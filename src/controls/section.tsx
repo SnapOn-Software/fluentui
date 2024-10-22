@@ -1,7 +1,7 @@
 import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import { isFunction, isNotEmptyArray } from '@kwiz/common';
 import React from 'react';
-import { mixins } from '../styles/styles';
+import { KnownClassNames, mixins } from '../styles/styles';
 
 const useStyles = makeStyles({
     main: mixins.main,
@@ -32,7 +32,7 @@ export interface ISectionProps {
 
 export const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<ISectionProps>>((props, ref) => {
     const cssNames = useStyles();
-    let css: string[] = [];
+    let css: string[] = [KnownClassNames.section];
     if (props.main) css.push(cssNames.main);
     if (isFunction(props.onClick))
         css.push(cssNames.clickable);

@@ -21,7 +21,6 @@ export module mixins {
         ...box,
         /** make buttons work */
         position: "relative",
-        zIndex: 2, //SUSPECTED NOT RELEVANT ANYMORE - can't go over 1, so it won't hide code editor menu if code editor is added below this
         /** make buttons work */
         maxWidth: "33%",
         /** stop bleeding into page */
@@ -57,10 +56,17 @@ export module mixins {
     // }
 }
 
+export const KnownClassNames = {
+    print: 'print-root',
+    section: 'kfui-section',
+    vertical: 'kfui-vertical',
+    horizontal: 'kfui-horizontal',
+    list: 'kfui-list'
+}
 export const useCommonStyles = makeStyles({
     printShow: {
         display: 'none',
-        ':global(body.print-root)': {
+        [`:global(body.${KnownClassNames.print})`]: {
             display: 'unset',
         },
         '@media print': {
@@ -68,7 +74,7 @@ export const useCommonStyles = makeStyles({
         }
     },
     printHide: {
-        ':global(body.print-root)': {
+        [`:global(body.${KnownClassNames.print})`]: {
             display: 'none !important'
         },
         '@media print': {
