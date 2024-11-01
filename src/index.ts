@@ -6,6 +6,7 @@ export * from './controls/field-editor';
 export * from './controls/file-upload';
 export * from './controls/horizontal';
 export * from './controls/input';
+export * from './controls/date';
 export * from './controls/list';
 export * from './controls/loading';
 export * from './controls/please-wait';

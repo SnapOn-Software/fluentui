@@ -63,6 +63,7 @@
     },
     "peerDependencies": {
         "@fluentui/react-components": ">=9.54.17 <10.0.0",
+        "@fluentui/react-datepicker-compat": "^0.4.53",
         "@types/react": ">=16.14.0 <19.0.0",
         "@types/react-dom": ">=16.9.0 <19.0.0",
         "react": ">=16.14.0 <19.0.0",

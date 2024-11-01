@@ -91,8 +91,8 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: {
 
     return [value, setValue, currentValue];
 }
-export function useTrackFocus(props: { onFocus: () => void, onLoseFocus: () => void }) {
-    const wrapperDiv = useRef<HTMLDivElement>(null);
+export function useTrackFocus(props: { onFocus: () => void, onLoseFocus: () => void, ref?: MutableRefObject<HTMLElement> }) {
+    const wrapperDiv = props.ref || useRef<HTMLDivElement>(null);
     useEffect(() => {
         function focusIn(e: FocusEvent) {
             let elm = e.target as HTMLElement;//document.activeElement;
