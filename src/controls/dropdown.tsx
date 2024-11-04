@@ -27,12 +27,10 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: I
     //sometimes control will lose value when re-rendered
     //use case: public forms when editing other fields after the dropdown was set
     //re-set the text value manually to fix
-    let text = Array.isArray(props.selected)
-        ? filterEmptyEntries(props.selected.map(s => {
+    let text = filterEmptyEntries((Array.isArray(props.selected)?props.selected:[props.selected]).map(s => {
             let v = firstOrNull(props.items, i => i.key === s);
             return v ? v.value : ''
-        })).join(', ')
-        : props.selected || "";
+        })).join(', ');
 
     return (
         <Dropdown {...{ ...props, onSelect: undefined }} ref={ref} clearable={!props.required && !props.multiselect}
