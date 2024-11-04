@@ -1,6 +1,7 @@
 import { GriffelStyle, Input, InputProps, makeStyles, mergeClasses, Textarea, TextareaProps } from '@fluentui/react-components';
 import { isFunction } from '@kwiz/common';
 import React from 'react';
+import { useKWIZFluentContextContext } from '../helpers/context';
 
 
 interface IProps extends InputProps {
@@ -8,8 +9,9 @@ interface IProps extends InputProps {
     onCancel?: () => void;
 }
 export const InputEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+    const ctx = useKWIZFluentContextContext();
     return (
-        <Input appearance='underline' {...props}
+        <Input appearance={ctx.inputAppearance} {...props}
             onKeyDown={isFunction(props.onOK) || isFunction(props.onCancel)
                 ? e => {
                     if (isFunction(props.onOK) && e.key === "Enter") props.onOK();

@@ -33,7 +33,6 @@ export const FieldEditor: React.FunctionComponent<IProps> = (props) => {
                 />
                 : <InputEx className={props.css && mergeClasses(...props.css)}
                     required={props.required}
-                    appearance='underline'
                     placeholder={props.label}
                     value={props.value || ""}
                     onChange={(e, data) => props.onChange(data.value)} />}
