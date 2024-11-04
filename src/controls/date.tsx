@@ -12,15 +12,13 @@ interface IProps extends DatePickerProps {
 export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const ctx = useKWIZFluentContextContext();
     const [showClear, setShowClear] = React.useState(isDate(props.value));
-    const [v, setV] = React.useState(0);
     const reset = React.useCallback(() => {
         setShowClear(false);
-        setV(v + 1);
         if (isFunction(props.onSelectDate)) props.onSelectDate(undefined);
-    }, [v]);
+    }, [showClear]);
 
     return (
-        <DatePicker key={`v${v}`} appearance={ctx.inputAppearance} mountNode={ctx.mountNode} {...props}
+        <DatePicker appearance={ctx.inputAppearance} mountNode={ctx.mountNode} {...props}
             onSelectDate={(date) => {
                 setShowClear(isDate(date));
                 if (isFunction(props.onSelectDate)) props.onSelectDate(date);
