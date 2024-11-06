@@ -50,6 +50,13 @@ const useStyles = makeStyles({
             color: tokens.colorBrandForeground1,
         }
     },
+    dangerSubtle: {
+        color: tokens.colorStatusWarningForeground2,
+
+        [`& .${compoundButtonClassNames.secondaryContent}`]: {
+            color: tokens.colorStatusWarningForeground1
+        }
+    }
 })
 
 
@@ -124,6 +131,12 @@ export const ButtonEXPrimarySubtle = React.forwardRef<HTMLButtonElement, (Button
     const cssNames = useStyles();
     return (
         <ButtonEX ref={ref} className={props.disabled ? undefined : cssNames.primarySubtle} {...props}>{props.children}</ButtonEX>
+    );
+});
+export const ButtonEXDangerSubtle = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
+    const cssNames = useStyles();
+    return (
+        <ButtonEX ref={ref} className={props.disabled ? undefined : cssNames.dangerSubtle} {...props}>{props.children}</ButtonEX>
     );
 });
 

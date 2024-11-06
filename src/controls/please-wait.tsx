@@ -9,9 +9,10 @@ interface IProps {
     contentOnly?: boolean;
     cancelText?: string;
     onCancel?: () => void;
+    label?: string;
 }
 export const PleaseWait: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
-    const field = <Field validationMessage="please wait..." validationState="none">
+    const field = <Field validationMessage={props.label || "please wait..."} validationState="none">
         <ProgressBar value={props.step} max={props.max} />
     </Field>;
     return (props.contentOnly
