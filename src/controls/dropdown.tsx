@@ -1,7 +1,7 @@
 import { Dropdown, DropdownProps, Option } from '@fluentui/react-components';
 import { filterEmptyEntries, firstOrNull, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContextContext } from '../helpers/context';
+import { useKWIZFluentContext } from '../helpers/context';
 
 type ForwardProps = Omit<DropdownProps, "onSelect" | "selectedOptions" | "clearable">;
 
@@ -21,7 +21,7 @@ interface IProps<dataType, keyType extends string = string> extends ForwardProps
 }
 
 function $DropdownEX<keyType extends string = string, dataType = never>(props: IProps<dataType, keyType>, ref: React.ForwardedRef<HTMLButtonElement>) {
-    const ctx = useKWIZFluentContextContext();
+    const ctx = useKWIZFluentContext();
     const selected: keyType[] = Array.isArray(props.selected) ? props.selected : isNullOrUndefined(props.selected) ? [] : [props.selected];
 
     //sometimes control will lose value when re-rendered

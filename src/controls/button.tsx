@@ -1,7 +1,7 @@
 import { Button, ButtonProps, CompoundButton, compoundButtonClassNames, CompoundButtonProps, makeStyles, mergeClasses, tokens, Tooltip } from '@fluentui/react-components';
 import { capitalizeFirstLetter, isFunction, isNullOrEmptyString, isNullOrUndefined, isString, PushNoDuplicate } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContextContext } from '../helpers/context';
+import { useKWIZFluentContext } from '../helpers/context';
 import { useCommonStyles, widthMedium } from '../styles/styles';
 
 interface IProps {
@@ -105,7 +105,7 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
     );
 });
 export const ButtonEXSecondary = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
-    const ctx = useKWIZFluentContextContext();
+    const ctx = useKWIZFluentContext();
     return (
         <ButtonEX ref={ref} appearance='secondary' shape={ctx.buttonShape} {...props}></ButtonEX>
     );
@@ -152,7 +152,7 @@ export const CompoundButtonEX = React.forwardRef<HTMLButtonElement, (CompoundBut
     );
 });
 export const CompoundButtonEXSecondary = React.forwardRef<HTMLButtonElement, (CompoundButtonEXProps)>((props, ref) => {
-    const ctx = useKWIZFluentContextContext();
+    const ctx = useKWIZFluentContext();
     return (
         <CompoundButtonEX ref={ref} appearance='secondary' shape={ctx.buttonShape} {...props}></CompoundButtonEX>
     );

@@ -1,7 +1,7 @@
 import { Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger } from '@fluentui/react-components';
 import { isNullOrEmptyString } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContextContext } from '../helpers/context';
+import { useKWIZFluentContext } from '../helpers/context';
 import { ButtonEXProps, ButtonEXSecondary } from './button';
 
 export interface IPrompterProps {
@@ -18,7 +18,7 @@ export interface IPrompterProps {
     children?: JSX.Element;
 }
 export const Prompter: React.FunctionComponent<React.PropsWithChildren<IPrompterProps>> = (props) => {
-    const ctx = useKWIZFluentContextContext();
+    const ctx = useKWIZFluentContext();
 
     let okProps: ButtonEXProps = {
         ...(props.okButtonProps as any || {}),

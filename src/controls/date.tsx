@@ -2,7 +2,7 @@ import { DatePicker, DatePickerProps } from '@fluentui/react-datepicker-compat';
 import { CalendarCancelRegular } from '@fluentui/react-icons';
 import { isDate, isFunction, isNullOrEmptyString } from '@kwiz/common';
 import * as React from 'react';
-import { useKWIZFluentContextContext } from '../helpers/context';
+import { useKWIZFluentContext } from '../helpers/context';
 
 
 interface IProps extends DatePickerProps {
@@ -10,7 +10,7 @@ interface IProps extends DatePickerProps {
     onCancel?: () => void;
 }
 export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
-    const ctx = useKWIZFluentContextContext();
+    const ctx = useKWIZFluentContext();
     const [showClear, setShowClear] = React.useState(isDate(props.value));
     const reset = React.useCallback(() => {
         setShowClear(false);
