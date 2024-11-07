@@ -1,3 +1,4 @@
+import { Link, Toast, ToastBody, Toaster, ToastFooter, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
 import { IDictionary, isDebug, isFunction, isNotEmptyArray, isNullOrEmptyString, jsonClone, jsonStringify, LoggerLevel, objectsEqual, wrapFunction } from "@kwiz/common";
 import { MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { GetLogger } from "../_modules/config";
@@ -265,4 +266,30 @@ export function useBlockNav() {
         onNav,
         navPrompt: prompt ? <Prompter {...prompt} /> : undefined
     };
+}
+
+export function useToast() {
+    const toasterId = useId("toaster");
+    const { dispatchToast } = useToastController(toasterId);
+    return {
+        control: <Toaster toasterId={toasterId} />,
+        dispatch: (info: {
+            title?: string;
+            body?: string;
+            subtitle?: string;
+            titleAction?: { text: string, onClick: () => void },
+            footerActions?: { text: string, onClick: () => void }[],
+            intent?: ToastIntent
+        }) => {
+            dispatchToast(<Toast>
+                {info.title && <ToastTitle action={info.titleAction ? <Link onClick={info.titleAction.onClick}>{info.titleAction.text}</Link> : undefined}>{info.title}</ToastTitle>}
+                {info.body && <ToastBody subtitle={info.subtitle}>{info.body}</ToastBody>}
+                {isNotEmptyArray(info.footerActions) &&
+                    <ToastFooter>
+                        {info.footerActions.map((a, i) => <Link key={`l${i}`} onClick={a.onClick}>{a.text}</Link>)}
+                    </ToastFooter>
+                }
+            </Toast>, { intent: info.intent || "info" });
+        }
+    }
 }
