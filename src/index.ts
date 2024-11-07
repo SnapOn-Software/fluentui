@@ -18,7 +18,7 @@ export * from './controls/svg';
 export * from './controls/toolbar';
 export * from './controls/vertical';
 export * from './controls/vertical-content';
-export { KWIZFluentContext } from './helpers/context';
+export { KWIZFluentContext, useKWIZFluentContext } from './helpers/context';
 export type { iKWIZFluentContext } from './helpers/context';
 export * from './helpers/hooks';
 export { KnownClassNames } from './styles/styles';
