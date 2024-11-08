@@ -34,8 +34,6 @@ export function useKWIZFluentContext() {
     //set defaults
     if (isNullOrUndefined(ctx.inputAppearance))
         ctx.inputAppearance = "underline";
-    if (isNullOrUndefined(ctx.mountNode))
-        ctx.mountNode = document.querySelector(".fui-FluentProvider");
     if (isNullOrUndefined(ctx.buttonShape))
         ctx.buttonShape = "circular";
     return ctx;

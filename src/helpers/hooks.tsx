@@ -4,6 +4,7 @@ import { MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useSt
 import { GetLogger } from "../_modules/config";
 import { IPrompterProps, Prompter } from "../controls/prompt";
 import { KnownClassNames } from "../styles/styles";
+import { iKWIZFluentContext, useKWIZFluentContext } from "./context";
 
 const logger = GetLogger("helpers/hooks");
 /** Empty array ensures that effect is only run on mount */
@@ -268,11 +269,34 @@ export function useBlockNav() {
     };
 }
 
+export function useKeyDown(options: {
+    //default use document
+    elm?: HTMLElement | Document;
+    onEnter?: (e: KeyboardEvent) => void;
+    onEscape?: (e: KeyboardEvent) => void;
+    onKeyDown?: (e: KeyboardEvent) => void;
+}) {
+    let elm = options.elm || document;
+
+    useEffect(() => {
+        let handler = (e: KeyboardEvent) => {
+            if (e.key === "Enter" && isFunction(options.onEnter)) options.onEnter(e);
+            else if (e.key === "Escape" && isFunction(options.onEscape)) options.onEscape(e);
+            if (isFunction(options.onKeyDown))
+                options.onKeyDown(e);
+        };
+        elm.addEventListener("keydown", handler);
+        return () => elm.removeEventListener("keydown", handler);
+    }, [elm]);
+}
+
+
 export function useToast() {
+    const ctx = useKWIZFluentContext();
     const toasterId = useId("toaster");
     const { dispatchToast } = useToastController(toasterId);
     return {
-        control: <Toaster toasterId={toasterId} />,
+        control: <Toaster mountNode={ctx.mountNode} toasterId={toasterId} />,
         dispatch: (info: {
             title?: string;
             body?: string;
@@ -292,4 +316,21 @@ export function useToast() {
             </Toast>, { intent: info.intent || "info" });
         }
     }
+}
+
+export function useKWIZFluentContextProvider(options: {
+    root?: React.MutableRefObject<HTMLDivElement>;
+    ctx?: iKWIZFluentContext;
+}) {
+    let v: iKWIZFluentContext = options && options.ctx || {};
+    const [kwizFluentContext, setKwizFluentContext] = useState<iKWIZFluentContext>(v);
+    useEffect(() => {
+        // ref only updates in useEffect, not in useMemo or anything else.
+        // we need to set it into state so it will trigger a ui update
+        setKwizFluentContext({
+            ...v,
+            mountNode: options.root.current
+        });
+    }, [options.root]);
+    return kwizFluentContext;
 }
