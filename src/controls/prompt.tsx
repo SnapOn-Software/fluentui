@@ -70,10 +70,10 @@ export const Prompter = React.forwardRef<HTMLDivElement, (IPrompterProps)>((prop
         <Dialog open>
             <DialogSurface mountNode={props.mountNode || ctx.mountNode}
                 style={!isNullOrEmptyString(props.maxWidth) ? { maxWidth: props.maxWidth } : undefined}>
-                {!isNullOrEmptyString(props.title) && <DialogTitle
-                    action={props.titleAction}
-                >{props.title}</DialogTitle>}
                 <DialogBody>
+                    {!isNullOrEmptyString(props.title) && <DialogTitle
+                        action={props.titleAction}
+                    >{props.title}</DialogTitle>}
                     <DialogContent ref={ref}>
                         {props.children}
                     </DialogContent>
