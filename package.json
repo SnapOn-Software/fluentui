@@ -21,8 +21,8 @@
         "test": "node --import tsx --test src",
         "link-local-kwiz": "npm link @kwiz/common",
         "__update-kwiz-packages": "npm install @kwiz/common@latest",
-        "npm-v-patch": "npm version patch",
-        "npm-v-major": "npm version major",
+        "npm-v-patch": "npm version patch && git push --tags",
+        "npm-v-major": "npm version major && git push --tags",
         "npm-publish": "npm publish --access public",
         "reset-repo": "git fetch origin && git reset --hard origin/main"
     },
