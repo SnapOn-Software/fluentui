@@ -6,7 +6,7 @@ name: Node.js Package
 on:
   push:
     tags: 
-      - '*' # run every time we commit with a new version number
+      - 'v*.*.*' # run every time we commit with a new version number
 
 jobs:
   build:
