@@ -1,3 +1,4 @@
+export * from './controls/accordion';
 export * from './controls/button';
 export * from './controls/centered';
 export * from './controls/date';

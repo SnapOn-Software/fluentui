@@ -2,10 +2,11 @@ import {
     Menu, MenuButton, MenuItem, MenuList, MenuPopover, MenuTrigger, Overflow, OverflowItem,
     useIsOverflowItemVisible, useOverflowMenu
 } from "@fluentui/react-components";
-import { isNumber } from '@kwiz/common';
 import { MoreHorizontalFilled } from "@fluentui/react-icons";
+import { isNumber } from '@kwiz/common';
 
 interface IProps<ItemType> {
+    /** you cannot have a menu with trigger in overflow items. put those in groupWrapper controls before/after rendering children. */
     items: ItemType[];
     getKey: (item: ItemType, index: number) => string;
     getPriority?: (item: ItemType, index: number) => number;
