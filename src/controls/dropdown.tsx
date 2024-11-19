@@ -20,7 +20,8 @@ interface IProps<dataType, keyType extends string = string> extends ForwardProps
         options?: { key: keyType, value: string, data?: dataType }[]) => void;
 }
 
-function $DropdownEX<keyType extends string = string, dataType = never>(props: IProps<dataType, keyType>, ref: React.ForwardedRef<HTMLButtonElement>) {
+/** issue: figure out how to use forward ref with typed controls */
+export function DropdownEXTypedNoForwardRef<keyType extends string = string, dataType = never>(props: IProps<dataType, keyType>, ref: React.ForwardedRef<HTMLButtonElement>) {
     const ctx = useKWIZFluentContext();
     const selected: keyType[] = Array.isArray(props.selected) ? props.selected : isNullOrUndefined(props.selected) ? [] : [props.selected];
 
@@ -49,4 +50,4 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: I
     );
 }
 
-export const DropdownEX = React.forwardRef($DropdownEX);
+export const DropdownEX = React.forwardRef(DropdownEXTypedNoForwardRef);
