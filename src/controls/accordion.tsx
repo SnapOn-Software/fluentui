@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 });
 
 interface iProps {
-    /** optionally, send the key for the group you want to open by default */
+    /** optional: send the key for the group you want to open by default */
     opened?: string;
     groups: {
         key: string;
