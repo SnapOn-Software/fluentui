@@ -2,6 +2,7 @@ export * from './controls/accordion';
 export * from './controls/button';
 export * from './controls/centered';
 export * from './controls/date';
+export * from './controls/divider';
 export * from './controls/dropdown';
 export * from './controls/error-boundary';
 export * from './controls/field-editor';
