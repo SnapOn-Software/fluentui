@@ -8,7 +8,8 @@ import useDroppable, { iDroppableProps } from "./use-droppable";
 
 export interface iDragDropContext {
     isDragging: boolean;
-    setIsDragging: (value: boolean) => void;
+    dragItem: iDraggedItemType<string>;
+    setDragItem: (value: iDraggedItemType<string>) => void;
 }
 //create context
 export const DragDropContext = React.createContext<iDragDropContext>(null);
@@ -44,11 +45,12 @@ export function useDragDropContext<
     };
 }
 export function useDragDropContextProvider(): iDragDropContext {
-    const [isDragging, setIsDragging] = useStateEX(false);
+    const [dragItem, setDragItem] = useStateEX<iDraggedItemType<string>>(null);
 
     //build context
     const ctx: iDragDropContext = {
-        isDragging, setIsDragging
+        isDragging: !isNullOrUndefined(dragItem),
+        dragItem, setDragItem
     };
 
 
