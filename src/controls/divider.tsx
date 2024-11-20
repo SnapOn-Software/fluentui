@@ -1,4 +1,4 @@
-import { Divider, makeStyles } from '@fluentui/react-components';
+import { Divider, DividerProps, makeStyles } from '@fluentui/react-components';
 import React from 'react';
 
 const useStyles = makeStyles({
@@ -6,7 +6,7 @@ const useStyles = makeStyles({
         flexGrow: 0
     }
 });
-interface IProps {
+interface IProps extends DividerProps {
 }
 export const DividerEX: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const cssNames = useStyles();
