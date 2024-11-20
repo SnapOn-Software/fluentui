@@ -61,7 +61,13 @@ export const KnownClassNames = {
     section: 'kfui-section',
     vertical: 'kfui-vertical',
     horizontal: 'kfui-horizontal',
-    list: 'kfui-list'
+    list: 'kfui-list',
+    accordion: 'kfui-accordion',
+    accordionHeader: 'kfui-accordion-header',
+    accordionBody: 'kfui-accordion-body',
+    accordionBodyWrapper: 'kfui-accordion-body-wrapper',
+    accordionBodyIndent: 'kfui-accordion-indent',
+    isOpen: 'is-opened',
 }
 export const useCommonStyles = makeStyles({
     printShow: {

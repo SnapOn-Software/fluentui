@@ -1,7 +1,10 @@
-import { Label, makeStyles } from "@fluentui/react-components";
+import { Divider, makeStyles, tokens } from "@fluentui/react-components";
 import { ChevronRightRegular } from "@fluentui/react-icons";
 import * as React from 'react';
+import { KnownClassNames } from "../styles/styles";
+import { ButtonEX } from "./button";
 import { Horizontal } from "./horizontal";
+import { Section } from "./section";
 import { Vertical } from "./vertical";
 
 const useStyles = makeStyles({
@@ -10,13 +13,19 @@ const useStyles = makeStyles({
         transition: "transform 200ms ease-out"
     },
     header: {
-        cursor: "pointer"
+        paddingLeft: 0
     },
     root: {
         maxHeight: "100%"
     },
     body: {
-        overflow: "auto"
+        overflow: "auto",
+    },
+    separator: {
+        flexGrow: 0
+    },
+    indent: {
+        width: tokens.spacingHorizontalL
     }
 });
 
@@ -33,15 +42,23 @@ interface iProps {
 export const AccordionEX: React.FunctionComponent<iProps> = (props) => {
     const classes = useStyles();
     const [opened, setOpened] = React.useState(props.opened || props.groups[0].key);
-    return (<Vertical main css={[classes.root]}>
+    return (<Vertical main css={[classes.root, KnownClassNames.accordion]}>
         {props.groups.map(group => <React.Fragment key={group.key}>
-            <Horizontal css={[classes.header]} onClick={() => setOpened(group.key)}>
-                <ChevronRightRegular className={opened === group.key && classes.opened} />
-                <Label>{group.title}</Label>
-            </Horizontal>
-            {group.key === opened && <Vertical main css={[classes.body]}>
-                {group.content}
-            </Vertical>}
+            <ButtonEX className={`${classes.header} ${KnownClassNames.accordionHeader} ${opened === group.key ? ` ${KnownClassNames.isOpen}` : ''}`}
+                icon={<ChevronRightRegular className={opened === group.key ? classes.opened : ''} />}
+                title={group.title} showTitleWithIcon dontCenterText
+                onClick={() => setOpened(group.key)}
+            />
+            <Divider className={classes.separator} />
+            {group.key === opened && <>
+                <Horizontal main css={[classes.body, KnownClassNames.accordionBodyWrapper]}>
+                    <Section css={[classes.indent, KnownClassNames.accordionBodyIndent]}></Section>
+                    <Vertical main css={[KnownClassNames.accordionBody]}>
+                        {group.content}
+                    </Vertical>
+                </Horizontal>
+                <Divider className={classes.separator} />
+            </>}
         </React.Fragment>)}
     </Vertical>
     );
