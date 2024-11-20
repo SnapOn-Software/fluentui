@@ -1,6 +1,6 @@
 import { isNullOrEmptyString } from "@kwiz/common";
 import { useDragDropContext } from "./drag-drop-context";
-import { iDraggedItemType, iDraggableProps } from "./use-draggable";
+import { iDraggableProps, iDraggedItemType } from "./use-draggable";
 import { iDroppableProps } from "./use-droppable";
 
 interface one<DragItemType extends iDraggedItemType<string>> {
@@ -16,8 +16,8 @@ type iDragDropProps<
     DragItemType extends iDraggedItemType<string>,
     DropInfoTypes extends string = never,
     DropInfoItemTypes extends iDraggedItemType<DropInfoTypes> = never,
-> = one<DragItemType>
-    | other<DropInfoTypes, DropInfoItemTypes>
+> = one<DragItemType> & Partial<other<DropInfoTypes, DropInfoItemTypes>>
+    | Partial<one<DragItemType>> & other<DropInfoTypes, DropInfoItemTypes>
     | (one<DragItemType> & other<DropInfoTypes, DropInfoItemTypes>);
 
 type iProps<DragItemType extends iDraggedItemType<string>, DropInfoTypes extends string, DropInfoItemTypes extends iDraggedItemType<DropInfoTypes>> =
@@ -43,5 +43,13 @@ export function DragDropContainer<
     if (drag.isDragging && props.onDraggingClassName) classNames.push(props.onDraggingClassName);
     if (drop.isOver && props.onDragOverClassName) classNames.push(props.onDragOverClassName);
 
-    return <div {...(props || {})} ref={dragDropRef} className={classNames.join(' ')}>{props.children}</div>;
+    const propsWithoutExtras = {
+        ...props
+    };
+    delete propsWithoutExtras.dragInfo;
+    delete propsWithoutExtras.dropInfo;
+    delete propsWithoutExtras.onDraggingClassName;
+    delete propsWithoutExtras.onDragOverClassName;
+
+    return <div {...propsWithoutExtras} ref={dragDropRef} className={classNames.join(' ')}>{props.children}</div>;
 }
