@@ -59,6 +59,8 @@
         "@kwiz/common": "^1.0.58",
         "esbuild": "^0.19.12",
         "get-tsconfig": "^4.7.2",
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1",
         "resolve-pkg-maps": "^1.0.0"
     },
     "peerDependencies": {

@@ -21,6 +21,7 @@ export * from './controls/vertical';
 export * from './controls/vertical-content';
 export { KWIZFluentContext, useKWIZFluentContext } from './helpers/context';
 export type { iKWIZFluentContext } from './helpers/context';
+export * from './helpers/drag-drop/exports';
 export * from './helpers/hooks';
 export { KnownClassNames } from './styles/styles';
 
