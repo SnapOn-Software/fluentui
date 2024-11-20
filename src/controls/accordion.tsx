@@ -1,8 +1,9 @@
-import { Divider, makeStyles, tokens } from "@fluentui/react-components";
+import { makeStyles, tokens } from "@fluentui/react-components";
 import { ChevronRightRegular } from "@fluentui/react-icons";
 import * as React from 'react';
 import { KnownClassNames } from "../styles/styles";
 import { ButtonEX } from "./button";
+import { DividerEX } from "./divider";
 import { Horizontal } from "./horizontal";
 import { Section } from "./section";
 import { Vertical } from "./vertical";
@@ -20,9 +21,6 @@ const useStyles = makeStyles({
     },
     body: {
         overflow: "auto",
-    },
-    separator: {
-        flexGrow: 0
     },
     indent: {
         width: tokens.spacingHorizontalL
@@ -49,7 +47,7 @@ export const AccordionEX: React.FunctionComponent<iProps> = (props) => {
                 title={group.title} showTitleWithIcon dontCenterText
                 onClick={() => setOpened(group.key)}
             />
-            <Divider className={classes.separator} />
+            <DividerEX />
             {group.key === opened && <>
                 <Horizontal main css={[classes.body, KnownClassNames.accordionBodyWrapper]}>
                     <Section css={[classes.indent, KnownClassNames.accordionBodyIndent]}></Section>
@@ -57,7 +55,7 @@ export const AccordionEX: React.FunctionComponent<iProps> = (props) => {
                         {group.content}
                     </Vertical>
                 </Horizontal>
-                <Divider className={classes.separator} />
+                <DividerEX />
             </>}
         </React.Fragment>)}
     </Vertical>
