@@ -1,4 +1,4 @@
-import { isNullOrEmptyString } from "@kwiz/common";
+import { mergeClasses } from "@fluentui/react-components";
 import { useDragDropContext } from "./drag-drop-context";
 import { iDraggableProps, iDraggedItemType } from "./use-draggable";
 import { iDroppableProps } from "./use-droppable";
@@ -39,7 +39,7 @@ export function DragDropContainer<
 
     const { drag, drop, dragDropRef } = useDragDropContext(props);
 
-    const classNames: string[] = isNullOrEmptyString(props.className) ? [] : props.className.split(' ');
+    const classNames: string[] = [];
     if (drag.isDragging && props.onDraggingClassName) classNames.push(props.onDraggingClassName);
     if (drop.isOver && props.onDragOverClassName) classNames.push(props.onDragOverClassName);
 
@@ -51,5 +51,5 @@ export function DragDropContainer<
     delete propsWithoutExtras.onDraggingClassName;
     delete propsWithoutExtras.onDragOverClassName;
 
-    return <div {...propsWithoutExtras} ref={dragDropRef} className={classNames.join(' ')}>{props.children}</div>;
+    return <div {...propsWithoutExtras} ref={dragDropRef} className={mergeClasses(...classNames, props.className)}>{props.children}</div>;
 }

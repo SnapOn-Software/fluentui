@@ -2,7 +2,7 @@ import { Button, ButtonProps, CompoundButton, compoundButtonClassNames, Compound
 import { capitalizeFirstLetter, isFunction, isNullOrEmptyString, isNullOrUndefined, isString, PushNoDuplicate } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
-import { useCommonStyles, widthMedium } from '../styles/styles';
+import { commonSizes, useCommonStyles } from '../styles/styles';
 
 interface IProps {
     title: string;//required
@@ -61,6 +61,7 @@ const useStyles = makeStyles({
 
 
 export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
+    const ctx = useKWIZFluentContext();
     const [hover, setHover] = React.useState(false);
     const trackHover = !isNullOrEmptyString(props.hoverTitle) || !isNullOrUndefined(props.hoverIcon);
 
@@ -77,9 +78,7 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
     if (props.hideOnPrint) PushNoDuplicate(css, commonCssNames.printHide);
     if (props.dontCenterText) PushNoDuplicate(css, cssNames.buttonNoCenter);
 
-    if (!isNullOrEmptyString(props.className)) css.push(...props.className.split(' '));
-
-    let btn = <Button ref={ref} appearance='subtle' {...props} className={mergeClasses(...css)}
+    let btn = <Button ref={ref} appearance='subtle' {...props} className={mergeClasses(...css, props.className)}
         aria-label={title} title={undefined} icon={icon}
         onMouseEnter={trackHover ? (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             setHover(true);
@@ -95,7 +94,9 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
         //no icon? will show the title by default
         (hasText && capitalizeFirstLetter(title))}</Button>;
     if (!hasText || props.children)//icon only or when content is different than props.title
-        btn = <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={title}>
+        btn = <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={title}
+            mountNode={ctx.mountNode}
+        >
             {btn}
         </Tooltip>;
 
@@ -141,11 +142,14 @@ export const ButtonEXDangerSubtle = React.forwardRef<HTMLButtonElement, (ButtonE
 });
 
 export const CompoundButtonEX = React.forwardRef<HTMLButtonElement, (CompoundButtonEXProps)>((props, ref) => {
+    const ctx = useKWIZFluentContext();
     let title = props.title || props['aria-label'];
     let tooltip = isString(props.secondaryContent) ? props.secondaryContent : title;
-    let max = typeof (props.width) === "undefined" ? widthMedium : props.width;
+    let max = typeof (props.width) === "undefined" ? commonSizes.widthMedium : props.width;
     return (
-        <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={tooltip}>
+        <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={tooltip}
+            mountNode={ctx.mountNode}
+        >
             <CompoundButton ref={ref} appearance='subtle' style={{ justifyContent: "flex-start", maxWidth: max }} {...props} aria-label={tooltip} title={undefined}>
                 {props.children || capitalizeFirstLetter(title)}</CompoundButton>
         </Tooltip>

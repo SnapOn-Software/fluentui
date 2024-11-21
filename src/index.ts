@@ -12,6 +12,7 @@ export * from './controls/input';
 export * from './controls/kwizoverflow';
 export * from './controls/list';
 export * from './controls/loading';
+export * from './controls/menu';
 export * from './controls/please-wait';
 export * from './controls/prompt';
 export * from './controls/search';
@@ -24,5 +25,5 @@ export { KWIZFluentContext, useKWIZFluentContext } from './helpers/context';
 export type { iKWIZFluentContext } from './helpers/context';
 export * from './helpers/drag-drop/exports';
 export * from './helpers/hooks';
-export { KnownClassNames } from './styles/styles';
+export { KnownClassNames, commonSizes } from './styles/styles';
 

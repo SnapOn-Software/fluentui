@@ -1,6 +1,6 @@
 import { Input, InputProps, makeStyles } from '@fluentui/react-components';
 import { DismissRegular, SearchRegular } from "@fluentui/react-icons";
-import { debounce, isFunction, isNullOrEmptyString } from '@kwiz/common';
+import { debounce, isFunction, isNullOrEmptyString, isUndefined } from '@kwiz/common';
 import React, { useState } from 'react';
 import { GetLogger } from '../_modules/config';
 import { useStateEX } from '../helpers/hooks';
@@ -35,7 +35,7 @@ export const Search: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
         props.onChangeDeferred(v);
     }, delay * 1000), [delay]);
 
-    let [value, setValue] = useStateEX(props.value, {
+    let [value, setValue] = useStateEX(props.value || "", {
         onChange: newValue => {
             if (isFunction(props.onChangeSync)) props.onChangeSync(newValue as string);
             if (isFunction(props.onChangeDeferred)) notifyParent(newValue);
@@ -45,7 +45,8 @@ export const Search: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
 
     //once props change, reset this control value to match
     React.useEffect(() => {
-        setValue(props.resetValue);
+        if (!isUndefined(props.resetValue))
+            setValue(props.resetValue);
         //todo: bug: setting value does not sync into the text box
         setResetKey(resetKey + 1)
     }, [props.resetValue]);
