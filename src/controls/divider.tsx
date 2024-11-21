@@ -8,9 +8,9 @@ const useStyles = makeStyles({
 });
 interface IProps extends DividerProps {
 }
-export const DividerEX: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+export const DividerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<IProps>)>((props, ref) => {
     const cssNames = useStyles();
     return (
-        <Divider {...props} className={cssNames.separator} />
+        <Divider ref={ref} {...props} className={cssNames.separator} />
     );
-}
+});

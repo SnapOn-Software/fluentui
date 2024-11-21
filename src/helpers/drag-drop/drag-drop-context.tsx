@@ -30,18 +30,22 @@ export function useDragDropContext<
     const isDroppable = !isNullOrUndefined(info.dropInfo);
     const drag = useDraggable(info?.dragInfo);
     const drop = useDroppable(info?.dropInfo);
-    const acceptDrops = isDroppable && !drag.isDragging && dragDropContext.isDragging;
+    const expectingDrop = isDroppable && !drag.isDragging && dragDropContext.isDragging
+        //check if item being dragged is allowed in this context...
+        && info.dropInfo.acceptTypes.indexOf(dragDropContext.dragItem.type) >= 0;
 
     return {
         dragDropContext,
         drag,
         drop,
+        /** an item that this control can handler is being dragged */
+        expectingDrop,
         dragDropRef: isDraggable && !isDroppable
             ? drag.dragRef
             : !isDraggable && isDroppable
                 ? drop.dropRef
                 //both drag and drop allowed
-                : acceptDrops ? drop.dropRef : drag.dragRef
+                : expectingDrop ? drop.dropRef : drag.dragRef
     };
 }
 export function useDragDropContextProvider(): iDragDropContext {

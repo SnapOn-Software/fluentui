@@ -17,7 +17,7 @@ interface IProps extends ISectionProps {
     wrap?: boolean;
     nogap?: boolean;
 }
-export const Vertical: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+export const Vertical = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IProps>>((props, ref) => {
     const cssNames = useStyles();
     let css: string[] = [KnownClassNames.vertical];
 
@@ -32,4 +32,4 @@ export const Vertical: React.FunctionComponent<React.PropsWithChildren<IProps>> 
     return (
         <Section {...props} css={css} />
     );
-}
+});
