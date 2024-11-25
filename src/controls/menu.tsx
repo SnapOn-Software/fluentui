@@ -1,6 +1,6 @@
 import { Menu, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, MenuPopoverProps, MenuProps, MenuTrigger } from '@fluentui/react-components';
 import { ChevronLeftRegular, ChevronRightRegular } from '@fluentui/react-icons';
-import { IDictionary, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone } from '@kwiz/common';
+import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
 import { useStateEX } from '../helpers/hooks';
@@ -48,9 +48,15 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
     if (!isNumber(pageSize)) pageSize = 99999999999;
     if (!isNumber(filterThreshold)) filterThreshold = 99999999999;
 
+    //when hovering over sub menu the parent would close - have menu trigger keep open on the parent level
+    const [keepOpen, setKeepOpen] = useStateEX<IDictionary<boolean>>({});
+    const [opened, setOpened] = useStateEX<IDictionary<boolean>>({});
+
     function renderItems(items: iMenuItemEX[], level: number) {
         const myLevelFilter = filterPerLevel[level];
-        if (!isNullOrEmptyString(myLevelFilter)) {
+        //get rid of empty/null items
+        items = items.filter(i => !isNullOrUndefined(i) && (isNotEmptyString(i.type) || isNotEmptyString((i as iMenuItemEXItem).title)))
+        if (isNotEmptyString(myLevelFilter)) {
             items = items.filter(i => i.type !== "separator" && i.title.toLowerCase().indexOf(myLevelFilter) >= 0);
         }
 
@@ -65,12 +71,22 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
                     return <MenuDivider key={index} />;
                 case "item":
                 default:
+                    const openKey = `${level}|${index}`;
                     const menuItem = <MenuItem key={index} icon={item.icon}
                         disabled={item.disabled}
                         onClick={item.onClick}
                     >{item.title}</MenuItem>;
-                    if (isNotEmptyArray(item.items)) {
-                        <Menu key={index}>
+                    return isNotEmptyArray(item.items)
+                        ? <Menu key={index} mountNode={ctx.mountNode} open={opened[openKey] || false} onOpenChange={(e, data) => {
+                            if (data.open) {
+                                setOpened({ ...opened, [openKey]: true });
+                                setKeepOpen({ ...keepOpen, [level]: true });
+                            }
+                            else if (!keepOpen[openKey]) {
+                                setOpened({ ...opened, [openKey]: false });
+                                setKeepOpen({ ...keepOpen, [level]: false });
+                            }
+                        }}>
                             <MenuTrigger disableButtonEnhancement>
                                 {menuItem}
                             </MenuTrigger>
@@ -80,10 +96,10 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
                                 </MenuList>
                             </MenuPopover>
                         </Menu>
-                    }
-                    else return menuItem;
+                        : menuItem;
             }
         });
+
         const paged = menuItems.length > pageSize;
         const filtered = menuItems.length > filterThreshold || !isNullOrEmptyString(myLevelFilter);
         const filterControl = filtered && <Search value={myLevelFilter || ""} onChangeDeferred={(newValue) => {
@@ -120,8 +136,12 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
         }
         return menuItems;
     }
+
     return (
-        <Menu mountNode={ctx.mountNode} {...props.menuProps}>
+        <Menu mountNode={ctx.mountNode} {...props.menuProps} open={opened[0] || false} onOpenChange={(e, data) => {
+            if (data.open) setOpened({ ...opened, 0: true });
+            else if (!keepOpen[0]) setOpened({ ...opened, 0: false });
+        }}>
             <MenuTrigger disableButtonEnhancement>
                 {isString(props.trigger)
                     ? <ButtonEX title={props.trigger} />

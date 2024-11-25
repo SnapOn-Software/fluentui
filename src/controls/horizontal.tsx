@@ -10,12 +10,16 @@ const useStyles = makeStyles({
         flexDirection: 'row'
     },
     wrap: mixins.wrap,
-    nogap: mixins.nogap
+    nogap: mixins.nogap,
+    centered: {
+        alignItems: "center"
+    }
 })
 
 interface IProps extends ISectionProps {
     wrap?: boolean;
     nogap?: boolean;
+    centered?: boolean;
 }
 export const Horizontal = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IProps>>((props, ref) => {
     const cssNames = useStyles();
@@ -26,6 +30,8 @@ export const Horizontal = React.forwardRef<HTMLDivElement, React.PropsWithChildr
         css.push(cssNames.wrap);
     if (props.nogap)
         css.push(cssNames.nogap);
+    if (props.centered)
+        css.push(cssNames.centered);
 
     if (isNotEmptyArray(props.css)) css.push(...props.css);
 
