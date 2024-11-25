@@ -190,14 +190,20 @@ export function useIsInPrint() {
     }, useEffectOnlyOnMount);
     return printMode;
 }
+export interface iBlockNav {
+    setMessage: (id: string, message?: string) => void;
+    onNav: (nav: () => void) => void;
+    navPrompt?: JSX.Element;
+
+}
 /** set block message if you want to block nav.
  * - call setMessage to  add a blocker message
  * - call onNav when you have internal navigation (open / close popups)
  * - render the navPrompt control to your page
  * FYI for page unload, most modern browsers won't show your message but a generic one instead. */
-export function useBlockNav() {
+export function useBlockNav(): iBlockNav {
     const [, setBlockNavMessages, blockNavMessagesRef] = useStateEX<IDictionary<string>>({});
-    const [prompt, setPrompt] = useStateEX<IPrompterProps>(null);
+    const [_prompt, setPrompt] = useStateEX<IPrompterProps>(null);
 
     const getMessagesArr = useCallback(() => {
         return Object.keys(blockNavMessagesRef.current).map(id => blockNavMessagesRef.current[id]);
@@ -265,7 +271,7 @@ export function useBlockNav() {
         // getMessages,
         // getMessagesArr,
         onNav,
-        navPrompt: prompt ? <Prompter {...prompt} /> : undefined
+        navPrompt: _prompt ? <Prompter {..._prompt} /> : undefined
     };
 }
 
@@ -287,7 +293,7 @@ export function useKeyDown(options: {
         };
         elm.addEventListener("keydown", handler);
         return () => elm.removeEventListener("keydown", handler);
-    }, [elm]);
+    }, [elm, options.onEnter, options.onEscape, options.onKeyDown]);
 }
 
 
@@ -333,4 +339,58 @@ export function useKWIZFluentContextProvider(options: {
         });
     }, [options.root]);
     return kwizFluentContext;
+}
+
+export interface iAlerts {
+    promptEX: (info: IPrompterProps) => void;
+    confirmEX: (message: string, onOK: () => void, onCancel?: () => void) => void;
+    alertEX: (message: string, onOK: () => void) => void;
+    alertPrompt?: JSX.Element;
+}
+/** set block message if you want to block nav.
+ * - call setMessage to  add a blocker message
+ * - call onNav when you have internal navigation (open / close popups)
+ * - render the navPrompt control to your page
+ * FYI for page unload, most modern browsers won't show your message but a generic one instead. */
+export function useAlerts(): iAlerts {
+    const [_prompt, _setPrompt] = useStateEX<IPrompterProps>(null);
+
+    const promptEX = useCallback((info: IPrompterProps) => {
+        //need to release react to re-render the prompt
+        window.setTimeout(() => {
+            //prompt, if ok - clear messages and nav.
+            _setPrompt({
+                ...info,
+                onCancel: () => {
+                    _setPrompt(null);
+                    if (isFunction(info.onCancel)) info.onCancel();
+                },
+                onOK: () => {
+                    _setPrompt(null);
+                    if (isFunction(info.onOK)) info.onOK();
+                }
+            });
+        }, 1);
+    }, useEffectOnlyOnMount);
+
+    const confirmEX = useCallback((message: string, onOK: () => void, onCancel?: () => void) => {
+        promptEX({
+            title: message,
+            onCancel,
+            onOK
+        });
+    }, useEffectOnlyOnMount);
+
+    const alertEX = useCallback((message: string, onOK: () => void) => {
+        promptEX({
+            title: message,
+            hideCancel: true,
+            onOK
+        });
+    }, useEffectOnlyOnMount);
+
+    return {
+        promptEX, confirmEX, alertEX,
+        alertPrompt: _prompt ? <Prompter {..._prompt} /> : undefined
+    };
 }

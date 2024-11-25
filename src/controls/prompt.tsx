@@ -1,6 +1,6 @@
-import { Dialog, DialogActions, DialogBody, DialogContent, DialogModalType, DialogSurface, DialogTitle, DialogTrigger } from '@fluentui/react-components';
+import { Dialog, DialogActions, DialogBody, DialogContent, DialogModalType, DialogSurface, DialogTitle, DialogTrigger, useId } from '@fluentui/react-components';
 import { DismissRegular } from '@fluentui/react-icons';
-import { isNotEmptyArray, isNullOrEmptyString } from '@kwiz/common';
+import { isNotEmptyArray, isNullOrEmptyString, noops, PushNoDuplicate, RemoveItemFromArr, stopEvent } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
 import { useKeyDown } from '../helpers/hooks';
@@ -13,7 +13,9 @@ export interface IPrompterProps {
     /** return false to prevent closing the dialog. */
     onOK?: () => Promise<void> | void;
     onCancel?: () => void;
+    /** OK */
     okButtonText?: string;
+    /** Cancel */
     cancelButtonText?: string;
     title?: string | JSX.Element;
     okButtonProps?: Partial<ButtonEXProps>;
@@ -38,25 +40,48 @@ export interface IPrompterProps {
     /** do not fire ok/cancel on esc/enter press */
     disableKeyboardActions?: boolean;
 }
+const dialogsOrder: string[] = [];
 export const Prompter = React.forwardRef<HTMLDivElement, (IPrompterProps)>((props, ref) => {
     const ctx = useKWIZFluentContext();
     const disableKeyboardActions = React.useRef(props.disableKeyboardActions);
     disableKeyboardActions.current = props.disableKeyboardActions;
 
+    const myId = useId();
+    React.useEffect(() => {
+        PushNoDuplicate(dialogsOrder, myId);
+        //cleanup
+        return () => RemoveItemFromArr(dialogsOrder, myId);
+    }, [myId]);
+
+    const onOK = props.onOK || noops;
+    const onCancel = props.onCancel || noops;
+
     let okProps: ButtonEXProps = {
         ...(props.okButtonProps as any || {}),
-        onClick: () => props.onOK(),
-        title: props.okButtonText || 'yes'
+        onClick: () => onOK(),
+        title: props.okButtonText || 'OK'
     };
     let cancelProps: ButtonEXProps = {
         ...(props.cancelButtonProps as any || {}),
-        onClick: () => props.onCancel(),
-        title: props.cancelButtonText || 'no'
+        onClick: () => onCancel(),
+        title: props.cancelButtonText || 'Cancel'
     };
 
     useKeyDown({
-        onEnter: () => !disableKeyboardActions.current && props.onOK(),
-        onEscape: () => !disableKeyboardActions.current && props.onCancel(),
+        onEnter: (e) => {
+            const topMost = dialogsOrder.indexOf(myId) === dialogsOrder.length - 1;
+            if (topMost && !disableKeyboardActions.current) {
+                stopEvent(e);
+                onOK();
+            }
+        },
+        onEscape: (e) => {
+            const topMost = dialogsOrder.indexOf(myId) === dialogsOrder.length - 1;
+            if (topMost && !disableKeyboardActions.current) {
+                stopEvent(e);
+                onCancel();
+            }
+        }
     });
 
     const actions: JSX.Element[] = [];

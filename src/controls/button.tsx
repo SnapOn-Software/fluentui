@@ -12,13 +12,14 @@ interface IProps {
     dontCenterText?: boolean;
     hoverIcon?: JSX.Element;
     hoverTitle?: string;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => void | undefined;//type the onClick arg
 }
 interface IPropsCompound extends IProps {
     width?: string | number;
 }
 
-export type ButtonEXProps = IProps & ButtonProps;
-export type CompoundButtonEXProps = IPropsCompound & CompoundButtonProps;
+export type ButtonEXProps = IProps & Omit<ButtonProps, "onClick" | "title">;
+export type CompoundButtonEXProps = IPropsCompound & Omit<CompoundButtonProps, "onClick" | "title">;;
 
 const useStyles = makeStyles({
     buttonNoCenter: {
@@ -78,7 +79,7 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
     if (props.hideOnPrint) PushNoDuplicate(css, commonCssNames.printHide);
     if (props.dontCenterText) PushNoDuplicate(css, cssNames.buttonNoCenter);
 
-    let btn = <Button ref={ref} appearance='subtle' {...props} className={mergeClasses(...css, props.className)}
+    let btn = <Button ref={ref} appearance='subtle' {...props as any as ButtonProps} className={mergeClasses(...css, props.className)}
         aria-label={title} title={undefined} icon={icon}
         onMouseEnter={trackHover ? (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             setHover(true);
@@ -150,7 +151,7 @@ export const CompoundButtonEX = React.forwardRef<HTMLButtonElement, (CompoundBut
         <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={tooltip}
             mountNode={ctx.mountNode}
         >
-            <CompoundButton ref={ref} appearance='subtle' style={{ justifyContent: "flex-start", maxWidth: max }} {...props} aria-label={tooltip} title={undefined}>
+            <CompoundButton ref={ref} appearance='subtle' style={{ justifyContent: "flex-start", maxWidth: max }} {...props as any as CompoundButtonProps} aria-label={tooltip} title={undefined}>
                 {props.children || capitalizeFirstLetter(title)}</CompoundButton>
         </Tooltip>
     );
