@@ -1,4 +1,4 @@
-import { Menu, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, MenuPopoverProps, MenuProps, MenuTrigger } from '@fluentui/react-components';
+import { Menu, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger } from '@fluentui/react-components';
 import { ChevronLeftRegular, ChevronRightRegular } from '@fluentui/react-icons';
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone } from '@kwiz/common';
 import React from 'react';
@@ -34,23 +34,34 @@ interface IProps {
     menuListProps?: MenuListProps;
     trigger: JSX.Element | string | ButtonEXProps;
     items: iMenuItemEX[];
-    /** default 8 0/null to disable */
-    filterThreshold?: number;
-    /** default 8, 0/null to disable */
-    pageSize?: number;
+    /** default 8 null/false to disable */
+    filterThreshold?: number | false;
+    /** default 8, null/false to disable */
+    pageSize?: number | false;
 }
 export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const ctx = useKWIZFluentContext();
     const [startIndexPerLevel, setStartIndexPerLevel] = useStateEX<IDictionary<number>>({});
     const [filterPerLevel, setFilterPerLevel] = useStateEX<IDictionary<string>>({});
-    let pageSize = isUndefined(props.pageSize) ? 8 : props.pageSize;
-    let filterThreshold = isUndefined(props.filterThreshold) ? 8 : props.filterThreshold;
-    if (!isNumber(pageSize)) pageSize = 99999999999;
-    if (!isNumber(filterThreshold)) filterThreshold = 99999999999;
+    let pageSize: number = isUndefined(props.pageSize) ? 8 : isNumber(props.pageSize) ? props.pageSize : 99999999999;
+    let filterThreshold: number = isUndefined(props.filterThreshold) ? 8 : isNumber(props.filterThreshold) ? props.filterThreshold : 99999999999;
 
     //when hovering over sub menu the parent would close - have menu trigger keep open on the parent level
     const [keepOpen, setKeepOpen] = useStateEX<IDictionary<boolean>>({});
     const [opened, setOpened] = useStateEX<IDictionary<boolean>>({});
+
+    React.useEffect(() => {
+        window.setTimeout(() => {
+            var menus = document.querySelectorAll(`.${menuPopoverClassNames.root}`);
+            menus.forEach((menu: HTMLDivElement) => {
+                var rect = menu.getBoundingClientRect();
+                if (rect.bottom > document.documentElement.clientHeight) {
+                    menu.style.overflow = "auto";
+                    menu.style.height = `${rect.height - (rect.bottom - document.documentElement.clientHeight)}px`;
+                }
+            });
+        }, 100);
+    }, [opened]);
 
     function renderItems(items: iMenuItemEX[], level: number) {
         const myLevelFilter = filterPerLevel[level];
