@@ -66,7 +66,6 @@ export const KnownClassNames = {
     accordionHeader: 'kfui-accordion-header',
     accordionBody: 'kfui-accordion-body',
     accordionBodyWrapper: 'kfui-accordion-body-wrapper',
-    accordionBodyIndent: 'kfui-accordion-indent',
     isOpen: 'is-opened',
 }
 export const useCommonStyles = makeStyles({

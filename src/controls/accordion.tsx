@@ -1,11 +1,10 @@
-import { makeStyles, tokens } from "@fluentui/react-components";
+import { makeStyles } from "@fluentui/react-components";
 import { ChevronRightRegular } from "@fluentui/react-icons";
 import * as React from 'react';
 import { KnownClassNames } from "../styles/styles";
 import { ButtonEX } from "./button";
 import { DividerEX } from "./divider";
 import { Horizontal } from "./horizontal";
-import { Section } from "./section";
 import { Vertical } from "./vertical";
 
 const useStyles = makeStyles({
@@ -24,9 +23,6 @@ const useStyles = makeStyles({
     },
     body: {
         overflow: "auto",
-    },
-    indent: {
-        width: tokens.spacingHorizontalL
     }
 });
 
@@ -54,7 +50,6 @@ export const AccordionEX: React.FunctionComponent<iProps> = (props) => {
             <DividerEX />
             {group.key === opened && <>
                 <Horizontal main css={[classes.body, KnownClassNames.accordionBodyWrapper]}>
-                    <Section css={[classes.indent, KnownClassNames.accordionBodyIndent]}></Section>
                     <Vertical main css={[KnownClassNames.accordionBody]}>
                         {group.content}
                     </Vertical>

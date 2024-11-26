@@ -1,4 +1,4 @@
-import { Input, InputProps, makeStyles } from '@fluentui/react-components';
+import { Input, InputProps, makeStyles, mergeClasses } from '@fluentui/react-components';
 import { DismissRegular, SearchRegular } from "@fluentui/react-icons";
 import { debounce, isFunction, isNullOrEmptyString, isUndefined } from '@kwiz/common';
 import React, { useState } from 'react';
@@ -10,6 +10,14 @@ const logger = GetLogger("Search");
 const useStyles = makeStyles({
     main: mixins.main,
     clickable: mixins.clickable,
+    root: {
+        paddingLeft: 0
+    },
+    searchIcon: {
+        position: "absolute",
+        left: '5px',
+        top: '5px'
+    },
 })
 
 interface IProps extends InputProps {
@@ -53,8 +61,8 @@ export const Search: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
 
     return (
         <Input key={resetKey} {...props} value={value} onChange={(e, data) => setValue(data.value)}
-            className={props.main ? cssNames.main : undefined}
-            contentBefore={!isNullOrEmptyString(value) ? undefined : <SearchRegular />}
+            className={mergeClasses(cssNames.root, props.main && cssNames.main)}
+            contentBefore={!isNullOrEmptyString(value) ? undefined : <SearchRegular className={cssNames.searchIcon} />}
             contentAfter={isNullOrEmptyString(value)
                 ? undefined
                 : <DismissRegular className={cssNames.clickable} onClick={() => {

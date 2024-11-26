@@ -1,7 +1,14 @@
-import { Dropdown, DropdownProps, Option } from '@fluentui/react-components';
+import { Dropdown, DropdownProps, makeStyles, mergeClasses, Option } from '@fluentui/react-components';
 import { filterEmptyEntries, firstOrNull, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
+
+const useStyles = makeStyles({
+    root: {
+        minWidth: "auto"
+    },
+});
+
 
 type ForwardProps = Omit<DropdownProps, "onSelect" | "selectedOptions" | "clearable">;
 
@@ -27,6 +34,7 @@ interface IProps<dataType, keyType extends string = string> extends ForwardProps
  */
 export function getDropdownEX<keyType extends string = string, dataType = never>() {
     return React.forwardRef<HTMLButtonElement, (IProps<dataType, keyType>)>((props, ref) => {
+        const classes = useStyles();
         const ctx = useKWIZFluentContext();
         const selected: keyType[] = Array.isArray(props.selected) ? props.selected : isNullOrUndefined(props.selected) ? [] : [props.selected];
 
@@ -39,7 +47,7 @@ export function getDropdownEX<keyType extends string = string, dataType = never>
         })).join(', ');
 
         return (
-            <Dropdown {...{ ...props, onSelect: undefined }} ref={ref} clearable={!props.required && !props.multiselect}
+            <Dropdown {...{ ...props, onSelect: undefined }} className={mergeClasses(classes.root, props.className)} ref={ref} clearable={!props.required && !props.multiselect}
                 appearance={ctx.inputAppearance} mountNode={ctx.mountNode}
                 selectedOptions={selected} value={text} onOptionSelect={(e, data) => {
                     let o = firstOrNull(props.items, i => i.key === data.optionValue);
