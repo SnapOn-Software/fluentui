@@ -8,6 +8,7 @@ export * from './controls/error-boundary';
 export * from './controls/field-editor';
 export * from './controls/file-upload';
 export * from './controls/horizontal';
+export * from './controls/html-editor/editor';
 export * from './controls/input';
 export * from './controls/kwizoverflow';
 export * from './controls/list';

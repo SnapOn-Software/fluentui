@@ -1,5 +1,7 @@
 import { tokens } from '@fluentui/react-components';
 import React from 'react';
+import { flushSync } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 interface IProps {
     size: number;
@@ -117,4 +119,13 @@ export const GetSVGSplitIcon = (props: { size: number }) => {
     return `<svg fill="${tokens.colorNeutralForeground1}" height="${props.size}px" width="${props.size}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
 	<path d="M10.646 13.146l0.707 0.707-2.853 2.854-2.854-2.854 0.707-0.707 1.647 1.647v-3.772h1v3.772l1.646-1.647zM8 2.207v3.772h1v-3.772l1.646 1.646 0.707-0.707-2.853-2.853-2.854 2.853 0.707 0.707 1.647-1.646zM0 8v1h17v-1h-17z" />
 </svg>`;
+}
+
+export function IconToSVG(icon: JSX.Element) {
+    const iconDiv = document.createElement('div');
+    const root = createRoot(iconDiv);
+    flushSync(() => {
+        root.render(icon);
+    });
+    return iconDiv.innerHTML;
 }
