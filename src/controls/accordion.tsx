@@ -19,6 +19,9 @@ const useStyles = makeStyles({
     root: {
         maxHeight: "100%"
     },
+    rootFill: {
+        minHeight: "100%"
+    },
     body: {
         overflow: "auto",
     },
@@ -30,6 +33,7 @@ const useStyles = makeStyles({
 interface iProps {
     /** optional: send the key for the group you want to open by default */
     opened?: string;
+    fillHeight?: boolean;
     groups: {
         key: string;
         title: string;
@@ -40,7 +44,7 @@ interface iProps {
 export const AccordionEX: React.FunctionComponent<iProps> = (props) => {
     const classes = useStyles();
     const [opened, setOpened] = React.useState(props.opened || props.groups[0].key);
-    return (<Vertical main css={[classes.root, KnownClassNames.accordion]}>
+    return (<Vertical main css={[classes.root, props.fillHeight && classes.rootFill, KnownClassNames.accordion]}>
         {props.groups.map(group => <React.Fragment key={group.key}>
             <ButtonEX className={`${classes.header} ${KnownClassNames.accordionHeader} ${opened === group.key ? ` ${KnownClassNames.isOpen}` : ''}`}
                 icon={<ChevronRightRegular className={opened === group.key ? classes.opened : ''} />}
