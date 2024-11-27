@@ -343,8 +343,8 @@ export function useKWIZFluentContextProvider(options: {
 
 export interface iAlerts {
     promptEX: (info: IPrompterProps) => void;
-    confirmEX: (message: string, onOK: () => void, onCancel?: () => void) => void;
-    alertEX: (message: string, onOK: () => void) => void;
+    confirmEX: (message: string, onOK?: () => void, onCancel?: () => void) => Promise<boolean>;
+    alertEX: (message: string, onOK?: () => void) => Promise<void>;
     alertPrompt?: JSX.Element;
 }
 /** set block message if you want to block nav.
@@ -373,19 +373,32 @@ export function useAlerts(): iAlerts {
         }, 1);
     }, useEffectOnlyOnMount);
 
-    const confirmEX = useCallback((message: string, onOK: () => void, onCancel?: () => void) => {
-        promptEX({
-            children: <Label>{message}</Label>,
-            onCancel,
-            onOK
+    const confirmEX = useCallback((message: string, onOK?: () => void, onCancel?: () => void) => {
+        return new Promise<boolean>(resolve => {
+            promptEX({
+                children: <Label>{message}</Label>,
+                onCancel: () => {
+                    if (isFunction(onCancel)) onCancel();
+                    resolve(false);
+                },
+                onOK: () => {
+                    if (isFunction(onOK)) onOK();
+                    resolve(true);
+                }
+            });
         });
     }, useEffectOnlyOnMount);
 
     const alertEX = useCallback((message: string, onOK: () => void) => {
-        promptEX({
-            children: <Label>{message}</Label>,
-            hideCancel: true,
-            onOK
+        return new Promise<void>(resolve => {
+            promptEX({
+                children: <Label>{message}</Label>,
+                hideCancel: true,
+                onOK: () => {
+                    if (isFunction(onOK)) onOK();
+                    resolve();
+                }
+            });
         });
     }, useEffectOnlyOnMount);
 
