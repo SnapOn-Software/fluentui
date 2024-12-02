@@ -4,6 +4,7 @@ import {
 } from "@fluentui/react-components";
 import { MoreHorizontalFilled } from "@fluentui/react-icons";
 import { isNumber } from '@kwiz/common';
+import { useKWIZFluentContext } from "../helpers/context";
 
 interface IProps<ItemType> {
     /** you cannot have a menu with trigger in overflow items. put those in groupWrapper controls before/after rendering children. */
@@ -18,6 +19,8 @@ interface IProps<ItemType> {
     className?: string;
 }
 const OverflowMenu = <ItemType,>(props: IProps<ItemType>) => {
+    const ctx = useKWIZFluentContext();
+
     const { ref, isOverflowing, overflowCount } =
         useOverflowMenu<HTMLButtonElement>();
 
@@ -25,12 +28,12 @@ const OverflowMenu = <ItemType,>(props: IProps<ItemType>) => {
         return null;
     }
 
-    let menu = <Menu>
+    let menu = <Menu mountNode={ctx.mountNode}>
         <MenuTrigger disableButtonEnhancement>
             {props.menuTrigger
                 ? props.menuTrigger(props.menuRef || ref, overflowCount)
                 : <MenuButton
-                    icon={<MoreHorizontalFilled/>}
+                    icon={<MoreHorizontalFilled />}
                     ref={props.menuRef || ref}
                     aria-label="More items"
                     appearance="subtle"
