@@ -57,7 +57,6 @@ export function useDragDropContextProvider(): iDragDropContext {
         dragItem, setDragItem
     };
 
-
     return ctx;
 }
 
@@ -66,7 +65,7 @@ interface iProps {
 export const DragDropContextProvider: React.FunctionComponent<React.PropsWithChildren<iProps>> = (props) => {
     const provider = useDragDropContextProvider();
     return <DragDropContext.Provider value={provider}>
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={HTML5Backend} context={window}>
             {props.children}
         </DndProvider>
     </DragDropContext.Provider>;

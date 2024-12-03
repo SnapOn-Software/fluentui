@@ -2,7 +2,7 @@ import { tokens } from "@fluentui/react-components";
 import { ArrowUploadRegular, CalligraphyPenRegular, DismissRegular } from "@fluentui/react-icons";
 import { ImageFileTypes, debounce, isElement, isFunction, isNullOrEmptyArray, isNullOrEmptyString } from "@kwiz/common";
 import * as React from "react";
-import { useStateEX } from "../../helpers/hooks";
+import { useElementSize, useStateEX } from "../../helpers/hooks";
 import { ButtonEX } from "../button";
 import { ColorPickerEx } from "../ColorPickerDialog";
 import { FileUpload } from "../file-upload";
@@ -14,13 +14,15 @@ interface iProps {
     BackgroundColor?: string;
     BorderColor?: string;
     LineColor?: string;
-    Width?: number;
-    Height?: number;
+    minWidth?: number;
+    minHeight?: number;
     Value?: string;
     OnChange?: (newValue: string) => void;
     ReadOnly?: boolean;
-    HideButtons?: boolean;
     SignAsText?: string;
+    HideUpload?: boolean;
+    HideClear?: boolean;
+    HideColorPicker?: boolean;
 }
 export const DrawPad: React.FunctionComponent<iProps> = (props) => {
     const [LineColor, setLineColor] = useStateEX<string>(props.LineColor || tokens.colorBrandForeground1);
@@ -29,7 +31,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
     const [loadedFontNames, setloadedFontNames] = useStateEX<string[]>([]);
 
     const canvasArea: React.RefObject<HTMLCanvasElement> = React.useRef();
-    const containerEle = React.useRef<HTMLDivElement>();
+    const canvasContainerDiv = React.useRef<HTMLDivElement>();
 
     //load font for sign as text
     React.useEffect(() => {
@@ -127,23 +129,33 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
         props.OnChange(url);
     }, [canvasArea, props.OnChange]);
 
+    const HideButtons = props.HideClear && props.HideColorPicker && props.HideUpload;
 
+    const sizer = useElementSize(canvasContainerDiv.current);
+    const [size, setSize] = useStateEX<{ width?: number; height?: number }>({});
+    React.useEffect(() => {
+        if (canvasContainerDiv.current) {
+            setSize({
+                width: canvasContainerDiv.current.clientWidth,
+                height: canvasContainerDiv.current.clientHeight,
+            });
+        }
+    }, [canvasContainerDiv, sizer]);
 
-    let width = props.Width > 0 ? props.Width : 400;
-    let height = props.Height > 0 ? props.Height : 200;
-
-    return <div ref={containerEle}><Horizontal>
-        <div style={{
-            position: "relative",
-            width: width,
-            height: height,
-            backgroundColor: props.BackgroundColor,
-            border: `1px solid ${props.BorderColor || tokens.colorNeutralStroke1}`
-        }}>
+    return <Horizontal nogap>
+        <div ref={canvasContainerDiv}
+            style={{
+                flexGrow: 1,
+                position: "relative",
+                minWidth: props.minWidth,
+                minHeight: props.minHeight,
+                backgroundColor: props.BackgroundColor,
+                border: `1px solid ${props.BorderColor || tokens.colorNeutralStroke1}`
+            }}>
             {props.ReadOnly
-                ? <img src={props.Value} style={{ position: "absolute", left: 0, top: 0, width: width, height: height }} />
+                ? <img src={props.Value} style={{ position: "absolute", left: 0, top: 0, width: size.width, height: size.height }} />
                 :
-                <div style={{ position: "absolute", left: 0, top: 0, width: width, height: height }}>
+                <div style={{ position: "absolute", left: 0, top: 0, width: size.width, height: size.height }}>
                     <canvas
                         ref={canvasArea}
                         style={{
@@ -152,8 +164,8 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                             position: "absolute",
                             left: 0,
                             top: 0,
-                            width: width,
-                            height: height,
+                            width: size.width,
+                            height: size.height,
                             border: tokens.colorBrandStroke1
                         }} />
                     {isNullOrEmptyString(props.Value)
@@ -177,19 +189,18 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                 </div>
             }
         </div>
-        {!props.ReadOnly && !props.HideButtons && <Vertical nogap>
-            <ColorPickerEx buttonOnly value={props.LineColor} onChange={newColor => {
+        {!props.ReadOnly && !HideButtons && <Vertical nogap>
+            {props.HideColorPicker || <ColorPickerEx buttonOnly value={props.LineColor} onChange={newColor => {
                 setLineColor(newColor);
-            }} />
-            <ButtonEX disabled={isNullOrEmptyString(props.Value)} title="Clear" icon={<DismissRegular />} onClick={() => {
+            }} />}
+            {props.HideClear || <ButtonEX disabled={isNullOrEmptyString(props.Value)} title="Clear" icon={<DismissRegular />} onClick={() => {
                 //can call clear on the canvas, or can call the onchange which will cause a re-draw
                 props.OnChange("");
-            }} />
-            <FileUpload title="Load background image" icon={<ArrowUploadRegular />} limitFileTypes={ImageFileTypes} asBase64={base64 => {
+            }} />}
+            {props.HideUpload || <FileUpload title="Load background image" icon={<ArrowUploadRegular />} limitFileTypes={ImageFileTypes} asBase64={base64 => {
                 props.OnChange(base64[0].base64);//this will trigger a change and state update
                 //self.state.manager.fromDataURL(base64);//this will just set the image to the canvas but won't trigger a change
-            }} />
+            }} />}
         </Vertical>}
-    </Horizontal>
-    </div>;
+    </Horizontal>;
 }

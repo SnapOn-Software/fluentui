@@ -146,6 +146,37 @@ export function useWindowSize() {
     }, useEffectOnlyOnMount);
     return windowSize;
 }
+export function useElementSize(elm: HTMLElement) {
+    // Initialize state with undefined width/height so server and client renders match
+    // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
+    const [elmSize, setELmSize] = useState<{
+        width: number,
+        height: number
+    }>({
+        width: undefined,
+        height: undefined
+    });
+    useEffect(() => {
+        if (elm) {
+            // Handler to call on elm resize
+            function handleResize() {
+                // Set elm width/height to state
+                setELmSize({
+                    width: (elm instanceof Window) ? elm.innerWidth : elm.clientWidth,
+                    height: (elm instanceof Window) ? elm.innerHeight : elm.clientHeight,
+                });
+            }
+            // Add event listener
+            const observer = new ResizeObserver(handleResize);
+            observer.observe(elm);
+            // Call handler right away so state gets updated with initial elm size
+            handleResize();
+            // Remove event listener on cleanup
+            return () => observer.disconnect();
+        }
+    }, [elm]);
+    return elmSize;
+}
 export function useIsInPrint() {
     // Initialize state with false
     const [printMode, setPrintMode] = useState<boolean>(false);

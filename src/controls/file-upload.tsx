@@ -107,6 +107,7 @@ export const FileUpload = React.forwardRef<HTMLButtonElement, (iProps)>((props, 
             }
         }
     });
+    dropContext.dragDropContext
 
     return <>
         {isNullOrEmptyString(props.secondaryContent)

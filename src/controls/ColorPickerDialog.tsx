@@ -36,7 +36,7 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
                 icon={<ColorRegular
                     color={selectedColor} />
                 }
-                onClick={() => setIsOpen(true)} />
+                onClick={(e) => setIsOpen(true)} />
             : <Field label={props.label}
                 required={props.required === true}
                 validationMessage={props.showValidationErrors && props.required === true && isNullOrEmptyString(selectedColor) ? "You can't leave this blank." : undefined}
@@ -56,7 +56,8 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
                         icon={<ColorRegular
                             color={selectedColor} />
                         }
-                        onClick={() => setIsOpen(true)} />}
+                        onClick={(e) => setIsOpen(true)} />
+                    }
                 />
             </Field>}
         {isOpen && <Prompter maxWidth={332}
