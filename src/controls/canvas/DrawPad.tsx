@@ -23,6 +23,7 @@ interface iProps {
     HideUpload?: boolean;
     HideClear?: boolean;
     HideColorPicker?: boolean;
+    disabled?: boolean;
 }
 export const DrawPad: React.FunctionComponent<iProps> = (props) => {
     const [LineColor, setLineColor] = useStateEX<string>(props.LineColor || tokens.colorBrandForeground1);
@@ -57,7 +58,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
 
     //setup manager
     React.useEffect(() => {
-        if (!props.ReadOnly) {
+        if (!props.ReadOnly && !props.disabled) {
             //this gets called after each render...
             if (!manager) {
                 if (canvasArea.current) {
@@ -190,14 +191,14 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
             }
         </div>
         {!props.ReadOnly && !HideButtons && <Vertical nogap>
-            {props.HideColorPicker || <ColorPickerEx buttonOnly value={props.LineColor} onChange={newColor => {
+            {props.HideColorPicker || <ColorPickerEx disabled={props.disabled} buttonOnly value={props.LineColor} onChange={newColor => {
                 setLineColor(newColor);
             }} />}
-            {props.HideClear || <ButtonEX disabled={isNullOrEmptyString(props.Value)} title="Clear" icon={<DismissRegular />} onClick={() => {
+            {props.HideClear || <ButtonEX disabled={props.disabled || isNullOrEmptyString(props.Value)} title="Clear" icon={<DismissRegular />} onClick={() => {
                 //can call clear on the canvas, or can call the onchange which will cause a re-draw
                 props.OnChange("");
             }} />}
-            {props.HideUpload || <FileUpload title="Load background image" icon={<ArrowUploadRegular />} limitFileTypes={ImageFileTypes} asBase64={base64 => {
+            {props.HideUpload || <FileUpload disabled={props.disabled} title="Load background image" icon={<ArrowUploadRegular />} limitFileTypes={ImageFileTypes} asBase64={base64 => {
                 props.OnChange(base64[0].base64);//this will trigger a change and state update
                 //self.state.manager.fromDataURL(base64);//this will just set the image to the canvas but won't trigger a change
             }} />}

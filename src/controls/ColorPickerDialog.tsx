@@ -17,6 +17,7 @@ export interface iProps {
     width?: number;
     buttonOnly?: boolean;
     placeholder?: string;
+    disabled?: boolean;
 }
 
 export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
@@ -31,7 +32,7 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
     }, useEffectOnlyOnMount);
     return <>
         {props.buttonOnly
-            ? <ButtonEX
+            ? <ButtonEX disabled={props.disabled}
                 title="Open color picker"
                 icon={<ColorRegular
                     color={selectedColor} />
@@ -41,7 +42,7 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
                 required={props.required === true}
                 validationMessage={props.showValidationErrors && props.required === true && isNullOrEmptyString(selectedColor) ? "You can't leave this blank." : undefined}
             >
-                <InputEx
+                <InputEx disabled={props.disabled}
                     placeholder={props.placeholder || "Enter value here"}
                     style={isNumber(props.width) ? { width: props.width } : undefined}
                     value={selectedColor}
@@ -51,7 +52,7 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
                             props.onChange(data.value);
                         }
                     }}
-                    contentAfter={<ButtonEX
+                    contentAfter={<ButtonEX disabled={props.disabled}
                         title="Open color picker"
                         icon={<ColorRegular
                             color={selectedColor} />
