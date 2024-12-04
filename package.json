@@ -59,6 +59,7 @@
         "@kwiz/common": "^1.0.84",
         "esbuild": "^0.19.12",
         "get-tsconfig": "^4.7.2",
+        "jodit": "^4.2.47",
         "jodit-react": "^4.1.2",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",

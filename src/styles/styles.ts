@@ -86,7 +86,7 @@ export const useCommonStyles = makeStyles({
             display: 'none !important'
         }
     },
-})
+});
 
 export const commonSizes = {
     widthMedium: 360,

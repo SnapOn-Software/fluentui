@@ -58,31 +58,37 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
 
     //setup manager
     React.useEffect(() => {
-        if (!props.ReadOnly && !props.disabled) {
+        if (!props.ReadOnly && canvasArea.current && !canvasArea.current["canvas_initialized"]) {
+            canvasArea.current["canvas_initialized"] = true;//for some reason this still fires twice on the same div
             //this gets called after each render...
-            if (!manager) {
-                if (canvasArea.current) {
-                    let manager = new DrawPadManager(canvasArea.current);
-                    setmanager(manager).then(() => UpdateCanvas());
-                    if (isFunction(props.OnChange)) {
-                        manager.addEventListener("endStroke", () => {
-                            let value = "";
-                            if (!manager.isEmpty()) {
-                                value = manager.toDataURL("image/png");
-                            }
-                            if (!canUndo)
-                                setcanUndo(true);
-
-                            props.OnChange(value);
-                        });
+            let manager = new DrawPadManager(canvasArea.current);
+            setmanager(manager).then(() => UpdateCanvas());
+            if (isFunction(props.OnChange)) {
+                manager.addEventListener("endStroke", () => {
+                    let value = "";
+                    if (!manager.isEmpty()) {
+                        value = manager.toDataURL("image/png");
                     }
-                }
-            }
-            else {
-                UpdateCanvas();
+                    if (!canUndo)
+                        setcanUndo(true);
+
+                    props.OnChange(value);
+                });
             }
         }
+    }, [canvasArea]);
+    React.useEffect(() => {
+        if (!props.ReadOnly) {
+            UpdateCanvas();
+        }
     });//run every time after render
+
+    React.useEffect(() => {
+        if (manager) {
+            if (props.disabled) manager.off();//stop accepting strokes, but still allow to set a default value
+            else manager.on();
+        }
+    }, [manager, props.disabled]);
 
     //set value to canvas
     const UpdateCanvas = React.useCallback(debounce(() => {

@@ -1,4 +1,4 @@
-import { Label, Link, Toast, ToastBody, Toaster, ToastFooter, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
+import { Label, Link, makeStyles, Toast, ToastBody, Toaster, ToastFooter, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
 import { IDictionary, isDebug, isFunction, isNotEmptyArray, isNullOrEmptyString, jsonClone, jsonStringify, LoggerLevel, objectsEqual, wrapFunction } from "@kwiz/common";
 import { MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { GetLogger } from "../_modules/config";
@@ -355,13 +355,22 @@ export function useToast() {
     }
 }
 
+export const useContextStyles = makeStyles({
+    root: {
+        "& *": {
+            scrollbarWidth: "thin"
+        }
+    },
+})
 export function useKWIZFluentContextProvider(options: {
     root?: React.MutableRefObject<HTMLDivElement>;
     ctx?: iKWIZFluentContext;
 }) {
+    const classes = useContextStyles();
     let v: iKWIZFluentContext = options && options.ctx || {};
     const [kwizFluentContext, setKwizFluentContext] = useState<iKWIZFluentContext>(v);
     useEffect(() => {
+        options.root?.current?.classList.add(...classes.root.split(' '));
         // ref only updates in useEffect, not in useMemo or anything else.
         // we need to set it into state so it will trigger a ui update
         setKwizFluentContext({
