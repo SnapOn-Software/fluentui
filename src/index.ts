@@ -4,6 +4,7 @@ export * from './controls/canvas/DrawPad';
 export * from './controls/centered';
 export * from './controls/ColorPickerDialog';
 export * from './controls/date';
+export * from './controls/diagram-picker';
 export * from './controls/divider';
 export * from './controls/dropdown';
 export * from './controls/error-boundary';

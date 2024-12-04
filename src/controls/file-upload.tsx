@@ -1,11 +1,11 @@
-import { ButtonProps, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowUploadRegular } from "@fluentui/react-icons";
 import { isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, lastOrNull } from '@kwiz/common';
 import * as React from "react";
 import { useDragDropContext } from "../helpers/drag-drop/drag-drop-context";
 import { dropFiles } from "../helpers/drag-drop/exports";
 import { useEffectOnlyOnMount } from "../helpers/hooks";
-import { ButtonEX, CompoundButtonEXSecondary } from "./button";
+import { ButtonEX, ButtonEXProps, CompoundButtonEXSecondary } from "./button";
 
 const useStyles = makeStyles({
     addRowIsOver: {
@@ -24,7 +24,7 @@ interface iProps {
     icon?: JSX.Element;
     onChange?: (newFile: File | File[], errors: string[]) => void;
     asBase64?: (files: base64Result[], errors: string[]) => void;
-    buttonProps?: ButtonProps;
+    buttonProps?: Partial<ButtonEXProps>;
     disabled?: boolean;
     /** limit file size in MB, for the asBase64 */
     fileSizeLimit?: number;
