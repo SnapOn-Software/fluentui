@@ -74,7 +74,6 @@ export default class DrawPadManager extends CustomEventTargetBase {
         this._ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         this.clear();
-
         // Enable mouse and touch event handlers
         this.on();
     }
@@ -134,6 +133,13 @@ export default class DrawPadManager extends CustomEventTargetBase {
         });
     }
 
+    public toPng() {
+        let value = "";
+        if (!this.isEmpty()) {
+            value = this.toDataURL("image/png");
+        }
+        return value;
+    }
     public toDataURL(type: 'image/png' | 'image/jpeg' | 'image/svg+xml' = 'image/png', encoderOptions?: number): string {
         switch (type) {
             case 'image/svg+xml':

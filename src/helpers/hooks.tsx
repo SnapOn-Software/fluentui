@@ -1,5 +1,5 @@
 import { Label, Link, makeStyles, Toast, ToastBody, Toaster, ToastFooter, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
-import { IDictionary, isDebug, isFunction, isNotEmptyArray, isNullOrEmptyString, jsonClone, jsonStringify, LoggerLevel, objectsEqual, wrapFunction } from "@kwiz/common";
+import { IDictionary, isDebug, isFunction, isNotEmptyArray, isNullOrEmptyString, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual, wrapFunction } from "@kwiz/common";
 import { MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { GetLogger } from "../_modules/config";
 import { IPrompterProps, Prompter } from "../controls/prompt";
@@ -76,8 +76,14 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: {
 
 
     let setValueWithEvents = wrapFunction(setValueWithCheck, {
-        before: newValue => isFunction(options.onChange) ? options.onChange(newValue) : newValue,
-        after: newValue => currentValue.current = newValue as ValueType
+        before: (newValue: ValueType) => isFunction(options.onChange) ? options.onChange(newValue) : newValue,
+        after: (newValue: ValueType) => currentValue.current = isPrimitiveValue(newValue) || isFunction(newValue)
+            ? newValue
+            //fix skipUpdateIfSame for complex objects
+            //if we don't clone it, currentValue.current will be a ref to the value in the owner
+            //and will be treated as unchanged object, and it will be out of sync
+            //this leads to skipUpdateIfSame failing after just 1 unchanged update
+            : jsonClone(newValue) as ValueType
     });
 
     const setValue = useCallback((newState: ValueType) => new Promise<ValueType>(resolve => {

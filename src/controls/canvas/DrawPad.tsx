@@ -1,12 +1,13 @@
-import { tokens } from "@fluentui/react-components";
+import { Field, tokens } from "@fluentui/react-components";
 import { ArrowUploadRegular, CalligraphyPenRegular, DismissRegular } from "@fluentui/react-icons";
-import { ImageFileTypes, debounce, isElement, isFunction, isNullOrEmptyArray, isNullOrEmptyString } from "@kwiz/common";
+import { debounce, getCSSVariableValue, ImageFileTypes, isElement, isNotEmptyString, isNullOrEmptyArray, isNullOrEmptyString, isNullOrUndefined } from "@kwiz/common";
 import * as React from "react";
-import { useElementSize, useStateEX } from "../../helpers/hooks";
+import { useAlerts, useElementSize, useStateEX } from "../../helpers/hooks";
 import { ButtonEX } from "../button";
 import { ColorPickerEx } from "../ColorPickerDialog";
 import { FileUpload } from "../file-upload";
 import { Horizontal } from "../horizontal";
+import { InputEx } from "../input";
 import { Vertical } from "../vertical";
 import DrawPadManager from "./DrawPadManager";
 
@@ -16,27 +17,52 @@ interface iProps {
     LineColor?: string;
     minWidth?: number;
     minHeight?: number;
+    /** base64 image data:image/png;base64,.... */
     Value?: string;
+    /** when user hits clear, it will reset to this value
+     * base64 image data:image/png;base64,....
+     */
+    DefaultBackdrop?: string;
     OnChange?: (newValue: string) => void;
     ReadOnly?: boolean;
-    SignAsText?: string;
     HideUpload?: boolean;
     HideClear?: boolean;
     HideColorPicker?: boolean;
     disabled?: boolean;
+    /** true - will prompt user for his name, string will just sign as that string */
+    allowSigning?: boolean | string;
+    allowFullscreen?: boolean;
 }
+var _userName: string = null;
+export const DrawPadUserName = {
+    get: () => { return _userName },
+    set: (userName: string) => { _userName = userName }
+};
 export const DrawPad: React.FunctionComponent<iProps> = (props) => {
     const [LineColor, setLineColor] = useStateEX<string>(props.LineColor || tokens.colorBrandForeground1);
     const [manager, setmanager] = useStateEX<DrawPadManager>(null);
-    const [canUndo, setcanUndo] = useStateEX<boolean>(false);
+    const [canUndo, setcanUndo] = useStateEX<boolean>(false, { skipUpdateIfSame: true });
     const [loadedFontNames, setloadedFontNames] = useStateEX<string[]>([]);
-
+    const [signed, setSigned] = useStateEX<boolean>(false);
+    const onChangeRef = React.useRef(props.OnChange);
+    const alerts = useAlerts();
     const canvasArea: React.RefObject<HTMLCanvasElement> = React.useRef();
     const canvasContainerDiv = React.useRef<HTMLDivElement>();
 
-    //load font for sign as text
+    //keep onChange up to date
     React.useEffect(() => {
-        if (props.SignAsText && isNullOrEmptyArray(loadedFontNames)) {
+        onChangeRef.current = props.OnChange;
+    }, [props.OnChange]);
+    //if user name provided - keep it
+    React.useEffect(() => {
+        if (isNotEmptyString(props.allowSigning)) {
+            DrawPadUserName.set(props.allowSigning);
+        }
+    }, [props.allowSigning]);
+
+    //load font for sign as text, if needed
+    React.useEffect(() => {
+        if (props.allowSigning && isNullOrEmptyArray(loadedFontNames)) {
             let DancingScriptFont = new FontFace(
                 "Dancing Script",
                 "url(https://fonts.gstatic.com/s/dancingscript/v25/If2RXTr6YS-zF4S-kcSWSVi_szLgiuE.woff2) format('woff2')",
@@ -54,7 +80,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                 setloadedFontNames(["Dancing Script"]);
             });
         }
-    }, [props.SignAsText, loadedFontNames]);
+    }, [props.allowSigning, loadedFontNames]);
 
     //setup manager
     React.useEffect(() => {
@@ -62,27 +88,46 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
             canvasArea.current["canvas_initialized"] = true;//for some reason this still fires twice on the same div
             //this gets called after each render...
             let manager = new DrawPadManager(canvasArea.current);
-            setmanager(manager).then(() => UpdateCanvas());
-            if (isFunction(props.OnChange)) {
-                manager.addEventListener("endStroke", () => {
-                    let value = "";
-                    if (!manager.isEmpty()) {
-                        value = manager.toDataURL("image/png");
-                    }
-                    if (!canUndo)
-                        setcanUndo(true);
-
-                    props.OnChange(value);
-                });
-            }
+            setmanager(manager);
+            manager.addEventListener("endStroke", () => {
+                //because this is used in an addEventListener - need to have a ref to get the most up to date onChange
+                if (onChangeRef.current) {
+                    let canvasValue = manager.toPng();
+                    setcanUndo(true);//todo - enable undo last??
+                    onChangeRef.current(canvasValue);
+                }
+            });
         }
     }, [canvasArea]);
+    //update line color selection
     React.useEffect(() => {
-        if (!props.ReadOnly) {
-            UpdateCanvas();
+        if (manager) {
+            manager.penColor.value = getCSSVariableValue(LineColor, canvasArea.current);
         }
-    });//run every time after render
+    }, [manager, LineColor]);
 
+    //Set props value to canvas on initial load or when owner element changes the prop
+    React.useEffect(() => {
+        if (manager) {
+            let canvasValue = manager.toPng();
+            let neededValue = isNotEmptyString(props.Value)
+                ? props.Value
+                : isNotEmptyString(props.DefaultBackdrop)
+                    ? props.DefaultBackdrop
+                    : "";
+            if (canvasValue !== neededValue) {
+                UpdateCanvas(neededValue);//if called repeatedly or too fast - may not load correctly
+            }
+        }
+    });//cant use those - canvas loses value on drag so must run this every time: [props.Value, props.DefaultBackdrop, manager]);
+
+    //set value to canvas
+    const UpdateCanvas = React.useCallback(debounce((valueToSet: string) => {
+        if (valueToSet === "") manager.clear();
+        else manager.fromDataURL(valueToSet, { clear: true });
+    }, 200, this), [manager]);
+
+    //enable/disable canvas manager
     React.useEffect(() => {
         if (manager) {
             if (props.disabled) manager.off();//stop accepting strokes, but still allow to set a default value
@@ -90,66 +135,79 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
         }
     }, [manager, props.disabled]);
 
-    //set value to canvas
-    const UpdateCanvas = React.useCallback(debounce(() => {
-        if (manager) {
-            manager.penColor.value = LineColor;
-
-            if (!isNullOrEmptyString(props.Value))
-                manager.fromDataURL(props.Value, { clear: true });
-            else
-                manager.clear();
-        }
-    }, 200, this), [manager, props.Value, LineColor]);
-
-    const onSignAs = React.useCallback(() => {
+    const sign = React.useCallback((name: string) => {
         let canvas = canvasArea.current;
         if (!isElement(canvas)) {
             return;
         }
+        setSigned(true);
 
         let height = canvas.clientHeight;
         let width = canvas.clientWidth;
         let fontName = loadedFontNames[0];
-        let signAs = props.SignAsText;
 
         let ctx = canvas.getContext("2d");
-        ctx.fillStyle = LineColor || LineColor || tokens.colorBrandForeground1;
+        ctx.fillStyle = getCSSVariableValue(LineColor, canvasArea.current);
 
         let fontSize = 0.6 * height;
         ctx.font = `${fontSize}px ${fontName}`;
-        let textMeasurement = ctx.measureText(signAs);
+        let textMeasurement = ctx.measureText(name);
         let textWidth = textMeasurement.width;
         let maxWidth = 0.9 * width;
 
         while (textWidth > maxWidth && fontSize > 1) {
             fontSize = fontSize - 1;
             ctx.font = `${fontSize}px ${fontName}`;
-            textMeasurement = ctx.measureText(signAs);
+            textMeasurement = ctx.measureText(name);
             textWidth = textMeasurement.width;
         }
 
         let x = (width - textWidth) / 2;
         let y = 0.6 * height; //baseline not starting point
-        ctx.fillText(signAs, x, y, width);
+        ctx.fillText(name, x, y, width);
         let url = canvas.toDataURL("image/png");
-        props.OnChange(url);
-    }, [canvasArea, props.OnChange]);
+        onChangeRef.current?.(url);
+    }, [canvasArea, LineColor]);
+
+    const onSignAs = React.useCallback(async () => {
+        if (isNullOrUndefined(DrawPadUserName.get())) {
+            //prompt user to type his name - then continue
+            alerts.promptEX({
+                title: "Sign as name",
+                children: <Field label="Signing as" hint="Please type in your name" required>
+                    <InputEx onChange={(e, data) => DrawPadUserName.set(data.value)} />
+                </Field>,
+                onCancel: () => {
+                    DrawPadUserName.set(null);//get rid of anything they typed while dialog was open
+                },
+                onOK: () => {
+                    if (!isNullOrEmptyString(DrawPadUserName.get()))//need to test current since this won't be updated when state changes
+                    {
+                        sign(DrawPadUserName.get());
+                    }
+                },
+            });
+        }
+        else sign(DrawPadUserName.get());
+    }, [canvasArea, LineColor]);
 
     const HideButtons = props.HideClear && props.HideColorPicker && props.HideUpload;
 
     const sizer = useElementSize(canvasContainerDiv.current);
     const [size, setSize] = useStateEX<{ width?: number; height?: number }>({});
+    //handle canvas resizing
     React.useEffect(() => {
         if (canvasContainerDiv.current) {
             setSize({
                 width: canvasContainerDiv.current.clientWidth,
                 height: canvasContainerDiv.current.clientHeight,
             });
+            if (manager) manager.resizeCanvas();
         }
-    }, [canvasContainerDiv, sizer]);
+    }, [canvasContainerDiv, sizer, manager]);
 
     return <Horizontal nogap>
+        {alerts.alertPrompt}
         <div ref={canvasContainerDiv}
             style={{
                 flexGrow: 1,
@@ -160,7 +218,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                 border: `1px solid ${props.BorderColor || tokens.colorNeutralStroke1}`
             }}>
             {props.ReadOnly
-                ? <img src={props.Value} style={{ position: "absolute", left: 0, top: 0, width: size.width, height: size.height }} />
+                ? <img src={isNotEmptyString(props.Value) ? props.Value : props.DefaultBackdrop} style={{ position: "absolute", left: 0, top: 0, width: size.width, height: size.height }} />
                 :
                 <div style={{ position: "absolute", left: 0, top: 0, width: size.width, height: size.height }}>
                     <canvas
@@ -175,8 +233,8 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                             height: size.height,
                             border: tokens.colorBrandStroke1
                         }} />
-                    {isNullOrEmptyString(props.Value)
-                        && !isNullOrEmptyString(props.SignAsText)
+                    {!signed
+                        && !isNullOrEmptyString(props.allowSigning)
                         && !isNullOrEmptyArray(loadedFontNames)
                         && <ButtonEX
                             style={{
@@ -188,7 +246,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                                 height: 16
                             }}
                             icon={<CalligraphyPenRegular />}
-                            title={`Sign as ${props.SignAsText}`}
+                            title={`Sign as ${props.allowSigning === true ? "..." : props.allowSigning}`}
                             onClick={() => {
                                 onSignAs();
                             }}
@@ -202,10 +260,11 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
             }} />}
             {props.HideClear || <ButtonEX disabled={props.disabled || isNullOrEmptyString(props.Value)} title="Clear" icon={<DismissRegular />} onClick={() => {
                 //can call clear on the canvas, or can call the onchange which will cause a re-draw
-                props.OnChange("");
+                setSigned(false);
+                onChangeRef.current?.("");
             }} />}
             {props.HideUpload || <FileUpload disabled={props.disabled} title="Load background image" icon={<ArrowUploadRegular />} limitFileTypes={ImageFileTypes} asBase64={base64 => {
-                props.OnChange(base64[0].base64);//this will trigger a change and state update
+                onChangeRef.current?.(base64[0].base64);//this will trigger a change and state update
                 //self.state.manager.fromDataURL(base64);//this will just set the image to the canvas but won't trigger a change
             }} />}
         </Vertical>}

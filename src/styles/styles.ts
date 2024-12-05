@@ -86,6 +86,18 @@ export const useCommonStyles = makeStyles({
             display: 'none !important'
         }
     },
+    hintLabel: {
+        color: tokens.colorNeutralForeground3,
+        fontSize: tokens.fontSizeBase200,
+        fontWeight: tokens.fontWeightRegular,
+        lineHeight: tokens.lineHeightBase200
+    },
+    validationLabel: {
+        color: tokens.colorPaletteRedForeground1,
+        fontSize: tokens.fontSizeBase200,
+        fontWeight: tokens.fontWeightRegular,
+        lineHeight: tokens.lineHeightBase200
+    }
 });
 
 export const commonSizes = {

@@ -1,7 +1,9 @@
-import { GriffelStyle, Input, InputProps, makeStyles, mergeClasses, Textarea, TextareaProps } from '@fluentui/react-components';
-import { isFunction } from '@kwiz/common';
+import { GriffelStyle, Input, InputOnChangeData, InputProps, Label, makeStyles, mergeClasses, Textarea, TextareaProps } from '@fluentui/react-components';
+import { isFunction, isNullOrNaN, isNullOrUndefined, isNumber } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
+import { useCommonStyles } from '../styles/styles';
+import { Vertical } from './vertical';
 
 
 interface IProps extends InputProps {
@@ -57,5 +59,36 @@ export const TextAreaEx: React.FunctionComponent<React.PropsWithChildren<IPropsT
             if (props.onChange) props.onChange(e, d);
             recalcHeight();
         }} />
+    );
+}
+
+
+interface INumberProps extends Omit<IProps, "value" | "onChange" | "defaultValue" | "inputMode"> {
+    defaultValue?: number;
+    onChange: (value: number) => void;
+    allowDecimals?: boolean;
+    /** if sent true - onChange will only be called when a valid non-empty value is being set */
+    required?: boolean;
+}
+export const InputNumberEx: React.FunctionComponent<React.PropsWithChildren<INumberProps>> = (props) => {
+    const commonStyles = useCommonStyles();
+    const [valueStr, setValueStr] = React.useState(isNumber(props.defaultValue) ? `${props.defaultValue}` : '');
+    const [isValid, setIsValid] = React.useState(true);
+    const onChange = React.useCallback((ev: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
+        const newValue = data.value;
+        setValueStr(newValue);//update text box anyways
+        const asNumber = props.allowDecimals ? parseFloat(newValue) : parseInt(newValue, 10);
+        const isValid = props.required ? !isNullOrNaN(asNumber) : isNullOrUndefined(asNumber) || !isNaN(asNumber);
+        setIsValid(isValid);
+        props.onChange(isValid ? asNumber : null);
+    }, [props.allowDecimals]);
+
+    const passProps: IProps = { ...props, defaultValue: undefined, value: undefined, onChange: undefined };
+
+    return (
+        <Vertical nogap>
+            <InputEx inputMode={props.allowDecimals ? "decimal" : "numeric"} {...passProps} value={valueStr} onChange={onChange} />
+            {!isValid && <Label className={commonStyles.validationLabel}>this is not a valid value</Label>}
+        </Vertical>
     );
 }
