@@ -1,5 +1,5 @@
 import { Field, tokens } from "@fluentui/react-components";
-import { ArrowUploadRegular, CalligraphyPenRegular, DismissRegular } from "@fluentui/react-icons";
+import { ArrowMaximizeRegular, ArrowMinimizeRegular, ArrowUploadRegular, CalligraphyPenRegular, DismissRegular } from "@fluentui/react-icons";
 import { debounce, getCSSVariableValue, ImageFileTypes, isElement, isNotEmptyString, isNullOrEmptyArray, isNullOrEmptyString, isNullOrUndefined } from "@kwiz/common";
 import * as React from "react";
 import { useAlerts, useElementSize, useStateEX } from "../../helpers/hooks";
@@ -44,6 +44,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
     const [canUndo, setcanUndo] = useStateEX<boolean>(false, { skipUpdateIfSame: true });
     const [loadedFontNames, setloadedFontNames] = useStateEX<string[]>([]);
     const [signed, setSigned] = useStateEX<boolean>(false);
+    const [fullscreen, setFullscreen] = useStateEX<boolean>(false);
     const onChangeRef = React.useRef(props.OnChange);
     const alerts = useAlerts();
     const canvasArea: React.RefObject<HTMLCanvasElement> = React.useRef();
@@ -124,7 +125,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
     //set value to canvas
     const UpdateCanvas = React.useCallback(debounce((valueToSet: string) => {
         if (valueToSet === "") manager.clear();
-        else manager.fromDataURL(valueToSet, { clear: true });
+        else manager.fromDataURL(valueToSet);
     }, 200, this), [manager]);
 
     //enable/disable canvas manager
@@ -173,6 +174,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
         if (isNullOrUndefined(DrawPadUserName.get())) {
             //prompt user to type his name - then continue
             alerts.promptEX({
+                mountNode: canvasContainerDiv.current,
                 title: "Sign as name",
                 children: <Field label="Signing as" hint="Please type in your name" required>
                     <InputEx onChange={(e, data) => DrawPadUserName.set(data.value)} />
@@ -206,7 +208,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
         }
     }, [canvasContainerDiv, sizer, manager]);
 
-    return <Horizontal nogap>
+    return <Horizontal nogap fullscreen={fullscreen}>
         {alerts.alertPrompt}
         <div ref={canvasContainerDiv}
             style={{
@@ -245,6 +247,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                                 right: 0,
                                 height: 16
                             }}
+                            disabled={props.disabled}
                             icon={<CalligraphyPenRegular />}
                             title={`Sign as ${props.allowSigning === true ? "..." : props.allowSigning}`}
                             onClick={() => {
@@ -255,7 +258,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
             }
         </div>
         {!props.ReadOnly && !HideButtons && <Vertical nogap>
-            {props.HideColorPicker || <ColorPickerEx disabled={props.disabled} buttonOnly value={props.LineColor} onChange={newColor => {
+            {props.HideColorPicker || <ColorPickerEx mountNode={canvasContainerDiv.current} disabled={props.disabled} buttonOnly value={props.LineColor} onChange={newColor => {
                 setLineColor(newColor);
             }} />}
             {props.HideClear || <ButtonEX disabled={props.disabled || isNullOrEmptyString(props.Value)} title="Clear" icon={<DismissRegular />} onClick={() => {
@@ -264,8 +267,15 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                 onChangeRef.current?.("");
             }} />}
             {props.HideUpload || <FileUpload disabled={props.disabled} title="Load background image" icon={<ArrowUploadRegular />} limitFileTypes={ImageFileTypes} asBase64={base64 => {
-                onChangeRef.current?.(base64[0].base64);//this will trigger a change and state update
-                //self.state.manager.fromDataURL(base64);//this will just set the image to the canvas but won't trigger a change
+                if (onChangeRef.current)
+                    onChangeRef.current?.(base64[0].base64);//this will trigger a change and state update
+                else
+                    manager?.fromDataURL(base64[0].base64);//this will just set the image to the canvas but won't trigger a change event for the caller
+            }} />}
+            {props.allowFullscreen && <ButtonEX title="Full screen" disabled={props.disabled} icon={fullscreen ? <ArrowMinimizeRegular /> : <ArrowMaximizeRegular />} onClick={async () => {
+                //can call clear on the canvas, or can call the onchange which will cause a re-draw
+                await setFullscreen(!fullscreen);
+                if (manager) manager.resizeCanvas();
             }} />}
         </Vertical>}
     </Horizontal>;

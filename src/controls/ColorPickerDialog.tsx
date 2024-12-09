@@ -18,6 +18,12 @@ export interface iProps {
     buttonOnly?: boolean;
     placeholder?: string;
     disabled?: boolean;
+
+    /** specify a specific mount node for this dialog */
+    mountNode?: HTMLElement | null | {
+        element?: HTMLElement | null;
+        className?: string;
+    }
 }
 
 export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
@@ -61,7 +67,7 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
                     }
                 />
             </Field>}
-        {isOpen && <Prompter maxWidth={332}
+        {isOpen && <Prompter maxWidth={332} mountNode={props.mountNode}
             hideOk hideCancel onCancel={() => {
                 if (isFunction(props.onChange)) {
                     props.onChange(selectedColor);

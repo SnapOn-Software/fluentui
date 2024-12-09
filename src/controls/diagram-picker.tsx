@@ -1,4 +1,4 @@
-import { Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, makeStyles, shorthands, Switch, tokens } from '@fluentui/react-components';
 import { ImageSparkleRegular } from '@fluentui/react-icons';
 import { DiagramOptions, stockUrl } from '@kwiz/common';
 import React from 'react';
@@ -43,7 +43,8 @@ export const DiagramPicker = React.forwardRef<HTMLDivElement, (React.PropsWithCh
     const ctx = useKWIZFluentContext();
     const classes = useStyles();
     const [isOpen, setIsOpen] = useStateEX(false);
-    let options = (props.hiRes ? DiagramOptions.hiRes : DiagramOptions.options);
+    const [hiRes, setHiRes] = useStateEX(props.hiRes);
+    let options = (hiRes ? DiagramOptions.hiRes : DiagramOptions.options);
     if (props.onlyTransparent) options = options.filter(o => o.name.endsWith(', transparent'));
     return (
         <Dialog open={isOpen} onOpenChange={(e, data) => {
@@ -56,6 +57,12 @@ export const DiagramPicker = React.forwardRef<HTMLDivElement, (React.PropsWithCh
                 <DialogBody className={classes.dialogBody}>
                     <DialogTitle>Choose a diagram</DialogTitle>
                     <DialogContent>
+                        <Switch checked={hiRes === true}
+                            onChange={(e, data) => {
+                                setHiRes(data.checked === true);
+                            }}
+                            label="High resolution diagrams"
+                        />
                         <Horizontal main wrap css={[classes.diagramWrapper]}>
                             {options
                                 .map(diagram => <Section key={diagram.name} css={[classes.diagram]}

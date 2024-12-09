@@ -96,9 +96,16 @@ export default class DrawPadManager extends CustomEventTargetBase {
 
     public fromDataURL(
         dataUrl: string,
+        /** default: clear, shrink and stretch all true */
         options: {
             clear?: boolean;
-        } = {},
+            shrinkToFit?: boolean;
+            stretchToFit?: boolean;
+        } = {
+                clear: true,
+                shrinkToFit: true,
+                stretchToFit: true
+            },
     ): Promise<void> {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -112,7 +119,11 @@ export default class DrawPadManager extends CustomEventTargetBase {
                  * 1 - image is smaller than canvas. keep as is.
                  * less than 1 - width, height or both are too big - this is the smaller factor that contains both
                  */
-                let factor = Math.min(1, this.canvas.width / img.width, this.canvas.height / img.height);
+                let factor = Math.min(this.canvas.width / img.width, this.canvas.height / img.height);
+                if (options.shrinkToFit !== true && factor < 1)
+                    factor = 1;
+                if (options.stretchToFit !== true && factor > 1)
+                    factor = 1;
                 //make sure its contained
                 let width = img.width * factor;
                 let height = img.height * factor;

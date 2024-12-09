@@ -97,6 +97,16 @@ export const useCommonStyles = makeStyles({
         fontSize: tokens.fontSizeBase200,
         fontWeight: tokens.fontWeightRegular,
         lineHeight: tokens.lineHeightBase200
+    },
+    fullscreen: {
+        position: "fixed",
+        top: 0, bottom: 0, left: 0, right: 0,
+        zIndex: 1,
+        backgroundColor: tokens.colorNeutralBackground1,
+        overflow: "auto",
+        padding: tokens.spacingHorizontalL,
+        paddingLeft: "20px",
+        paddingRight: "20px"
     }
 });
 

@@ -1,11 +1,11 @@
-import { makeStyles, Portal, tokens } from '@fluentui/react-components';
+import { makeStyles, tokens } from '@fluentui/react-components';
 import { ArrowMaximize16Regular, ArrowMinimize16Regular, Dismiss16Regular, Save16Regular } from '@fluentui/react-icons';
 import { isObject } from '@kwiz/common';
 import JoditEditor, { Jodit } from "jodit-react";
 import React, { useRef } from 'react';
 import { ButtonEX, ButtonEXProps } from '../button';
+import { Section } from '../section';
 import { IconToSVG } from '../svg';
-import { Vertical } from '../vertical';
 
 //const logger = GetLogger("html-editor");
 
@@ -14,16 +14,6 @@ const useStyles = makeStyles({
         border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStrokeAccessible}`,
         padding: tokens.spacingHorizontalS,
         minHeight: `100px`
-    },
-    fullscreen: {
-        position: "fixed",
-        top: 0, bottom: 0, left: 0, right: 0,
-        zIndex: 1,
-        backgroundColor: "white",
-        overflow: "auto",
-        padding: tokens.spacingHorizontalL,
-        paddingLeft: "20px",
-        paddingRight: "20px"
     }
 });
 
@@ -171,11 +161,9 @@ export const HtmlEditor: React.FunctionComponent<React.PropsWithChildren<IProps>
     />;
 
     return (showFullScreen
-        ? <Portal>
-            <Vertical css={[classes.fullscreen]}>
-                {editorElement}
-            </Vertical>
-        </Portal>
+        ? <Section fullscreen="portal">
+            {editorElement}
+        </Section>
         : fullScreenButton
             ? <ButtonEX {...fullScreenButton} onClick={() => {
                 setShowFullScreen(true);
