@@ -392,6 +392,7 @@ export interface iAlerts {
     confirmEX: (message: string, onOK?: () => void, onCancel?: () => void) => Promise<boolean>;
     alertEX: (message: string, onOK?: () => void) => Promise<void>;
     alertPrompt?: JSX.Element;
+    close: () => void;
 }
 /** set block message if you want to block nav.
  * - call setMessage to  add a blocker message
@@ -450,6 +451,7 @@ export function useAlerts(): iAlerts {
 
     return {
         promptEX, confirmEX, alertEX,
-        alertPrompt: _prompt ? <Prompter {..._prompt} /> : undefined
+        alertPrompt: _prompt ? <Prompter {..._prompt} /> : undefined,
+        close: () => _setPrompt(null)
     };
 }

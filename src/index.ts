@@ -19,6 +19,7 @@ export * from './controls/loading';
 export * from './controls/menu';
 export * from './controls/please-wait';
 export * from './controls/prompt';
+export * from './controls/qrcode';
 export * from './controls/search';
 export * from './controls/section';
 export * from './controls/svg';
