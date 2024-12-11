@@ -1,6 +1,6 @@
 import { Menu, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger } from '@fluentui/react-components';
 import { ChevronLeftRegular, ChevronRightRegular } from '@fluentui/react-icons';
-import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone } from '@kwiz/common';
+import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone, stopEvent } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
 import { useStateEX } from '../helpers/hooks';
@@ -155,9 +155,13 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
         }}>
             <MenuTrigger disableButtonEnhancement>
                 {isString(props.trigger)
-                    ? <ButtonEX title={props.trigger} />
+                    ? <ButtonEX title={props.trigger} onClick={(e) => {
+                        stopEvent(e);
+                    }} />
                     : isString((props.trigger as ButtonEXProps).title)
-                        ? <ButtonEX {...(props.trigger as ButtonEXProps)} />
+                        ? <ButtonEX {...(props.trigger as ButtonEXProps)} onClick={(e) => {
+                            stopEvent(e);
+                        }} />
                         : props.trigger as JSX.Element}
             </MenuTrigger>
             <MenuPopover {...props.menuPopOverProps}>
