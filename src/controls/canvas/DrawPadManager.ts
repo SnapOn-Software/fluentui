@@ -119,7 +119,8 @@ export default class DrawPadManager extends CustomEventTargetBase {
                  * 1 - image is smaller than canvas. keep as is.
                  * less than 1 - width, height or both are too big - this is the smaller factor that contains both
                  */
-                let factor = Math.min(this.canvas.width / img.width, this.canvas.height / img.height);
+                //use clientHeight/clientWidth to supprot phones properly and compensate for window.devicePixelRatio
+                let factor = Math.min(this.canvas.clientWidth / img.width, this.canvas.clientHeight / img.height);
                 if (options.shrinkToFit !== true && factor < 1)
                     factor = 1;
                 if (options.stretchToFit !== true && factor > 1)
@@ -128,8 +129,8 @@ export default class DrawPadManager extends CustomEventTargetBase {
                 let width = img.width * factor;
                 let height = img.height * factor;
                 //center it
-                var centerShift_x = this.canvas.width > width ? (this.canvas.width / 2) - (width / 2) : 0;
-                var centerShift_y = this.canvas.height > height ? (this.canvas.height / 2) - (height / 2) : 0;
+                var centerShift_x = this.canvas.clientWidth > width ? (this.canvas.clientWidth / 2) - (width / 2) : 0;
+                var centerShift_y = this.canvas.clientHeight > height ? (this.canvas.clientHeight / 2) - (height / 2) : 0;
 
                 this._ctx.drawImage(img, centerShift_x, centerShift_y, width, height);
                 resolve();

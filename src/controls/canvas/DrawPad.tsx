@@ -17,10 +17,10 @@ interface iProps {
     LineColor?: string;
     minWidth?: number;
     minHeight?: number;
-    /** base64 image data:image/png;base64,.... */
+    /** url or  base64 image data:image/png;base64,.... */
     Value?: string;
     /** when user hits clear, it will reset to this value
-     * base64 image data:image/png;base64,....
+     * url or base64 image data:image/png;base64,....
      */
     DefaultBackdrop?: string;
     OnChange?: (newValue: string) => void;
