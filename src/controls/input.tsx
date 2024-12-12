@@ -1,27 +1,53 @@
-import { GriffelStyle, Input, InputOnChangeData, InputProps, Label, makeStyles, mergeClasses, Textarea, TextareaProps } from '@fluentui/react-components';
-import { isFunction, isNullOrNaN, isNullOrUndefined, isNumber } from '@kwiz/common';
+import { GriffelStyle, Input, InputOnChangeData, InputProps, Label, Link, makeStyles, mergeClasses, Textarea, TextareaProps } from '@fluentui/react-components';
+import { isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
 import { useCommonStyles } from '../styles/styles';
+import { Horizontal } from './horizontal';
+import { MenuEx } from './menu';
+import { Section } from './section';
 import { Vertical } from './vertical';
 
 
 interface IProps extends InputProps {
     onOK?: () => void;
     onCancel?: () => void;
+    tokens?: { title: string; value: string; }[];
+    tokenMenuLabel?: string;
 }
 export const InputEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const ctx = useKWIZFluentContext();
-    return (
-        <Input appearance={ctx.inputAppearance} {...props}
-            onKeyDown={isFunction(props.onOK) || isFunction(props.onCancel)
-                ? e => {
-                    if (isFunction(props.onOK) && e.key === "Enter") props.onOK();
-                    else if (isFunction(props.onCancel) && e.key === "Escape") props.onCancel();
-                }
-                : undefined
+    const input = <Input appearance={ctx.inputAppearance} {...props}
+        onKeyDown={isFunction(props.onOK) || isFunction(props.onCancel)
+            ? e => {
+                if (isFunction(props.onOK) && e.key === "Enter") props.onOK();
+                else if (isFunction(props.onCancel) && e.key === "Escape") props.onCancel();
             }
-        />
+            : undefined
+        }
+    />;
+    return (
+        isNotEmptyArray(props.tokens)
+            ? <Vertical nogap>
+                {input}
+                <Horizontal nogap>
+                    <Section main />
+                    <MenuEx trigger={<Link>{props.tokenMenuLabel || "tokens"}</Link>} items={props.tokens.map(token =>
+                    ({
+                        title: token.title, onClick: () => {
+                            let newValue = props.value || "";
+                            if (isNullOrEmptyString(props.value))
+                                newValue = token.value;
+                            else
+                                newValue += ` ${token.value}`;
+                            props.onChange(null, {
+                                value: newValue
+                            });
+                        }
+                    }))} />
+                </Horizontal>
+            </Vertical>
+            : input
     );
 }
 

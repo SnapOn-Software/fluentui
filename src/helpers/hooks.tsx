@@ -1,5 +1,5 @@
 import { Label, Link, makeStyles, Toast, ToastBody, Toaster, ToastFooter, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
-import { IDictionary, isDebug, isFunction, isNotEmptyArray, isNullOrEmptyString, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual, wrapFunction } from "@kwiz/common";
+import { IDictionary, isDebug, isFunction, isNotEmptyArray, isNullOrEmptyString, isPrimitiveValue, isString, jsonClone, jsonStringify, LoggerLevel, objectsEqual, wrapFunction } from "@kwiz/common";
 import { MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { GetLogger } from "../_modules/config";
 import { IPrompterProps, Prompter } from "../controls/prompt";
@@ -389,8 +389,8 @@ export function useKWIZFluentContextProvider(options: {
 
 export interface iAlerts {
     promptEX: (info: IPrompterProps) => void;
-    confirmEX: (message: string, onOK?: () => void, onCancel?: () => void) => Promise<boolean>;
-    alertEX: (message: string, onOK?: () => void) => Promise<void>;
+    confirmEX: (message: string | JSX.Element, onOK?: () => void, onCancel?: () => void) => Promise<boolean>;
+    alertEX: (message: string | JSX.Element, onOK?: () => void) => Promise<void>;
     alertPrompt?: JSX.Element;
     close: () => void;
 }
@@ -420,10 +420,10 @@ export function useAlerts(): iAlerts {
         }, 1);
     }, useEffectOnlyOnMount);
 
-    const confirmEX = useCallback((message: string, onOK?: () => void, onCancel?: () => void) => {
+    const confirmEX = useCallback((message: string | JSX.Element, onOK?: () => void, onCancel?: () => void) => {
         return new Promise<boolean>(resolve => {
             promptEX({
-                children: <Label>{message}</Label>,
+                children: isString(message) ? <Label>{message}</Label> : message,
                 onCancel: () => {
                     if (isFunction(onCancel)) onCancel();
                     resolve(false);
@@ -436,10 +436,10 @@ export function useAlerts(): iAlerts {
         });
     }, useEffectOnlyOnMount);
 
-    const alertEX = useCallback((message: string, onOK: () => void) => {
+    const alertEX = useCallback((message: string | JSX.Element, onOK: () => void) => {
         return new Promise<void>(resolve => {
             promptEX({
-                children: <Label>{message}</Label>,
+                children: isString(message) ? <Label>{message}</Label> : message,
                 hideCancel: true,
                 onOK: () => {
                     if (isFunction(onOK)) onOK();
