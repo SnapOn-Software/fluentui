@@ -27,6 +27,7 @@ interface iProps {
     ReadOnly?: boolean;
     HideUpload?: boolean;
     HideClear?: boolean;
+    //HideUndo?: boolean;
     HideColorPicker?: boolean;
     disabled?: boolean;
     /** true - will prompt user for his name, string will just sign as that string */
@@ -98,7 +99,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                 //because this is used in an addEventListener - need to have a ref to get the most up to date onChange
                 if (onChangeRef.current) {
                     let canvasValue = manager.toPng();
-                    setcanUndo(true);//todo - enable undo last??
+                    setcanUndo(true);
                     onChangeRef.current(canvasValue);
                 }
             });
@@ -265,6 +266,11 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                 disabled={props.disabled} buttonOnly value={props.LineColor} onChange={newColor => {
                     setLineColor(newColor);
                 }} />}
+            {/* todo: undo isn't working properly
+            {props.HideUndo || <ButtonEX disabled={!canUndo} title="Undo" icon={<ArrowUndoRegular />} onClick={() => {
+                manager.undoLast();
+                setcanUndo(manager.canUndo());
+            }} />} */}
             {props.HideClear || <ButtonEX disabled={props.disabled || isNullOrEmptyString(props.Value)} title="Clear" icon={<DismissRegular />} onClick={() => {
                 //can call clear on the canvas, or can call the onchange which will cause a re-draw
                 setSigned(false);
