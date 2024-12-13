@@ -52,6 +52,11 @@ type JoditExpanded = Jodit & {//& IViewBased<IViewOptions>
         setShowFullScreen: (value: boolean) => void;
     }
 };
+
+const saveIcon = IconToSVG(<Save16Regular title='Save' />);
+const cancelIcon = IconToSVG(<Dismiss16Regular title='Cancel' />);
+const maxIcon = IconToSVG(<ArrowMaximize16Regular title='Maximize' />);
+const minIcon = IconToSVG(<ArrowMinimize16Regular title='Minimize' />);
 export const HtmlEditor: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const classes = useStyles();
     const [active, setActive] = React.useState(false);
@@ -82,7 +87,7 @@ export const HtmlEditor: React.FunctionComponent<React.PropsWithChildren<IProps>
 
 
     Jodit.defaultOptions.controls.save = {
-        template: () => IconToSVG(<Save16Regular title='Save' />),
+        template: () => saveIcon,
         exec: (view: JoditExpanded) => {
             view.kwizInstance.props.onChange?.(view.value);
             view.kwizInstance.props.onSave?.(view.value);
@@ -90,21 +95,21 @@ export const HtmlEditor: React.FunctionComponent<React.PropsWithChildren<IProps>
         }
     };
     Jodit.defaultOptions.controls.cancel = {
-        template: () => IconToSVG(<Dismiss16Regular title='Cancel' />),
+        template: () => cancelIcon,
         exec: (view: JoditExpanded) => {
             view.kwizInstance.props.onCancel?.();
             view.kwizInstance.setShowFullScreen(false);
         }
     };
     Jodit.defaultOptions.controls.maximize = {
-        template: () => IconToSVG(<ArrowMaximize16Regular title='Maximize' />),
+        template: () => maxIcon,
         exec: (view: JoditExpanded) => {
             view.kwizInstance.props.onChange?.(view.value);//pass value from smaller editor to bigger one
             view.kwizInstance.setShowFullScreen(true);
         }
     };
     Jodit.defaultOptions.controls.minimize = {
-        template: () => IconToSVG(<ArrowMinimize16Regular title='Minimize' />),
+        template: () => minIcon,
         exec: (view: JoditExpanded) => {
             view.kwizInstance.props.onChange?.(view.value);
             view.kwizInstance.setShowFullScreen(false);

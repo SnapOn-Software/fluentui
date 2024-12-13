@@ -67,6 +67,7 @@ export const KnownClassNames = {
     accordionBody: 'kfui-accordion-body',
     accordionBodyWrapper: 'kfui-accordion-body-wrapper',
     isOpen: 'is-opened',
+    progressBarStepLabel: 'step-label'
 }
 export const useCommonStyles = makeStyles({
     printShow: {

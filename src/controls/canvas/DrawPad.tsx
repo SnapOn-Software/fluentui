@@ -38,11 +38,14 @@ export const DrawPadUserName = {
     get: () => { return _userName },
     set: (userName: string) => { _userName = userName }
 };
+
+const fontName = "Dancing Script";
+let fontLoading: Promise<boolean> = null;
+let fontReady = false;
 export const DrawPad: React.FunctionComponent<iProps> = (props) => {
     const [LineColor, setLineColor] = useStateEX<string>(props.LineColor || tokens.colorBrandForeground1);
     const [manager, setmanager] = useStateEX<DrawPadManager>(null);
     const [canUndo, setcanUndo] = useStateEX<boolean>(false, { skipUpdateIfSame: true });
-    const [loadedFontNames, setloadedFontNames] = useStateEX<string[]>([]);
     const [signed, setSigned] = useStateEX<boolean>(false);
     const [fullscreen, setFullscreen] = useStateEX<boolean>(false);
     const onChangeRef = React.useRef(props.OnChange);
@@ -63,9 +66,9 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
 
     //load font for sign as text, if needed
     React.useEffect(() => {
-        if (props.allowSigning && isNullOrEmptyArray(loadedFontNames)) {
+        if (props.allowSigning && !fontLoading) {
             let DancingScriptFont = new FontFace(
-                "Dancing Script",
+                fontName,
                 "url(https://fonts.gstatic.com/s/dancingscript/v25/If2RXTr6YS-zF4S-kcSWSVi_szLgiuE.woff2) format('woff2')",
                 {
                     style: "normal",
@@ -75,13 +78,14 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                 }
             );
 
-            DancingScriptFont.load().then(async loadedFont => {
+            fontLoading = DancingScriptFont.load().then(async loadedFont => {
                 document.fonts.add(loadedFont);
                 await document.fonts.ready;
-                setloadedFontNames(["Dancing Script"]);
+                fontReady = true;
+                return true;
             });
         }
-    }, [props.allowSigning, loadedFontNames]);
+    }, [props.allowSigning]);
 
     //setup manager
     React.useEffect(() => {
@@ -145,7 +149,6 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
 
         let height = canvas.clientHeight;
         let width = canvas.clientWidth;
-        let fontName = loadedFontNames[0];
 
         let ctx = canvas.getContext("2d");
         ctx.fillStyle = getCSSVariableValue(LineColor, canvasArea.current);
@@ -174,7 +177,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
         if (isNullOrUndefined(DrawPadUserName.get())) {
             //prompt user to type his name - then continue
             alerts.promptEX({
-                mountNode: canvasContainerDiv.current,
+                //mountNode: canvasContainerDiv.current, this lets other content on the form cover the dialog
                 title: "Sign as name",
                 children: <Field label="Signing as" hint="Please type in your name" required>
                     <InputEx onChange={(e, data) => DrawPadUserName.set(data.value)} />
@@ -237,7 +240,7 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                         }} />
                     {!signed
                         && !isNullOrEmptyString(props.allowSigning)
-                        && !isNullOrEmptyArray(loadedFontNames)
+                        && !isNullOrEmptyArray(fontReady)
                         && <ButtonEX
                             style={{
                                 position: "absolute",
@@ -258,9 +261,10 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
             }
         </div>
         {!props.ReadOnly && !HideButtons && <Vertical nogap>
-            {props.HideColorPicker || <ColorPickerEx mountNode={canvasContainerDiv.current} disabled={props.disabled} buttonOnly value={props.LineColor} onChange={newColor => {
-                setLineColor(newColor);
-            }} />}
+            {props.HideColorPicker || <ColorPickerEx //mountNode={canvasContainerDiv.current} this lets other content on the form cover the dialog
+                disabled={props.disabled} buttonOnly value={props.LineColor} onChange={newColor => {
+                    setLineColor(newColor);
+                }} />}
             {props.HideClear || <ButtonEX disabled={props.disabled || isNullOrEmptyString(props.Value)} title="Clear" icon={<DismissRegular />} onClick={() => {
                 //can call clear on the canvas, or can call the onchange which will cause a re-draw
                 setSigned(false);

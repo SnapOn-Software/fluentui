@@ -14,6 +14,8 @@ interface IProps {
     showTime?: boolean;
     datePickerProps?: DatePickerProps;
     timePickerProps?: TimePickerProps;
+    /** don't allow to clear the value */
+    required?: boolean;
 }
 export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const ctx = useKWIZFluentContext();
@@ -21,7 +23,7 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
     //time value will always have a value even when clearing the date
     const [timeValue, setTimeValue] = useStateEX<Date>(isDate(props.value) ? props.value : new Date());
     const { showClear, dateValue } = React.useMemo(() => {
-        const showClear = isDate(props.value);
+        const showClear = !props.required && isDate(props.value);
         const dateValue = props.value;
         return { showClear, dateValue };
     }, [props.value]);
