@@ -12,7 +12,7 @@ import { Vertical } from './vertical';
 interface IProps extends InputProps {
     onOK?: () => void;
     onCancel?: () => void;
-    tokens?: { title: string; value: string; }[];
+    tokens?: { title: string; value: string; replace?: boolean; }[];
     tokenMenuLabel?: string;
 }
 export const InputEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
@@ -36,10 +36,15 @@ export const InputEx: React.FunctionComponent<React.PropsWithChildren<IProps>> =
                     ({
                         title: token.title, onClick: () => {
                             let newValue = props.value || "";
-                            if (isNullOrEmptyString(props.value))
+                            if (token.replace) {
                                 newValue = token.value;
-                            else
-                                newValue += ` ${token.value}`;
+                            }
+                            else {
+                                if (isNullOrEmptyString(props.value))
+                                    newValue = token.value;
+                                else
+                                    newValue += ` ${token.value}`;
+                            }
                             props.onChange(null, {
                                 value: newValue
                             });
