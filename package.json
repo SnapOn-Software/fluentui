@@ -57,6 +57,7 @@
         "typescript": "^5.3.3"
     },
     "dependencies": {
+        "@fluentui/react-timepicker-compat": "^0.2.42",
         "@kwiz/common": "^1.0.103",
         "esbuild": "^0.19.12",
         "get-tsconfig": "^4.7.2",
