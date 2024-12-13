@@ -2,86 +2,60 @@ import { DatePicker, DatePickerProps } from '@fluentui/react-datepicker-compat';
 import { TimePicker, TimePickerProps } from '@fluentui/react-timepicker-compat';
 
 import { CalendarCancelRegular } from '@fluentui/react-icons';
-import { isDate, isFunction, isNullOrEmptyString, isNullOrUndefined } from '@kwiz/common';
+import { isDate } from '@kwiz/common';
 import * as React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
-import { useEffectOnlyOnMount } from '../helpers/hooks';
 import { Horizontal } from './horizontal';
 
-interface IProps extends Omit<DatePickerProps, 'onChange'> {
-    onOK?: () => void;
-    onCancel?: () => void;
+interface IProps {
     onDateChange: (newDateObject: Date) => void;
-    initialDate: Date
+    value: Date;
     showTime?: boolean;
-    timePickerProps?: TimePickerProps
+    datePickerProps?: DatePickerProps;
+    timePickerProps?: TimePickerProps;
 }
 export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const ctx = useKWIZFluentContext();
-    const [showClear, setShowClear] = React.useState(isDate(props.initialDate));
-    const [dateValue, setDateValue] = React.useState(props.initialDate);
-    const [timeValue, setTimeValue] = React.useState(props.initialDate);
 
-    const reset = React.useCallback(() => {
-        showClear && setShowClear(false);
-        showClear && setDateValue(undefined);
-    }, [showClear]);
+    const { showClear, dateValue, timeValue } = React.useMemo(() => {
+        const showClear = isDate(props.value);
+        const dateValue = props.value;
+        const timeValue = props.value;
+        return { showClear, dateValue, timeValue };
+    }, [props.value]);
 
-    const changeDateHandler = React.useCallback(
-        (newDateValue: Date): void => {
-            const newDate = new Date(
-                newDateValue
-            );
-            // Use the old time values.
-            newDate.setHours(
-                timeValue.getHours(),
-                timeValue.getMinutes(),
-                timeValue.getSeconds(),
-                timeValue.getMilliseconds()
-            );
-            props.onDateChange(newDate);
-            setDateValue(newDate);
-        },
-        [timeValue]
-    );
+    function reset() {
+        props.onDateChange(null);
+    }
 
-    const changeTimeHandler = React.useCallback(
-        (newTimeValue: Date): void => {
-            // Use the old date value.
-            const newDate = new Date(
-                dateValue
-            );
-            newDate.setHours(
-                newTimeValue.getHours(),
-                newTimeValue.getMinutes(),
-                newTimeValue.getSeconds(),
-                newTimeValue.getMilliseconds()
-            );
-            props.onDateChange(newDate);
-            setTimeValue(newDate);
-        },
-        [dateValue]
-    );
+    const changeDateHandler = React.useCallback((newDateValue: Date): void => {
+        const newDate = new Date(newDateValue);
+        // Use the old time values.
+        newDate.setHours(
+            timeValue.getHours(),
+            timeValue.getMinutes(), 0, 0
+        );
+        props.onDateChange(newDate);
+    }, [timeValue]);
+
+    const changeTimeHandler = React.useCallback((newTimeValue: Date): void => {
+        // Use the old date value.
+        const newDate = new Date(dateValue);
+        newDate.setHours(
+            newTimeValue.getHours(),
+            newTimeValue.getMinutes(), 0, 0
+        );
+        props.onDateChange(newDate);
+    }, [dateValue]);
 
     const DatePickerControl = <DatePicker
-        {...props}
+        {...(props.datePickerProps || {})}
         appearance={ctx.inputAppearance}
         mountNode={ctx.mountNode}
         value={dateValue}
         onSelectDate={(newDate) => {
-            setShowClear(isDate(newDate));
             changeDateHandler(newDate);
         }}
-        onChange={(__, date) => {
-            // ask Shai: if we need this?
-        }}
-        onKeyDown={isFunction(props.onOK) || isFunction(props.onCancel)
-            ? e => {
-                if (isFunction(props.onOK) && e.key === "Enter") props.onOK();
-                else if (isFunction(props.onCancel) && e.key === "Escape") props.onCancel();
-            }
-            : undefined
-        }
         contentBefore={showClear && <CalendarCancelRegular title='Clear' onClick={() => reset()} />}
     />
 
@@ -94,27 +68,14 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
             const newDate = date.selectedTime;
             changeTimeHandler(newDate);
         }}
-        onChange={(e) => {
-            // ask Shai: if we need this?
-        }}
-        onKeyDown={isFunction(props.onOK) || isFunction(props.onCancel)
-            ? e => {
-                if (isFunction(props.onOK) && e.key === "Enter") props.onOK();
-                else if (isFunction(props.onCancel) && e.key === "Escape") props.onCancel();
-            }
-            : undefined
-        }
     />
 
     return (
-        <>
-            {
-                props.showTime ? <Horizontal>
-                    {DatePickerControl}
-                    {TimePickerControl}
-                </Horizontal> :
-                    { DatePickerControl }
-            }
-        </>
+        props.showTime
+            ? <Horizontal>
+                {DatePickerControl}
+                {TimePickerControl}
+            </Horizontal>
+            : DatePickerControl
     );
 }
