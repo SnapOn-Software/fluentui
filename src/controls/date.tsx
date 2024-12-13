@@ -5,6 +5,7 @@ import { CalendarCancelRegular } from '@fluentui/react-icons';
 import { isDate } from '@kwiz/common';
 import * as React from 'react';
 import { useKWIZFluentContext } from '../helpers/context';
+import { useStateEX } from '../helpers/hooks';
 import { Horizontal } from './horizontal';
 
 interface IProps {
@@ -17,11 +18,12 @@ interface IProps {
 export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const ctx = useKWIZFluentContext();
 
-    const { showClear, dateValue, timeValue } = React.useMemo(() => {
+    //time value will always have a value even when clearing the date
+    const [timeValue, setTimeValue] = useStateEX<Date>(isDate(props.value) ? props.value : new Date());
+    const { showClear, dateValue } = React.useMemo(() => {
         const showClear = isDate(props.value);
         const dateValue = props.value;
-        const timeValue = props.value;
-        return { showClear, dateValue, timeValue };
+        return { showClear, dateValue };
     }, [props.value]);
 
     function reset() {
@@ -32,15 +34,17 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
         const newDate = new Date(newDateValue);
         // Use the old time values.
         newDate.setHours(
-            timeValue.getHours(),
-            timeValue.getMinutes(), 0, 0
+            timeValue ? timeValue.getHours() : 0,
+            timeValue ? timeValue.getMinutes() : 0, 0, 0
         );
         props.onDateChange(newDate);
     }, [timeValue]);
 
     const changeTimeHandler = React.useCallback((newTimeValue: Date): void => {
+        //update our state
+        setTimeValue(newTimeValue);
         // Use the old date value.
-        const newDate = new Date(dateValue);
+        const newDate = isDate(dateValue) ? new Date(dateValue) : new Date();
         newDate.setHours(
             newTimeValue.getHours(),
             newTimeValue.getMinutes(), 0, 0
@@ -52,7 +56,7 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
         {...(props.datePickerProps || {})}
         appearance={ctx.inputAppearance}
         mountNode={ctx.mountNode}
-        value={dateValue}
+        value={isDate(dateValue) ? dateValue : null}
         onSelectDate={(newDate) => {
             changeDateHandler(newDate);
         }}
@@ -63,7 +67,8 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
         appearance={ctx.inputAppearance}
         mountNode={ctx.mountNode}
         {...props.timePickerProps}
-        value={timeValue.toLocaleTimeString("en", { hour: "2-digit", minute: "2-digit", hour12: true })}
+        //only show time value when there is a selected date. timeValue will never be null.
+        value={isDate(dateValue) ? timeValue.toLocaleTimeString("en", { hour: "2-digit", minute: "2-digit", hour12: true }) : ""}
         onTimeChange={(e, date) => {
             const newDate = date.selectedTime;
             changeTimeHandler(newDate);
