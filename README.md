@@ -11,7 +11,7 @@ To successfully use these controls you should create a context:
 
 ```ts
 const root = React.useRef<HTMLDivElement>(null);
-const kwizFluentContext = useKWIZFluentContextProvider({
+const { KWIZFluentContext, value: kwizFluentContext } = useKWIZFluentContextProvider({
     ctx: {
         buttonShape: "rounded"
     },

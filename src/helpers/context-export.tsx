@@ -1,5 +1,5 @@
 import { makeStyles } from "@fluentui/react-components";
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { iKWIZFluentContext, KWIZFluentContext } from "./context-const";
 export type { iKWIZFluentContext } from "./context-const";
 
@@ -27,5 +27,5 @@ export function useKWIZFluentContextProvider(options: {
             mountNode: options.root.current
         });
     }, [options.root]);
-    return (props: PropsWithChildren) => <KWIZFluentContext.Provider value={kwizFluentContext}>{props.children}</KWIZFluentContext.Provider>;
+    return { KWIZFluentContext, value: kwizFluentContext };
 }
