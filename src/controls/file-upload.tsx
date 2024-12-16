@@ -33,9 +33,22 @@ interface iProps {
 export const FileUpload = React.forwardRef<HTMLButtonElement, (iProps)>((props, ref) => {
     const classes = useStyles();
     const hiddenFileInput = React.useRef(null);
+    const onChangeRef = React.useRef(props.onChange);
+    const asBase64Ref = React.useRef(props.asBase64);
+
     const isMulti = props.allowMultiple === true;
     const icon = props.icon || <ArrowUploadRegular />;
     const title = isNotEmptyString(props.title) ? props.title : `Drop or select ${isMulti ? 'files' : 'file'}`;
+
+    //keep onChange up to date
+    React.useEffect(() => {
+        onChangeRef.current = props.onChange;
+    }, [props.onChange]);
+    //keep onChange up to date
+    React.useEffect(() => {
+        asBase64Ref.current = props.asBase64;
+    }, [props.asBase64]);
+
 
     const onGotFiles = React.useCallback(async (rawFiles: FileList) => {
         let errors: string[] = [];
@@ -66,18 +79,14 @@ export const FileUpload = React.forwardRef<HTMLButtonElement, (iProps)>((props, 
         }
 
         if (isMulti) {
-            if (isFunction(props.onChange)) {
-                props.onChange(acceptedFiles, errors);
-            }
+            onChangeRef.current?.(acceptedFiles, errors);
         }
         else {
             const fileUploaded = acceptedFiles[0];
-            if (isFunction(props.onChange)) {
-                props.onChange(fileUploaded, errors);
-            }
+            onChangeRef.current?.(fileUploaded, errors);
         }
 
-        if (isFunction(props.asBase64)) {
+        if (isFunction(asBase64Ref.current)) {
             const filesAs64: base64Result[] = [];
             for (let i = 0; i < (isMulti ? acceptedFiles.length : 1); i++) {
                 const currentFile = acceptedFiles[i];
@@ -95,7 +104,7 @@ export const FileUpload = React.forwardRef<HTMLButtonElement, (iProps)>((props, 
                     else errors.push(`Could not read file ${acceptedFiles[i].name}`);
                 }
             }
-            props.asBase64(filesAs64, errors);
+            asBase64Ref.current?.(filesAs64, errors);
         }
     }, useEffectOnlyOnMount);
 
