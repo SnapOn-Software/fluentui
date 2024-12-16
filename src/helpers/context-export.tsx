@@ -1,30 +1,7 @@
 import { makeStyles } from "@fluentui/react-components";
-import { useEffect, useState } from "react";
-
-export interface iKWIZFluentContext {
-    /**
-     * Where the portal children are mounted on DOM
-     *
-     * @default a new element on document.body without any styling
-     */
-    mountNode?: HTMLElement | null | {
-        element?: HTMLElement | null;
-        className?: string;
-    }
-    /**
-     * Controls the colors and borders of the input.
-     * 
-     * @default 'underline'
-     */
-    inputAppearance?: 'outline' | 'underline' | 'filled-darker' | 'filled-lighter';
-
-    /**
-     * A button can be rounded, circular, or square.
-     *
-     * @default 'rounded'
-     */
-    buttonShape?: 'rounded' | 'circular' | 'square';
-}
+import React, { PropsWithChildren, useEffect, useState } from "react";
+import { iKWIZFluentContext, KWIZFluentContext } from "./context-const";
+export type { iKWIZFluentContext } from "./context-const";
 
 const useContextStyles = makeStyles({
     root: {
@@ -33,6 +10,7 @@ const useContextStyles = makeStyles({
         }
     },
 })
+
 export function useKWIZFluentContextProvider(options: {
     root?: React.MutableRefObject<HTMLDivElement>;
     ctx?: iKWIZFluentContext;
@@ -49,5 +27,5 @@ export function useKWIZFluentContextProvider(options: {
             mountNode: options.root.current
         });
     }, [options.root]);
-    return kwizFluentContext;
+    return (props: PropsWithChildren) => <KWIZFluentContext.Provider value={kwizFluentContext}>{props.children}</KWIZFluentContext.Provider>;
 }

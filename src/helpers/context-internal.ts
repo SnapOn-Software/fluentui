@@ -1,10 +1,7 @@
 import { isNullOrUndefined } from "@kwiz/common";
 import React from "react";
-import { iKWIZFluentContext } from "./context-export";
+import { KWIZFluentContext } from "./context-const";
 
-
-//create context
-export const KWIZFluentContext = React.createContext<iKWIZFluentContext>(null);
 //use context from within controls
 export function useKWIZFluentContext() {
     let ctx = React.useContext(KWIZFluentContext) || {};
