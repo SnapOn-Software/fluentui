@@ -2,9 +2,7 @@ import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowUploadRegular } from "@fluentui/react-icons";
 import { isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, lastOrNull } from '@kwiz/common';
 import * as React from "react";
-import { useDragDropContext } from "../helpers/drag-drop/drag-drop-context";
-import { dropFiles } from "../helpers/drag-drop/exports";
-import { useEffectOnlyOnMount } from "../helpers/hooks";
+import { dropFiles, useDragDropContext, useEffectOnlyOnMount } from "../helpers";
 import { ButtonEX, ButtonEXProps, CompoundButtonEXSecondary } from "./button";
 
 const useStyles = makeStyles({

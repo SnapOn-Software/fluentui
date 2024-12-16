@@ -1,23 +1,13 @@
 import { isNullOrUndefined } from "@kwiz/common";
-import React, { useContext } from "react";
+import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useStateEX } from "../hooks";
-import { iDraggableProps, iDraggedItemType, useDraggable } from "./use-draggable";
-import useDroppable, { iDroppableProps } from "./use-droppable";
+import { DragDropContext, useDragDropContextInternal } from "./drag-drop-context-internal";
+import { iDragDropContext, iDraggableProps, iDraggedItemType, iDroppableProps } from "./drag-drop.types";
+import { useDraggable } from "./use-draggable";
+import { useDroppable } from "./use-droppable";
 
-export interface iDragDropContext {
-    isDragging: boolean;
-    dragItem: iDraggedItemType<string>;
-    setDragItem: (value: iDraggedItemType<string>) => void;
-}
-//create context
-export const DragDropContext = React.createContext<iDragDropContext>(null);
-//use context from within controls
-export function useDragDropContextInternal() {
-    const dragDropContext = useContext(DragDropContext);
-    return dragDropContext;
-}
 export function useDragDropContext<
     DragItemType extends iDraggedItemType<string> = never,
     DropInfoType extends iDroppableProps<string, any> = never

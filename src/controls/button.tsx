@@ -1,7 +1,7 @@
 import { Button, ButtonProps, CompoundButton, compoundButtonClassNames, CompoundButtonProps, makeStyles, mergeClasses, tokens, Tooltip } from '@fluentui/react-components';
 import { capitalizeFirstLetter, isFunction, isNullOrEmptyString, isNullOrUndefined, isString, PushNoDuplicate } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { commonSizes, useCommonStyles } from '../styles/styles';
 
 interface IProps {

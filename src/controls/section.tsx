@@ -1,7 +1,7 @@
 import { makeStyles, mergeClasses, Portal, tokens } from '@fluentui/react-components';
 import { isFunction, isNotEmptyArray } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { KnownClassNames, mixins, useCommonStyles } from '../styles/styles';
 
 const useStyles = makeStyles({

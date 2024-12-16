@@ -1,14 +1,7 @@
 import { ConnectDropTarget, DropTargetMonitor, useDrop } from 'react-dnd';
-import { iDraggedItemType } from './use-draggable';
+import { iDraggedItemType, iDroppableProps } from './drag-drop.types';
 
-export interface iDroppableProps<DropTypes extends string, ItemTypes extends iDraggedItemType<DropTypes>> {
-    acceptTypes: DropTypes[];
-    onItemDrop: (item: ItemTypes) => void;
-    onHover?: (item: ItemTypes) => void;
-    onDrop?: () => void;
-}
-
-function useDroppable<DropType extends string, ItemType extends iDraggedItemType<DropType>>(props?: iDroppableProps<DropType, ItemType>): {
+export function useDroppable<DropType extends string, ItemType extends iDraggedItemType<DropType>>(props?: iDroppableProps<DropType, ItemType>): {
     canDrop: boolean;
     isOver: boolean;
     dropRef: ConnectDropTarget;
@@ -44,5 +37,3 @@ function useDroppable<DropType extends string, ItemType extends iDraggedItemType
         dropRef,
     };
 }
-
-export default useDroppable;

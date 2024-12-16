@@ -4,8 +4,8 @@ import { TimePicker, TimePickerProps } from '@fluentui/react-timepicker-compat';
 import { CalendarCancelRegular } from '@fluentui/react-icons';
 import { isDate } from '@kwiz/common';
 import * as React from 'react';
-import { useKWIZFluentContext } from '../helpers/context';
-import { useStateEX } from '../helpers/hooks';
+import { useKWIZFluentContext } from '../helpers/context-internal';
+import { useStateEX } from '../helpers';
 import { Horizontal } from './horizontal';
 
 interface IProps {

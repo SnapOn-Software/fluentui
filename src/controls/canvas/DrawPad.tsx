@@ -2,7 +2,7 @@ import { Field, tokens } from "@fluentui/react-components";
 import { ArrowMaximizeRegular, ArrowMinimizeRegular, ArrowUploadRegular, CalligraphyPenRegular, DismissRegular } from "@fluentui/react-icons";
 import { debounce, getCSSVariableValue, ImageFileTypes, isElement, isNotEmptyString, isNullOrEmptyArray, isNullOrEmptyString, isNullOrUndefined } from "@kwiz/common";
 import * as React from "react";
-import { useAlerts, useElementSize, useStateEX } from "../../helpers/hooks";
+import { useAlerts, useElementSize, useStateEX } from "../../helpers";
 import { ButtonEX } from "../button";
 import { ColorPickerEx } from "../ColorPickerDialog";
 import { FileUpload } from "../file-upload";

@@ -2,8 +2,8 @@ import { Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTr
 import { ImageSparkleRegular } from '@fluentui/react-icons';
 import { DiagramOptions, stockUrl } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context';
-import { useStateEX } from '../helpers/hooks';
+import { useKWIZFluentContext } from '../helpers/context-internal';
+import { useStateEX } from '../helpers';
 import { ButtonEXPrimarySubtle } from './button';
 import { Horizontal } from './horizontal';
 import { Section } from './section';

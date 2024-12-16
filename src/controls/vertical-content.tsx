@@ -1,7 +1,7 @@
 import { makeStyles, mergeClasses } from '@fluentui/react-components';
 import { isNotEmptyArray } from '@kwiz/common';
 import React from 'react';
-import { useWindowSize } from '../helpers/hooks';
+import { useWindowSize } from '../helpers';
 
 const useStyles = makeStyles({
     verticalContainer: {

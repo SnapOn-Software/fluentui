@@ -2,8 +2,8 @@ import { Menu, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, Menu
 import { ChevronLeftRegular, ChevronRightRegular } from '@fluentui/react-icons';
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone, stopEvent } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context';
-import { useStateEX } from '../helpers/hooks';
+import { useKWIZFluentContext } from '../helpers/context-internal';
+import { useStateEX } from '../helpers';
 import { ButtonEX, ButtonEXProps } from './button';
 import { Horizontal } from './horizontal';
 import { Search } from './search';

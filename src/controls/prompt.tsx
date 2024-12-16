@@ -2,8 +2,8 @@ import { Dialog, DialogActions, DialogBody, DialogContent, DialogModalType, Dial
 import { DismissRegular } from '@fluentui/react-icons';
 import { isNotEmptyArray, isNullOrEmptyString, noops, PushNoDuplicate, RemoveItemFromArr, stopEvent } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context';
-import { useKeyDown } from '../helpers/hooks';
+import { useKWIZFluentContext } from '../helpers/context-internal';
+import { useKeyDown } from '../helpers/hooks-events';
 import { ButtonEX, ButtonEXProps, ButtonEXSecondary } from './button';
 
 export interface IPrompterProps {

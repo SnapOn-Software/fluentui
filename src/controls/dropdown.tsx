@@ -1,7 +1,7 @@
 import { Dropdown, DropdownProps, makeStyles, mergeClasses, Option } from '@fluentui/react-components';
 import { filterEmptyEntries, firstOrNull, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 
 const useStyles = makeStyles({
     root: {

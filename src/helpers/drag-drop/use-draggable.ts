@@ -1,15 +1,7 @@
 import { useEffect } from 'react';
 import { ConnectDragSource, DragSourceMonitor, useDrag } from 'react-dnd';
-import { useDragDropContextInternal } from './drag-drop-context';
-
-export interface iDraggedItemType<DragType extends string> {
-    type: DragType;
-}
-export interface iDraggableProps<ItemType extends iDraggedItemType<string>> {
-    item: ItemType;
-    onBeginDrag?: () => void;
-    onEndDrag?: (dropResult: any) => void;
-}
+import { useDragDropContextInternal } from './drag-drop-context-internal';
+import { iDraggableProps, iDraggedItemType } from './drag-drop.types';
 
 export function useDraggable<ItemType extends iDraggedItemType<string>>(props?: iDraggableProps<ItemType>): {
     isDragging: boolean;

@@ -1,7 +1,7 @@
 import { GriffelStyle, Input, InputOnChangeData, InputProps, Label, Link, makeStyles, mergeClasses, Textarea, TextareaProps } from '@fluentui/react-components';
 import { isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { useCommonStyles } from '../styles/styles';
 import { Horizontal } from './horizontal';
 import { MenuEx } from './menu';

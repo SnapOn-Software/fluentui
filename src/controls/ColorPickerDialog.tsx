@@ -3,7 +3,7 @@ import { ColorRegular } from "@fluentui/react-icons";
 import { isFunction, isNullOrEmptyString, isNumber } from "@kwiz/common";
 import * as React from "react";
 import ColorPicker, { Color } from 'react-pick-color';
-import { useEffectOnlyOnMount, useStateEX } from "../helpers/hooks";
+import { useEffectOnlyOnMount, useStateEX } from "../helpers";
 import { ButtonEX } from "./button";
 import { InputEx } from "./input";
 import { Prompter } from "./prompt";

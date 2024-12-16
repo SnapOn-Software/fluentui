@@ -1,7 +1,6 @@
 import { mergeClasses } from "@fluentui/react-components";
 import { useDragDropContext } from "./drag-drop-context";
-import { iDraggableProps, iDraggedItemType } from "./use-draggable";
-import { iDroppableProps } from "./use-droppable";
+import { iDraggableProps, iDraggedItemType, iDroppableProps } from "./drag-drop.types";
 
 interface one<DragItemType extends iDraggedItemType<string>> {
     dragInfo: iDraggableProps<DragItemType>;
