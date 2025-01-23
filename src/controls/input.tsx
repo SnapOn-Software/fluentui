@@ -112,7 +112,7 @@ export const InputNumberEx: React.FunctionComponent<React.PropsWithChildren<INum
         const isValid = props.required ? !isNullOrNaN(asNumber) : isNullOrUndefined(asNumber) || !isNaN(asNumber);
         setIsValid(isValid);
         props.onChange(isValid ? asNumber : null);
-    }, [props.allowDecimals]);
+    }, [props.allowDecimals, props.onChange, props.required]);
 
     const passProps: IProps = { ...props, defaultValue: undefined, value: undefined, onChange: undefined };
 
