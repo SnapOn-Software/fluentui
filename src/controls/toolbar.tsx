@@ -1,6 +1,6 @@
 import { Toolbar, ToolbarDivider, ToolbarGroup } from '@fluentui/react-components';
 import React from 'react';
-import { useCommonStyles } from '../styles/styles';
+import { KnownClassNames } from '../styles/styles';
 import { KWIZOverflow } from './kwizoverflow';
 
 interface IProps {
@@ -10,8 +10,6 @@ interface IProps {
     sideButtons?: JSX.Element;
 }
 export const ToolbarEX: React.FunctionComponent<IProps> = (props) => {
-    const commonCssNames = useCommonStyles();
-
     let elements: { id: string, priority?: number, elm: JSX.Element, overflowElement?: JSX.Element }[] = [];
     props.buttonGroups.forEach((group, groupIndex) => {
         group.forEach((button, buttonIndex) => {
@@ -32,7 +30,7 @@ export const ToolbarEX: React.FunctionComponent<IProps> = (props) => {
     });
 
     return (
-        <KWIZOverflow className={commonCssNames.printHide}
+        <KWIZOverflow className={KnownClassNames.printHide}
             items={elements}
             getKey={e => e.id}
             renderItem={(e, i, overflow) => overflow && e.overflowElement || e.elm}

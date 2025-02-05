@@ -22,6 +22,8 @@ export interface iKWIZFluentContext {
      * @default 'rounded'
      */
     buttonShape?: 'rounded' | 'circular' | 'square';
+    /** true if using dark theme */
+    dark?: boolean;
 }
 
 //create context

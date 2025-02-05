@@ -1,6 +1,7 @@
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { LOGO_BLUE_SQUARE, LOGO_WHITE_SQUARE, isNullOrUndefined, isString } from '@kwiz/common';
 import React from 'react';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { KnownClassNames, mixins } from '../styles/styles';
 import { Horizontal } from './horizontal';
 import { Section } from './section';
@@ -85,8 +86,9 @@ interface IProps {
 }
 
 export const ListEx = (props: IProps) => {
-
+    const ctx = useKWIZFluentContext();
     const cssNames = useStyles();
+    const isDark = ctx.dark === true || props.dark === true;
 
     const listItemElm = (item: iListItem) => <Horizontal key={item.key} css={[cssNames.listItem, item.selected && cssNames.listItemSelected]} onClick={item.onClick}>
         {item.media && <Section css={[cssNames.media]} onClick={(e) => {
@@ -94,7 +96,7 @@ export const ListEx = (props: IProps) => {
                 e.stopPropagation();//media may have its on onclick
         }}>{
                 isString(item.media)
-                    ? <div className={cssNames.image} style={{ backgroundImage: `url('${encodeURI(item.media)}'), url('${props.dark ? LOGO_WHITE_SQUARE : LOGO_BLUE_SQUARE}')` }}></div>
+                    ? <div className={cssNames.image} style={{ backgroundImage: `url('${encodeURI(item.media)}'), url('${isDark ? LOGO_WHITE_SQUARE : LOGO_BLUE_SQUARE}')` }}></div>
                     : item.media
             }</Section>}
         <Vertical main css={[cssNames.listItemBody]}>

@@ -11,12 +11,8 @@ const useStyles = makeStyles({
     main: mixins.main,
     clickable: mixins.clickable,
     root: {
-        paddingLeft: 0
     },
     searchIcon: {
-        position: "absolute",
-        left: '5px',
-        top: '5px'
     },
 })
 

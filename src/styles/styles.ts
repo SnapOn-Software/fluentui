@@ -58,6 +58,8 @@ export module mixins {
 
 export const KnownClassNames = {
     print: 'print-root',
+    printHide: 'print-hide',
+    printShow: 'print-show',
     section: 'kfui-section',
     vertical: 'kfui-vertical',
     horizontal: 'kfui-horizontal',
@@ -67,26 +69,11 @@ export const KnownClassNames = {
     accordionBody: 'kfui-accordion-body',
     accordionBodyWrapper: 'kfui-accordion-body-wrapper',
     isOpen: 'is-opened',
-    progressBarStepLabel: 'step-label'
+    progressBarStepLabel: 'step-label',
+    left: 'float-left',
+    right: 'float-right'
 }
 export const useCommonStyles = makeStyles({
-    printShow: {
-        display: 'none',
-        [`:global(body.${KnownClassNames.print})`]: {
-            display: 'unset',
-        },
-        '@media print': {
-            display: 'unset',
-        }
-    },
-    printHide: {
-        [`:global(body.${KnownClassNames.print})`]: {
-            display: 'none !important'
-        },
-        '@media print': {
-            display: 'none !important'
-        }
-    },
     hintLabel: {
         color: tokens.colorNeutralForeground3,
         fontSize: tokens.fontSizeBase200,

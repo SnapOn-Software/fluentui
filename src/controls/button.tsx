@@ -2,7 +2,7 @@ import { Button, ButtonProps, CompoundButton, compoundButtonClassNames, Compound
 import { capitalizeFirstLetter, isFunction, isNullOrEmptyString, isNullOrUndefined, isString, PushNoDuplicate } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
-import { commonSizes, useCommonStyles } from '../styles/styles';
+import { commonSizes, KnownClassNames } from '../styles/styles';
 
 interface IProps {
     title: string;//required
@@ -72,11 +72,10 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
     let hasIcon = !isNullOrUndefined(icon);
     let hasText = props.children || !hasIcon || (hasIcon && props.showTitleWithIcon === true);
 
-    const commonCssNames = useCommonStyles();
     const cssNames = useStyles();
     let css: string[] = [];
 
-    if (props.hideOnPrint) PushNoDuplicate(css, commonCssNames.printHide);
+    if (props.hideOnPrint) PushNoDuplicate(css, KnownClassNames.printHide);
     if (props.dontCenterText) PushNoDuplicate(css, cssNames.buttonNoCenter);
 
     let btn = <Button ref={ref} appearance='subtle' {...props as any as ButtonProps} className={mergeClasses(...css, props.className)}

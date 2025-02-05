@@ -19,6 +19,7 @@ export * from './kwizoverflow';
 export * from './list';
 export * from './loading';
 export * from './menu';
+export * from './merge-text';
 export * from './please-wait';
 export * from './progress-bar';
 export * from './prompt';
@@ -29,3 +30,4 @@ export * from './svg';
 export * from './toolbar';
 export * from './vertical';
 export * from './vertical-content';
+

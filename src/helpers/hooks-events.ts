@@ -3,8 +3,8 @@ import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { KnownClassNames } from "../styles/styles";
 import { useEffectOnlyOnMount } from "./hooks";
 
-export function useTrackFocus(props: { onFocus: () => void, onLoseFocus: () => void, ref?: MutableRefObject<HTMLElement> }) {
-    const wrapperDiv = props.ref || useRef<HTMLDivElement>(null);
+export function useTrackFocus<elmType extends HTMLElement>(props: { onFocus: () => void, onLoseFocus: () => void, ref?: MutableRefObject<elmType> }) {
+    const wrapperDiv: MutableRefObject<elmType> = props.ref || useRef<HTMLDivElement>(null) as any;
     useEffect(() => {
         function focusIn(e: FocusEvent) {
             let elm = e.target as HTMLElement;//document.activeElement;

@@ -2,13 +2,12 @@ import { isFunction, isNotEmptyArray, isNullOrEmptyString, isPrimitiveValue, jso
 import { MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { GetLogger } from "../_modules/config";
 
-const logger = GetLogger("helpers/hooks");
 /** Empty array ensures that effect is only run on mount */
 export const useEffectOnlyOnMount = [];
 
 /** set state on steroids. provide promise callback after render, onChange transformer and automatic skip-set when value not changed */
 export function useStateEX<ValueType>(initialValue: ValueType, options?: {
-    onChange?: (newValue: SetStateAction<ValueType>) => SetStateAction<ValueType>;
+    onChange?: (newValue: SetStateAction<ValueType>, isValueChanged: boolean) => SetStateAction<ValueType>;
     //will not set state if value did not change
     skipUpdateIfSame?: boolean;
     //optional, provide a name for better logging
@@ -53,26 +52,36 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: {
         }
     }, [value, resolveState.current]);
 
-    let setValueWithCheck = !options.skipUpdateIfSame ? setValueInState : (newValue: ValueType) => {
-        logger.groupSync('conditional value change', log => {
+    function getIsValueChanged(newValue: ValueType): boolean {
+        return logger.groupSync('getIsValueChanged', log => {
             if (logger.getLevel() === LoggerLevel.VERBOSE) {
                 log('old: ' + jsonStringify(currentValue.current));
                 log('new: ' + jsonStringify(newValue));
             }
             if (!objectsEqual(newValue as object, currentValue.current as object)) {
                 log(`value changed`);
-                setValueInState(newValue);
+                return true;
             }
             else {
                 log(`value unchanged`);
-                resolvePromises();
+                return false;
             }
         });
+    };
+
+    let setValueWithCheck = !options.skipUpdateIfSame ? setValueInState : (newValue: ValueType) => {
+        const isValueChanged = getIsValueChanged(newValue);
+        if (isValueChanged) {
+            setValueInState(newValue);
+        }
+        else {
+            resolvePromises();
+        }
     }
 
 
     let setValueWithEvents = wrapFunction(setValueWithCheck, {
-        before: (newValue: ValueType) => isFunction(options.onChange) ? options.onChange(newValue) : newValue,
+        before: (newValue: ValueType) => isFunction(options.onChange) ? options.onChange(newValue, getIsValueChanged(newValue)) : newValue,
         after: (newValue: ValueType) => currentValue.current = isPrimitiveValue(newValue) || isFunction(newValue)
             ? newValue
             //fix skipUpdateIfSame for complex objects

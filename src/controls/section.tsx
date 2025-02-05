@@ -1,5 +1,5 @@
 import { makeStyles, mergeClasses, Portal, tokens } from '@fluentui/react-components';
-import { isFunction, isNotEmptyArray } from '@kwiz/common';
+import { isFunction, isNotEmptyArray, isNotEmptyString } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { KnownClassNames, mixins, useCommonStyles } from '../styles/styles';
@@ -15,7 +15,10 @@ const useStyles = makeStyles({
     right: {
         ...mixins.float,
         float: "right",
-        marginRight: tokens.spacingHorizontalXXL
+        marginLeft: tokens.spacingHorizontalXXL
+    },
+    selfCentered: {
+        alignSelf: "center"
     }
 });
 
@@ -31,6 +34,7 @@ export interface ISectionProps {
     right?: boolean;
     /** true - will add css position fixed. portal will also wrap it in a portal. */
     fullscreen?: boolean | "portal";
+    centerSelf?: boolean;
 }
 
 export const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<ISectionProps>>((props, ref) => {
@@ -39,13 +43,21 @@ export const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<
     const cssNames = useStyles();
     let css: string[] = [KnownClassNames.section];
     if (props.main) css.push(cssNames.main);
+    if (props.centerSelf) css.push(cssNames.selfCentered);
     if (isFunction(props.onClick))
         css.push(cssNames.clickable);
 
-    if (props.left) css.push(cssNames.left);
-    else if (props.right) css.push(cssNames.right);
+    if (props.left) {
+        css.push(cssNames.left);
+        css.push(KnownClassNames.left);
+    }
+    else if (props.right) {
+        css.push(cssNames.right);
+        css.push(KnownClassNames.right);
+    }
 
-    if (isNotEmptyArray(props.css)) css.push(...props.css);
+    //a css class might have space and  multiuple classes in it
+    if (isNotEmptyArray(props.css)) props.css.filter(c => isNotEmptyString(c)).forEach(c => css.push(...c.split(" ")));
     if (props.fullscreen) css.push(commonStyles.fullscreen);
     const control = <div ref={ref} {...(props.rootProps || {})} title={props.title} style={props.style}
         className={mergeClasses(...css)}

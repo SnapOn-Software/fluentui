@@ -10,12 +10,18 @@ const useStyles = makeStyles({
         flexDirection: 'column'
     },
     wrap: mixins.wrap,
-    nogap: mixins.nogap
+    nogap: mixins.nogap,
+    vCentered: {
+        justifyContent: "center"
+    },
+
 })
 
 interface IProps extends ISectionProps {
     wrap?: boolean;
     nogap?: boolean;
+    /** vertical centered */
+    vCentered?: boolean;
 }
 export const Vertical = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IProps>>((props, ref) => {
     const cssNames = useStyles();
@@ -26,6 +32,8 @@ export const Vertical = React.forwardRef<HTMLDivElement, React.PropsWithChildren
         css.push(cssNames.wrap);
     if (props.nogap)
         css.push(cssNames.nogap);
+    if (props.vCentered)
+        css.push(cssNames.vCentered);
 
     if (isNotEmptyArray(props.css)) css.push(...props.css);
 
