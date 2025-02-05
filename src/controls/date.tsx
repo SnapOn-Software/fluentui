@@ -40,7 +40,7 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
             timeValue ? timeValue.getMinutes() : 0, 0, 0
         );
         props.onDateChange(newDate);
-    }, [timeValue]);
+    }, [timeValue, props.onDateChange]);
 
     const changeTimeHandler = React.useCallback((newTimeValue: Date): void => {
         //update our state
