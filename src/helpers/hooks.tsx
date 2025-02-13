@@ -105,3 +105,13 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: {
 
     return [value, setValue, currentValue];
 }
+
+export function useRefWithState<T>(initialValue?: T) {
+    let asRef = useRef<T>(initialValue);
+    let [asState, setState] = useState<T>(initialValue);
+    let setRef = useCallback((newValue: T) => {
+        asRef.current = newValue;
+        setState(newValue);
+    }, useEffectOnlyOnMount);
+    return { asRef, asState, setRef };
+}
