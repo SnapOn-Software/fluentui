@@ -106,6 +106,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: {
     return [value, setValue, currentValue];
 }
 
+/** use a ref, that can be tracked as useEffect dependency */
 export function useRefWithState<T>(initialValue?: T) {
     let asRef = useRef<T>(initialValue);
     let [asState, setState] = useState<T>(initialValue);
@@ -113,5 +114,12 @@ export function useRefWithState<T>(initialValue?: T) {
         asRef.current = newValue;
         setState(newValue);
     }, useEffectOnlyOnMount);
-    return { asRef, asState, setRef };
+    return {
+        /** pure ref object */
+        ref: asRef,
+        /** use the value in useEffect dependency */
+        value: asState,
+        /** set it by ref={e.set} */
+        set: setRef
+    };
 }
