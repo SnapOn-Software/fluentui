@@ -5,14 +5,15 @@ import { GetLogger } from "../_modules/config";
 /** Empty array ensures that effect is only run on mount */
 export const useEffectOnlyOnMount = [];
 
-/** set state on steroids. provide promise callback after render, onChange transformer and automatic skip-set when value not changed */
-export function useStateEX<ValueType>(initialValue: ValueType, options?: {
+type stateExOptions<ValueType> = {
     onChange?: (newValue: SetStateAction<ValueType>, isValueChanged: boolean) => SetStateAction<ValueType>;
     //will not set state if value did not change
     skipUpdateIfSame?: boolean;
     //optional, provide a name for better logging
     name?: string;
-}):
+};
+/** set state on steroids. provide promise callback after render, onChange transformer and automatic skip-set when value not changed */
+export function useStateEX<ValueType>(initialValue: ValueType, options?: stateExOptions<ValueType>):
     [ValueType, (newValue: SetStateAction<ValueType>) => Promise<ValueType>, MutableRefObject<ValueType>] {
     options = options || {};
     const name = options.name || '';
@@ -107,9 +108,9 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: {
 }
 
 /** use a ref, that can be tracked as useEffect dependency */
-export function useRefWithState<T>(initialValue?: T) {
+export function useRefWithState<T>(initialValue?: T, stateOptions: stateExOptions<T> = { skipUpdateIfSame: true }) {
     let asRef = useRef<T>(initialValue);
-    let [asState, setState] = useState<T>(initialValue);
+    let [asState, setState] = useStateEX<T>(initialValue, stateOptions);
     let setRef = useCallback((newValue: T) => {
         asRef.current = newValue;
         setState(newValue);
