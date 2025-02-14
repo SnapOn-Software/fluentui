@@ -12,6 +12,21 @@ type stateExOptions<ValueType> = {
     //optional, provide a name for better logging
     name?: string;
 };
+function extractStringValue(e: any) {
+    try {
+        if (e instanceof HTMLElement)
+            return e.outerHTML;
+    } catch (e) { }
+    try {
+        let json = jsonStringify(e);
+        if (json === "{}") return Object.keys(e).join();//maybe just object with functions, no members or values
+        else return json;
+    } catch (e) { }
+    try {
+        return e.toString();
+    } catch (e) { }
+    return '';
+}
 /** set state on steroids. provide promise callback after render, onChange transformer and automatic skip-set when value not changed */
 export function useStateEX<ValueType>(initialValue: ValueType, options?: stateExOptions<ValueType>):
     [ValueType, (newValue: SetStateAction<ValueType>) => Promise<ValueType>, MutableRefObject<ValueType>] {
@@ -54,19 +69,20 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
     }, [value, resolveState.current]);
 
     function getIsValueChanged(newValue: ValueType): boolean {
-        return logger.groupSync('getIsValueChanged', log => {
+        let result: boolean;
+        if (!objectsEqual(newValue as object, currentValue.current as object)) {
+            result = true;
+        }
+        else {
+            result = false;
+        }
+
+        return logger.groupSync(result ? 'value changed' : 'value not changed', log => {
             if (logger.getLevel() === LoggerLevel.VERBOSE) {
-                log('old: ' + jsonStringify(currentValue.current));
-                log('new: ' + jsonStringify(newValue));
+                log('old: ' + extractStringValue(currentValue.current));
+                log('new: ' + extractStringValue(newValue));
             }
-            if (!objectsEqual(newValue as object, currentValue.current as object)) {
-                log(`value changed`);
-                return true;
-            }
-            else {
-                log(`value unchanged`);
-                return false;
-            }
+            return result;
         });
     };
 
@@ -108,7 +124,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
 }
 
 /** use a ref, that can be tracked as useEffect dependency */
-export function useRefWithState<T>(initialValue?: T, stateOptions: stateExOptions<T> = { skipUpdateIfSame: true }) {
+export function useRefWithState<T>(initialValue?: T, stateOptions: stateExOptions<T> = { skipUpdateIfSame: true, name: "useRefWithState" }) {
     let asRef = useRef<T>(initialValue);
     let [asState, setState] = useStateEX<T>(initialValue, stateOptions);
     let setRef = useCallback((newValue: T) => {
