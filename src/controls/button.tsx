@@ -111,6 +111,13 @@ export const ButtonEXSecondary = React.forwardRef<HTMLButtonElement, (ButtonEXPr
         <ButtonEX ref={ref} appearance='secondary' shape={ctx.buttonShape} {...props}></ButtonEX>
     );
 });
+/** to be used in MessageBarActions for prominent actions. Otherwise use ButtonEX or ButtonEXDangerSubtle */
+export const ButtonEXMessageBarAction = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
+    const ctx = useKWIZFluentContext();
+    return (
+        <ButtonEX ref={ref} appearance='secondary' hideOnPrint {...props}></ButtonEX>
+    );
+});
 export const ButtonEXPrimary = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
     return (
         <ButtonEXSecondary ref={ref} appearance='primary' {...props}>{props.children}</ButtonEXSecondary>

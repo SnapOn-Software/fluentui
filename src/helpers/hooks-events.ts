@@ -87,45 +87,42 @@ export function useElementSize(elm: HTMLElement) {
     return elmSize;
 }
 export function useIsInPrint() {
-    // Initialize state with false
-    const [printMode, setPrintMode] = useState<boolean>(false);
+    // Initialize state with media query
+    const [printMode, setPrintMode] = useState<boolean>(window.matchMedia ? window.matchMedia('print').matches : false);
     useEffect(() => {
-        function forcePrint(e: KeyboardEvent) {
+        if (printMode)
+            document.body.classList.add(KnownClassNames.print);
+        else
+            document.body.classList.remove(KnownClassNames.print);
+    }, [printMode]);
+
+    useEffect(() => {
+        const forcePrintOn = () => setPrintMode(true);
+        const forcePrintOff = () => setPrintMode(false);
+
+        function printDebugHelper(e: KeyboardEvent) {
             if (e.ctrlKey && e.shiftKey && e.altKey) {
                 if (e.key.toLocaleLowerCase() === "q") {
-                    document.body.classList.remove(KnownClassNames.print);
-                    handlePrint(e, false);
+                    forcePrintOff();
                 }
                 else {
                     console.warn('forced print mode - to exit refresh to ctrl+shift+alt+q');
-                    document.body.classList.add(KnownClassNames.print);
-                    handlePrint(e, true);
+                    forcePrintOn();
                 }
             }
         }
-        // Handler to call on printing
-        function handlePrint(e?: Event, force?: boolean) {
-            if (force === true) setPrintMode(true);
-            else if (window.matchMedia) {
-                var mediaQueryList = window.matchMedia('print');
-                if (mediaQueryList.matches) {
-                    setPrintMode(true);
-                } else {
-                    setPrintMode(false);
-                }
-            }
-        }
+
         // Add event listener
-        window.addEventListener("print", handlePrint);
+        window.addEventListener("beforeprint", forcePrintOn);
+        window.addEventListener("afterprint", forcePrintOff);
         if (isDebug())
-            window.addEventListener("keydown", forcePrint);
-        // Call handler right away so state gets updated with initial printing state
-        handlePrint();
+            window.addEventListener("keydown", printDebugHelper);
         // Remove event listener on cleanup
         return () => {
-            window.removeEventListener("print", handlePrint);
+            window.removeEventListener("beforeprint", forcePrintOn);
+            window.removeEventListener("afterprint", forcePrintOff);
             if (isDebug())
-                window.removeEventListener("keydown", forcePrint);
+                window.removeEventListener("keydown", printDebugHelper);
         };
     }, useEffectOnlyOnMount);
     return printMode;

@@ -1,4 +1,4 @@
-import { makeStaticStyles, makeStyles } from "@fluentui/react-components";
+import { makeStaticStyles, makeStyles, tokens } from "@fluentui/react-components";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { GetLogger } from "../_modules/config";
 import { KnownClassNames } from "../styles";
@@ -9,7 +9,10 @@ const logger = GetLogger("KWIZFluentContextProvider");
 const useContextStyles = makeStyles({
     root: {
         "& *": {
-            scrollbarWidth: "thin"
+            scrollbarWidth: "thin",
+            //if we can make sure this applies only to fui-FluentProvider, do this too, since public forms might take over the entire page we don't want to to affect other sites:
+            //maybe make KWIZFluentProvider automatically wrap in a root and apply to it
+            //scrollbarColor: `${tokens.colorBrandForeground2} ${tokens.colorBrandBackground2}`
         },
         [`& .${KnownClassNames.printShow}`]: {
             '@media print': {
