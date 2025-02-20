@@ -1,6 +1,7 @@
-import { GriffelStyle, Input, InputOnChangeData, InputProps, Label, Link, makeStyles, mergeClasses, Textarea, TextareaProps } from '@fluentui/react-components';
-import { isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber } from '@kwiz/common';
-import React from 'react';
+import { GriffelStyle, Input, InputOnChangeData, InputProps, Label, Link, makeStyles, mergeClasses, Textarea, TextareaOnChangeData, TextareaProps } from '@fluentui/react-components';
+import { isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, pasteTextAtCursor, stopEvent } from '@kwiz/common';
+import React, { useCallback, useEffect } from 'react';
+import { useEffectOnlyOnMount, useRefWithState } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { useCommonStyles } from '../styles/styles';
 import { Horizontal } from './horizontal';
@@ -10,7 +11,9 @@ import { Vertical } from './vertical';
 
 
 interface IProps extends InputProps {
+    /** fire on enter */
     onOK?: () => void;
+    /** fire on escape */
     onCancel?: () => void;
     tokens?: { title: string; value: string; replace?: boolean; }[];
     tokenMenuLabel?: string;
@@ -20,8 +23,8 @@ export const InputEx: React.FunctionComponent<React.PropsWithChildren<IProps>> =
     const input = <Input appearance={ctx.inputAppearance} {...props}
         onKeyDown={isFunction(props.onOK) || isFunction(props.onCancel)
             ? e => {
-                if (isFunction(props.onOK) && e.key === "Enter") props.onOK();
-                else if (isFunction(props.onCancel) && e.key === "Escape") props.onCancel();
+                if (e.key === "Enter") props.onOK?.();
+                if (e.key === "Escape") props.onCancel?.();
             }
             : undefined
         }
@@ -69,27 +72,60 @@ const useStyles = makeStyles({
 
 interface IPropsTextArea extends TextareaProps {
     fullSize?: boolean;
+    /** recalc the height to grow to show all text */
     growNoShrink?: boolean;
+    allowTab?: boolean;
+    /** fire on enter */
+    onOK?: () => void;
+    /** fire on escape */
+    onCancel?: () => void;
+    onValueChange?: (e: React.ChangeEvent<HTMLTextAreaElement> | React.KeyboardEvent<HTMLTextAreaElement>, d: {
+        value: string;
+        elm: HTMLTextAreaElement;
+    }) => void;
 }
 export const TextAreaEx: React.FunctionComponent<React.PropsWithChildren<IPropsTextArea>> = (props) => {
     const cssNames = useStyles();
     let css: string[] = [];
 
     if (props.fullSize) css.push(cssNames.fullSizeTextArea);
-    const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+    const textAreaRef = useRefWithState<HTMLTextAreaElement>(null);
     const recalcHeight = React.useCallback(() => {
-        if (textAreaRef.current && props.growNoShrink) {
-            if (textAreaRef.current.scrollHeight > textAreaRef.current.clientHeight)
-                textAreaRef.current.style.minHeight = textAreaRef.current.scrollHeight + 'px';
+        if (textAreaRef.ref.current && props.growNoShrink) {
+            if (textAreaRef.ref.current.scrollHeight > textAreaRef.ref.current.clientHeight)
+                textAreaRef.ref.current.style.minHeight = textAreaRef.ref.current.scrollHeight + 'px';
         }
-    }, [textAreaRef]);
+    }, useEffectOnlyOnMount);
+
+    useEffect(() => { recalcHeight(); }, [textAreaRef.value]);
+
+    const onChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement> | React.KeyboardEvent<HTMLTextAreaElement>, d: TextareaOnChangeData) => {
+        props.onValueChange?.(e, { value: d.value, elm: textAreaRef.ref.current });
+        recalcHeight();
+    }, [props.onChange]);
+
+    const needOnKeyDown = props.allowTab || isFunction(props.onOK) || isFunction(props.onCancel);
 
     let style: React.CSSProperties = { height: '100%', ...props.style };
+
     return (
-        <Textarea ref={textAreaRef} className={mergeClasses(...css)} {...props} style={style} onChange={(e, d) => {
-            if (props.onChange) props.onChange(e, d);
-            recalcHeight();
-        }} />
+        <Textarea ref={textAreaRef.set} className={mergeClasses(...css)} {...props} style={style}
+            onKeyDown={needOnKeyDown ? (e) => {
+                if (props.allowTab && e.key === "Tab") {
+                    stopEvent(e);
+                    const textArea = e.target as HTMLTextAreaElement;
+                    pasteTextAtCursor(textArea, "\t");
+                    onChange(e, { value: textArea.value });
+                    return;
+                }
+                if (e.key === "Enter") props.onOK?.();
+                if (e.key === "Escape") props.onCancel?.();
+                props.onKeyDown?.(e);
+            } : props.onKeyDown}
+            onChange={(e, d) => {
+                props.onChange?.(e, d);
+                onChange(e, d);
+            }} />
     );
 }
 

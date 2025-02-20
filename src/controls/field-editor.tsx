@@ -1,8 +1,8 @@
-import { Field, mergeClasses, Textarea } from '@fluentui/react-components';
+import { Field, mergeClasses } from '@fluentui/react-components';
 import { isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
 import { GetLogger } from '../_modules/config';
-import { InputEx } from './input';
+import { InputEx, TextAreaEx } from './input';
 
 const logger = GetLogger('FieldEditor');
 
@@ -14,7 +14,8 @@ interface IProps {
     css: string[];
     label: string;
     description?: string;
-    type?: "text" | "multiline"
+    type?: "text" | "multiline";
+    allowTab?: boolean;
 }
 export const FieldEditor: React.FunctionComponent<IProps> = (props) => {
     if (isNullOrUndefined(props.value)) {
@@ -25,11 +26,12 @@ export const FieldEditor: React.FunctionComponent<IProps> = (props) => {
             validationMessage={props.error || props.description}
             validationState={props.error ? "error" : "none"}>
             {props.type === "multiline"
-                ? <Textarea className={props.css && mergeClasses(...props.css)}
+                ? <TextAreaEx className={props.css && mergeClasses(...props.css)}
                     required={props.required}
                     placeholder={props.label}
                     value={props.value || ""}
-                    onChange={(e, data) => props.onChange(data.value)}
+                    allowTab={props.allowTab}
+                    onValueChange={(e, data) => props.onChange(data.value)}
                 />
                 : <InputEx className={props.css && mergeClasses(...props.css)}
                     required={props.required}
