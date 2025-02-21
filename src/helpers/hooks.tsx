@@ -132,11 +132,11 @@ export function useRefWithState<T>(initialValue?: T, stateOptions: stateExOption
         setState(newValue);
     }, useEffectOnlyOnMount);
     return {
-        /** pure ref object */
+        /** ref object for getting latest value in handlers */
         ref: asRef,
-        /** use the value in useEffect dependency */
+        /** for useEffect dependency */
         value: asState,
-        /** set it by ref={e.set} */
+        /** for setting on element: ref={e.set} */
         set: setRef
     };
 }

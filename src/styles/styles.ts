@@ -11,7 +11,7 @@ export module mixins {
             cursor: "pointer"
         }
     }
-    const box: GriffelStyle = {
+    export const box: GriffelStyle = {
         padding: tokens.spacingHorizontalM,
         borderRadius: tokens.borderRadiusMedium,
         boxShadow: tokens.shadow4,
