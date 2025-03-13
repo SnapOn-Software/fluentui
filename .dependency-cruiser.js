@@ -194,13 +194,13 @@ module.exports = {
     {
       name: "no-import-from-controls",
       severity: "error",
-      comment: "do not import controls into helpers, except for prompt control - by full path not from index",
+      comment: "do not import controls into helpers, except for prompt/please-wait control - by full path not from index",
       from: {
         path: "src/helpers/"
       },
       to: {
         path: "src/controls",
-        pathNot: "src/controls/prompt"
+        pathNot: ["src/controls/prompt", "src/controls/please-wait"]
       }
     }
   ],

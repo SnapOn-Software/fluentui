@@ -1,6 +1,6 @@
 import { Toast, ToastTitle, Toaster, useId, useToastController } from "@fluentui/react-components";
 import { useCallback, useState } from "react";
-import { PleaseWait } from "../controls";
+import { PleaseWait } from "../controls/please-wait";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
 
 /* Provides useful helpers for tracking if control has changes, and handling the save changes with progress bar and on success/fail messages. */
