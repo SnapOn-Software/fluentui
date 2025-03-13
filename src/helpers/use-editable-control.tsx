@@ -11,7 +11,7 @@ export function useEditableControl() {
     const toasterId = useId("toaster");
     const { dispatchToast } = useToastController(toasterId);
 
-    const onSaveChanges = useCallback(async (worker: () => Promise<{ success: boolean; message: string; }>) => {
+    const onSaveChanges = useCallback(async (worker: () => Promise<{ success: boolean; message?: string; }>) => {
         setShowProgress(true);
         const success = await worker();
         setShowProgress(false);
