@@ -121,7 +121,12 @@ export const DrawPad: React.FunctionComponent<iProps> = (props) => {
                 : isNotEmptyString(props.DefaultBackdrop)
                     ? props.DefaultBackdrop
                     : "";
-            if (canvasValue !== neededValue) {
+            if (canvasValue !== neededValue ||
+                (
+                    isNullOrEmptyString(canvasValue) &&
+                    isNullOrEmptyString(neededValue)
+                )
+            ) {
                 UpdateCanvas(neededValue);//if called repeatedly or too fast - may not load correctly
             }
         }
