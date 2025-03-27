@@ -2,8 +2,8 @@ import { Menu, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, Menu
 import { ChevronLeftRegular, ChevronRightRegular } from '@fluentui/react-icons';
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone, stopEvent } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context-internal';
 import { useStateEX } from '../helpers';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { ButtonEX, ButtonEXProps } from './button';
 import { Horizontal } from './horizontal';
 import { Search } from './search';
@@ -113,7 +113,7 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
 
         const paged = menuItems.length > pageSize;
         const filtered = menuItems.length > filterThreshold || !isNullOrEmptyString(myLevelFilter);
-        const filterControl = filtered && <Search value={myLevelFilter || ""} onChangeDeferred={(newValue) => {
+        const filterControl = filtered && <Search defaultValue={myLevelFilter || ""} onChangeDeferred={(newValue) => {
             const s = jsonClone(filterPerLevel);
             s[level] = newValue ? newValue.toLowerCase() : "";
             setFilterPerLevel(s);

@@ -1,8 +1,9 @@
 import { Input, InputProps, makeStyles, mergeClasses } from '@fluentui/react-components';
 import { DismissRegular, SearchRegular } from "@fluentui/react-icons";
-import { debounce, isNullOrEmptyString } from '@kwiz/common';
-import React, { useRef } from 'react';
+import { debounce, isNullOrEmptyString, isNullOrUndefined } from '@kwiz/common';
+import React, { useEffect, useRef } from 'react';
 import { GetLogger } from '../_modules/config';
+import { useEffectOnlyOnMount, useStateEX } from '../helpers';
 import { mixins } from '../styles/styles';
 const logger = GetLogger("Search");
 
@@ -36,26 +37,35 @@ export const Search: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
     React.useEffect(() => { refonChangeDeferred.current = props.onChangeDeferred; }, [props.onChangeDeferred]);
 
     //cannot call debounce every render, since it won't be the same debounced instance...
-    var notifyParent = React.useMemo(() => debounce(v => {
+    var notifyParent = React.useCallback(debounce(v => {
         logger.log(`Set: ${v}`);
         //Call the latest ref - we don't want to call an old version of this function
         refonChangeDeferred.current?.(v);
     }, delay * 1000), [delay]);
 
-    const currentValue = props.value || "";
+    const [currentValue, setCurrentValue] = useStateEX(props.value || props.defaultValue || "", { skipUpdateIfSame: true });
+    useEffect(() => {
+        if (!isNullOrUndefined(props.value))
+            setCurrentValue(props.value);
+    }, [props.value]);
+
+    var changeValue = React.useCallback((newValue: string) => {
+        newValue = newValue || "";//no null or undefined here
+        setCurrentValue(newValue);//keep our state updated in sync
+        props.onChange?.(newValue);//if parent is using search as managed control, keep it up to date in sync
+        notifyParent(newValue);//trigger a search async
+    }, useEffectOnlyOnMount);
 
     return (
-        <Input {...props} value={currentValue} onChange={(e, data) => {
-            props.onChange?.(data.value);
-            notifyParent(data.value);
+        <Input {...props} autoFocus defaultValue={undefined} value={currentValue} onChange={(e, data) => {
+            changeValue(data.value);
         }}
             className={mergeClasses(cssNames.root, props.main && cssNames.main)}
             contentBefore={!isNullOrEmptyString(currentValue) ? undefined : <SearchRegular className={cssNames.searchIcon} />}
             contentAfter={isNullOrEmptyString(currentValue)
                 ? undefined
                 : <DismissRegular className={cssNames.clickable} onClick={() => {
-                    props.onChange?.("");
-                    notifyParent("");
+                    changeValue("");
                 }} />
             } />
     );

@@ -24,7 +24,8 @@
         "npm-v-patch": "npm version patch && git push origin main:main && git push --tags",
         "npm-v-major": "npm version major && git push origin main:main && git push --tags",
         "npm-publish": "npm publish --access public",
-        "reset-repo": "git fetch origin && git reset --hard origin/main"
+        "reset-repo": "git fetch origin && git reset --hard origin/main",
+        "clear-npm-cache": "npm cache clean --force"
     },
     "repository": {
         "type": "git",
