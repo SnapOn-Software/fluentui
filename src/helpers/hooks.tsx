@@ -1,6 +1,8 @@
+import { makeStyles } from "@fluentui/react-components";
 import { isFunction, isNotEmptyArray, isNullOrEmptyString, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual, wrapFunction } from "@kwiz/common";
-import { MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { HTMLAttributes, MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { GetLogger } from "../_modules/config";
+import { mixins } from "../styles/styles";
 
 /** Empty array ensures that effect is only run on mount */
 export const useEffectOnlyOnMount = [];
@@ -139,4 +141,23 @@ export function useRefWithState<T>(initialValue?: T, stateOptions: stateExOption
         /** for setting on element: ref={e.set} */
         set: setRef
     };
+}
+
+const useStyles = makeStyles({
+    clickable: mixins.clickable,
+});
+
+/** return props to make div appear as clickable, and accept enter key as click */
+export function useClickableDiv() {
+    const cssNames = useStyles();
+
+    const props: HTMLAttributes<HTMLDivElement> = {
+        className: cssNames.clickable,
+        tabIndex: 0,
+        onKeyDown: e => {
+            if (e.key === "Enter") (e.target as HTMLDivElement).click();
+        }
+    };
+
+    return props;
 }

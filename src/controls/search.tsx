@@ -14,7 +14,7 @@ const useStyles = makeStyles({
     },
     searchIcon: {
     },
-})
+});
 
 interface IProps extends Omit<InputProps, "onChange"> {
     main?: boolean;

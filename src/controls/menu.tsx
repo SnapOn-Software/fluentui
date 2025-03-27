@@ -1,13 +1,12 @@
 import { Menu, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger } from '@fluentui/react-components';
-import { ChevronLeftRegular, ChevronRightRegular } from '@fluentui/react-icons';
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone, stopEvent } from '@kwiz/common';
 import React from 'react';
-import { useStateEX } from '../helpers';
+import { useClickableDiv, useStateEX } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { ButtonEX, ButtonEXProps } from './button';
+import { DividerEX } from './divider';
 import { Horizontal } from './horizontal';
 import { Search } from './search';
-import { Section } from './section';
 
 interface iMenuItemEXItem {
     type?: "item";
@@ -24,7 +23,8 @@ interface iMenuItemEXSeparator {
 interface iMenuItemEXGroup {
     type: "group";
     title: string;
-    items: iMenuItemEX[];
+    //can't nest groups
+    items: (iMenuItemEX & { type?: "separator" | "item" })[];
 }
 export type iMenuItemEX = iMenuItemEXItem | iMenuItemEXSeparator | iMenuItemEXGroup;
 
@@ -50,6 +50,8 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
     const [keepOpen, setKeepOpen] = useStateEX<IDictionary<boolean>>({});
     const [opened, setOpened] = useStateEX<IDictionary<boolean>>({});
 
+    const clickableDiv = useClickableDiv();
+
     React.useEffect(() => {
         window.setTimeout(() => {
             var menus = document.querySelectorAll(`.${menuPopoverClassNames.root}`);
@@ -65,18 +67,34 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
 
     function renderItems(items: iMenuItemEX[], level: number) {
         const myLevelFilter = filterPerLevel[level];
-        //get rid of empty/null items
-        items = items.filter(i => !isNullOrUndefined(i) && (isNotEmptyString(i.type) || isNotEmptyString((i as iMenuItemEXItem).title)))
-        if (isNotEmptyString(myLevelFilter)) {
-            items = items.filter(i => i.type !== "separator" && i.title.toLowerCase().indexOf(myLevelFilter) >= 0);
+
+        const showItem = (i: iMenuItemEX) => {
+            //get rid of empty/null items
+            let show = !isNullOrUndefined(i) && (isNotEmptyString(i.type) || isNotEmptyString((i as iMenuItemEXItem).title));
+            if (show && isNotEmptyString(myLevelFilter)) {
+                if (i.type === "separator") show = false;
+                else if (i.type === "group") {
+                    //only show group if 1 or more results are in it
+                    return i.items.filter(sub => showItem(sub)).length > 0;
+                }
+                else
+                    show = i.title.toLowerCase().indexOf(myLevelFilter) >= 0;
+            }
+            return show;
         }
+
+        //inject group items into this level - so we share the filter/next functionality. it looks wierd if filter/paging is done per group if they are displayed inline.
+        items = items.map(i => i.type === "group" && isNotEmptyArray(i.items) ? [i, ...i.items] : i)
+            .flat()
+            //filter empty item or based on text filter
+            .filter(i => showItem(i));
 
         let menuItems = items.map((item, index) => {
             switch (item.type) {
                 case "group":
+                    //todo: technically group items should be nested inside the group for better screen reder support
                     return <MenuGroup key={index}>
                         <MenuGroupHeader>{item.title}</MenuGroupHeader>
-                        {renderItems(item.items, level + 1)}
                     </MenuGroup>;
                 case "separator":
                     return <MenuDivider key={index} />;
@@ -113,36 +131,40 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
 
         const paged = menuItems.length > pageSize;
         const filtered = menuItems.length > filterThreshold || !isNullOrEmptyString(myLevelFilter);
-        const filterControl = filtered && <Search defaultValue={myLevelFilter || ""} onChangeDeferred={(newValue) => {
-            const s = jsonClone(filterPerLevel);
-            s[level] = newValue ? newValue.toLowerCase() : "";
-            setFilterPerLevel(s);
-        }} />;
+
         if (paged) {
             let start = startIndexPerLevel[level];
             if (isNullOrUndefined(start)) start = 0;
             let hasMore = menuItems.length > start + pageSize;
             menuItems = menuItems.slice(start, start + pageSize);
-            if (start > 0 || hasMore) menuItems.splice(0, 0, <Horizontal key='$next'>
-                <ButtonEX disabled={start < 1} icon={<ChevronLeftRegular />} title='previous' onClick={() => {
-                    const s = jsonClone(startIndexPerLevel);
-                    s[level] = start - pageSize;
-                    setStartIndexPerLevel(s);
-                }} />
-                <Section main>
-                    {filterControl}
-                </Section>
-                <ButtonEX disabled={!hasMore} icon={<ChevronRightRegular />} title='next' onClick={() => {
-                    const s = jsonClone(startIndexPerLevel);
-                    s[level] = start + pageSize;
-                    setStartIndexPerLevel(s);
-                }} />
-            </Horizontal>);
+            if (start > 0) {
+                menuItems.splice(0, 0, <DividerEX key="$prev" title='Previous'
+                    {...clickableDiv}
+                    onClick={() => {
+                        const s = jsonClone(startIndexPerLevel);
+                        s[level] = start - pageSize;
+                        setStartIndexPerLevel(s);
+                    }}
+                >previous</DividerEX>);
+            }
+            if (hasMore)
+                menuItems.push(<DividerEX key="$next" title='Next'
+                    {...clickableDiv}
+                    onClick={() => {
+                        const s = jsonClone(startIndexPerLevel);
+                        s[level] = start + pageSize;
+                        setStartIndexPerLevel(s);
+                    }}
+                >next</DividerEX>);
         }
-        else if (filtered) {
+        if (filtered) {
             //just filter - no paging
-            menuItems.splice(0, 0, <Horizontal key='$next'>
-                {filterControl}
+            menuItems.splice(0, 0, <Horizontal key='$search'>
+                <Search defaultValue={myLevelFilter || ""} onChangeDeferred={(newValue) => {
+                    const s = jsonClone(filterPerLevel);
+                    s[level] = newValue ? newValue.toLowerCase() : "";
+                    setFilterPerLevel(s);
+                }} />
             </Horizontal>);
         }
         return menuItems;
