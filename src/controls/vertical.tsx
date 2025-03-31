@@ -38,6 +38,6 @@ export const Vertical = React.forwardRef<HTMLDivElement, React.PropsWithChildren
     if (isNotEmptyArray(props.css)) css.push(...props.css);
 
     return (
-        <Section {...props} css={css} />
+        <Section {...props} css={css} ref={ref} />
     );
 });
