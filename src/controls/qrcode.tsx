@@ -9,6 +9,7 @@ interface IProps {
     backgroundColor?: string;
     foregroundColor?: string;
 }
+
 export const QRCodeEX: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const container = useRef<HTMLCanvasElement>();
     useEffect(() => {
