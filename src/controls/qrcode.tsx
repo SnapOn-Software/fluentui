@@ -1,13 +1,6 @@
-import { makeStyles } from '@fluentui/react-components';
 import { colorToHex } from '@kwiz/common';
 import QRCode from 'qrcode';
 import React, { useEffect, useRef } from 'react';
-
-const useStyles = makeStyles({
-    center: {
-        justifyContent: 'center'
-    },
-})
 
 interface IProps {
     value: string;
