@@ -1,6 +1,6 @@
 import { Button, ButtonProps, CompoundButton, compoundButtonClassNames, CompoundButtonProps, makeStyles, mergeClasses, tokens, Tooltip } from '@fluentui/react-components';
-import { capitalizeFirstLetter, isFunction, isNullOrEmptyString, isNullOrUndefined, isString, PushNoDuplicate } from '@kwiz/common';
-import React from 'react';
+import { capitalizeFirstLetter, isFunction, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isString, PushNoDuplicate } from '@kwiz/common';
+import React, { HTMLAttributeAnchorTarget } from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { commonSizes, KnownClassNames } from '../styles/styles';
 
@@ -13,6 +13,9 @@ interface IProps {
     hoverIcon?: JSX.Element;
     hoverTitle?: string;
     onClick?: (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => void | undefined;//type the onClick arg
+    /** href will be set to an onclick, with either window.open(href) or window.location.href={href} depending on the target */
+    href?: string;
+    target?: HTMLAttributeAnchorTarget;
 }
 interface IPropsCompound extends IProps {
     width?: string | number;
@@ -77,6 +80,25 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
 
     if (props.hideOnPrint) PushNoDuplicate(css, KnownClassNames.printHide);
     if (props.dontCenterText) PushNoDuplicate(css, cssNames.buttonNoCenter);
+
+    if (isNullOrUndefined(props.onClick) && isNotEmptyString(props.href)) {
+        props.onClick = () => {
+            switch (props.target) {
+                case "_top":
+                    window.top.location.href = props.href;
+                    break;
+                case "_parent":
+                    window.parent.location.href = props.href;
+                    break;
+                case "_blank":
+                    window.open(props.href);
+                    break;
+                default:
+                    window.location.href = props.href;
+                    break;
+            }
+        };
+    }
 
     let btn = <Button ref={ref} appearance='subtle' {...props as any as ButtonProps} className={mergeClasses(...css, props.className)}
         aria-label={title} title={undefined} icon={icon}
@@ -153,6 +175,26 @@ export const CompoundButtonEX = React.forwardRef<HTMLButtonElement, (CompoundBut
     let title = props.title || props['aria-label'];
     let tooltip = isString(props.secondaryContent) ? props.secondaryContent : title;
     let max = typeof (props.width) === "undefined" ? commonSizes.widthMedium : props.width;
+
+    if (isNullOrUndefined(props.onClick) && isNotEmptyString(props.href)) {
+        props.onClick = () => {
+            switch (props.target) {
+                case "_top":
+                    window.top.location.href = props.href;
+                    break;
+                case "_parent":
+                    window.parent.location.href = props.href;
+                    break;
+                case "_blank":
+                    window.open(props.href);
+                    break;
+                default:
+                    window.location.href = props.href;
+                    break;
+            }
+        };
+    }
+
     return (
         <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={tooltip}
             mountNode={ctx.mountNode}
