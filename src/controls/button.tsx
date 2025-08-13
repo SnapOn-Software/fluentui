@@ -81,8 +81,10 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
     if (props.hideOnPrint) PushNoDuplicate(css, KnownClassNames.printHide);
     if (props.dontCenterText) PushNoDuplicate(css, cssNames.buttonNoCenter);
 
-    if (isNullOrUndefined(props.onClick) && isNotEmptyString(props.href)) {
-        props.onClick = () => {
+    let onClick = props.onClick;
+
+    if (isNullOrUndefined(onClick) && isNotEmptyString(props.href)) {
+        onClick = () => {
             switch (props.target) {
                 case "_top":
                     window.top.location.href = props.href;
@@ -100,7 +102,7 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
         };
     }
 
-    let btn = <Button ref={ref} appearance='subtle' {...props as any as ButtonProps} className={mergeClasses(...css, props.className)}
+    let btn = <Button ref={ref} appearance='subtle' {...props as any as ButtonProps} onClick={onClick} className={mergeClasses(...css, props.className)}
         aria-label={title} title={undefined} icon={icon}
         onMouseEnter={trackHover ? (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             setHover(true);
@@ -176,8 +178,10 @@ export const CompoundButtonEX = React.forwardRef<HTMLButtonElement, (CompoundBut
     let tooltip = isString(props.secondaryContent) ? props.secondaryContent : title;
     let max = typeof (props.width) === "undefined" ? commonSizes.widthMedium : props.width;
 
-    if (isNullOrUndefined(props.onClick) && isNotEmptyString(props.href)) {
-        props.onClick = () => {
+    let onClick = props.onClick;
+
+    if (isNullOrUndefined(onClick) && isNotEmptyString(props.href)) {
+        onClick = () => {
             switch (props.target) {
                 case "_top":
                     window.top.location.href = props.href;
@@ -199,7 +203,7 @@ export const CompoundButtonEX = React.forwardRef<HTMLButtonElement, (CompoundBut
         <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={tooltip}
             mountNode={ctx.mountNode}
         >
-            <CompoundButton ref={ref} appearance='subtle' style={{ justifyContent: "flex-start", maxWidth: max }} {...props as any as CompoundButtonProps} aria-label={tooltip} title={undefined}>
+            <CompoundButton ref={ref} appearance='subtle' style={{ justifyContent: "flex-start", maxWidth: max }} {...props as any as CompoundButtonProps} onClick={onClick} aria-label={tooltip} title={undefined}>
                 {props.children || capitalizeFirstLetter(title)}</CompoundButton>
         </Tooltip>
     );
