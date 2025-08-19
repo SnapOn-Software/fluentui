@@ -1,11 +1,12 @@
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles, Skeleton, tokens } from '@fluentui/react-components';
 import { ArrowMaximize16Regular, ArrowMinimize16Regular, Dismiss16Regular, Save16Regular } from '@fluentui/react-icons';
-import { isObject } from '@kwiz/common';
+import { isNullOrUndefined, isObject } from '@kwiz/common';
 import JoditEditor, { Jodit } from "jodit-react";
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useEffectOnlyOnMount } from '../../helpers';
 import { ButtonEX, ButtonEXProps } from '../button';
 import { Section } from '../section';
-import { IconToSVG } from '../svg';
+import { IconToSVGAsync } from '../svg';
 
 //const logger = GetLogger("html-editor");
 
@@ -53,18 +54,44 @@ type JoditExpanded = Jodit & {//& IViewBased<IViewOptions>
     }
 };
 
-const saveIcon = IconToSVG(<Save16Regular title='Save' />);
-const cancelIcon = IconToSVG(<Dismiss16Regular title='Cancel' />);
-const maxIcon = IconToSVG(<ArrowMaximize16Regular title='Maximize' />);
-const minIcon = IconToSVG(<ArrowMinimize16Regular title='Minimize' />);
+const saveIconPromise = IconToSVGAsync(<Save16Regular title='Save' />);
+const cancelIconPromise = IconToSVGAsync(<Dismiss16Regular title='Cancel' />);
+const maxIconPromise = IconToSVGAsync(<ArrowMaximize16Regular title='Maximize' />);
+const minIconPromise = IconToSVGAsync(<ArrowMinimize16Regular title='Minimize' />);
 export const HtmlEditor: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const classes = useStyles();
     const [active, setActive] = React.useState(false);
     const [showFullScreen, setShowFullScreen] = React.useState(false);
+    const [icons, setIcons] = useState<{
+        saveIcon: string;
+        cancelIcon: string;
+        maxIcon: string;
+        minIcon: string;
+    }>(null);
 
+    useEffect(() => {
+        Promise.all([saveIconPromise,
+            cancelIconPromise,
+            maxIconPromise,
+            minIconPromise]).then(values => {
+                setIcons({
+                    saveIcon: values[0],
+                    cancelIcon: values[1],
+                    maxIcon: values[2],
+                    minIcon: values[3]
+                });
+            });
+    }, useEffectOnlyOnMount);
 
     //quill react demos: https://codesandbox.io/examples/package/react-quill
     const editorRef = useRef<JoditExpanded>(null);
+
+    if (isNullOrUndefined(icons)) return <Skeleton />;
+
+    const { saveIcon,
+        cancelIcon,
+        maxIcon,
+        minIcon } = icons;
 
     const extraConfig = {
         uploader: {

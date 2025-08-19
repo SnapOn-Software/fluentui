@@ -129,6 +129,7 @@ export function GetSVGCopyIcon(props: { size: number }) {
     )
 }
 
+/** @deprecated unsafe use IconToSVGAsync instead */
 export function IconToSVG(icon: JSX.Element) {
     const iconDiv = document.createElement('div');
     const root = createRoot(iconDiv);
@@ -136,4 +137,13 @@ export function IconToSVG(icon: JSX.Element) {
         root.render(icon);
     });
     return iconDiv.innerHTML;
+}
+export function IconToSVGAsync(icon: JSX.Element) {
+    //wrap in a timeout to relase any sycn react render and prevent conflict/fail
+    return new Promise<string>(resolve => {
+        window.setTimeout(() => {
+            resolve(IconToSVG(icon));
+        }, 1);
+    });
+
 }

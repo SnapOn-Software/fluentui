@@ -22,7 +22,7 @@ interface IPropsCompound extends IProps {
 }
 
 export type ButtonEXProps = IProps & Omit<ButtonProps, "onClick" | "title">;
-export type CompoundButtonEXProps = IPropsCompound & Omit<CompoundButtonProps, "onClick" | "title">;;
+export type CompoundButtonEXProps = IPropsCompound & Omit<CompoundButtonProps, "onClick" | "title">;
 
 const useStyles = makeStyles({
     buttonNoCenter: {
