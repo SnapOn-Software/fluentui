@@ -2,7 +2,7 @@ import { Link, Toast, ToastBody, Toaster, ToastFooter, ToastIntent, ToastTitle, 
 import { isNotEmptyArray } from "@kwiz/common";
 import { useKWIZFluentContext } from "./context-internal";
 
-export type toastDispatcher = (info: {
+export type toastDispatcherType = (info: {
     title?: string;
     body?: string;
     subtitle?: string;
@@ -12,7 +12,7 @@ export type toastDispatcher = (info: {
 }) => void;
 export function useToast(): {
     control: JSX.Element;
-    dispatch: toastDispatcher;
+    dispatch: toastDispatcherType;
 } {
     const ctx = useKWIZFluentContext();
     const toasterId = useId("toaster");
