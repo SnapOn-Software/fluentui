@@ -1,5 +1,5 @@
 import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Horizontal } from "./horizontal";
 
 const useStyles = makeStyles({
@@ -12,15 +12,15 @@ const useStyles = makeStyles({
     }
 });
 
-export function FieldSet({ title, children }: { title: string; children: ReactNode }) {
+export const FieldSet = React.forwardRef<HTMLFieldSetElement, (React.PropsWithChildren<{ title: string; }>)>(({ title, children }, ref) => {
     const css = useStyles();
 
-    return <fieldset className={css.fieldset}>
+    return <fieldset ref={ref} className={css.fieldset}>
         <legend>{title}</legend>
         {children}
     </fieldset>;
-}
-export function HorizontalFieldSet({ title, children }: { title: string; children: ReactNode }) {
+});
+export const HorizontalFieldSet = React.forwardRef<HTMLFieldSetElement, (React.PropsWithChildren<{ title: string; }>)>(({ title, children }, ref) => {
     const css = useStyles();
 
     return <FieldSet title={title}>
@@ -28,4 +28,4 @@ export function HorizontalFieldSet({ title, children }: { title: string; childre
             {children}
         </Horizontal>
     </FieldSet>;
-}
+});

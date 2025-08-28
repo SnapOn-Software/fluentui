@@ -1,5 +1,5 @@
 import { Drawer, DrawerBody, DrawerHeader, drawerHeaderClassNames, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, makeStyles, tokens } from "@fluentui/react-components";
-import { ReactNode } from "react";
+import React from "react";
 import { useCommonStyles } from "../styles/styles";
 
 const useStyles = makeStyles({
@@ -18,17 +18,16 @@ const useStyles = makeStyles({
     }
 });
 
-export default function DrawerEX(props: {
+export const DrawerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<{
     rootProps?: DrawerProps;
     headerProps?: DrawerHeaderProps;
     headerTitleProps?: DrawerHeaderTitleProps;
-    children?: ReactNode;
     title?: string;
     titleActions?: JSX.Element;
-}) {
+}>)>((props, ref) => {
     const commonStyles = useCommonStyles();
     const css = useStyles();
-    return <Drawer {...props.rootProps} className={css.drawer}>
+    return <Drawer ref={ref} {...props.rootProps} className={css.drawer}>
         <DrawerHeader {...props.headerProps} className={commonStyles.header}>
             <DrawerHeaderTitle {...props.headerTitleProps} action={props.titleActions || props.headerTitleProps?.action}>
                 {props.title || props.headerTitleProps?.children}
@@ -38,4 +37,4 @@ export default function DrawerEX(props: {
             {props.children}
         </DrawerBody>
     </Drawer>;
-}
+});
