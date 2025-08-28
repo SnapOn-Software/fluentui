@@ -95,6 +95,15 @@ export const useCommonStyles = makeStyles({
         padding: tokens.spacingHorizontalL,
         paddingLeft: "20px",
         paddingRight: "20px"
+    },
+    header: {
+        boxShadow: tokens.shadow4Brand,
+        backgroundColor: tokens.colorBrandBackground,
+        color: tokens.colorNeutralBackground1,
+        padding: `${tokens.spacingVerticalXL} ${tokens.spacingHorizontalXL}`,
+        '& button': {
+            color: tokens.colorNeutralBackground1
+        }
     }
 });
 
