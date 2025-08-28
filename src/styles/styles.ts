@@ -108,7 +108,10 @@ export const useCommonStyles = makeStyles({
 });
 
 export const commonSizes = {
+    /** 360 */
     widthMedium: 360,
+    /** 520 */
     widthWide: 520,
+    /** 820 */
     extraWidthWide: 820,
 }

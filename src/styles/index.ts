@@ -1,1 +1,1 @@
-export { commonSizes, KnownClassNames } from './styles';
+export { commonSizes, KnownClassNames, useCommonStyles } from './styles';
