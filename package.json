@@ -18,14 +18,15 @@
         "build-explain": "tsc --explainFiles",
         "check-dependencies": "madge --circular ./src",
         "create-link": "npm link",
-        "test": "depcruise src && node --import tsx --test src",
+        "test": "npm run prestart && depcruise src && node --import tsx --test src",
         "link-local-kwiz": "npm link @kwiz/common",
         "__update-kwiz-packages": "npm install @kwiz/common@latest",
         "npm-v-patch": "npm version patch && git push origin main:main && git push --tags",
         "npm-v-major": "npm version major && git push origin main:main && git push --tags",
         "npm-publish": "npm publish --access public",
         "reset-repo": "git fetch origin && git reset --hard origin/main",
-        "clear-npm-cache": "npm cache clean --force"
+        "clear-npm-cache": "npm cache clean --force",
+        "prestart": "check-node-version --node 18"
     },
     "repository": {
         "type": "git",
@@ -52,6 +53,7 @@
     "packageManager": "npm@9.5.1",
     "devDependencies": {
         "@types/qrcode": "^1.5.5",
+        "check-node-version": "^4.2.1",
         "dependency-cruiser": "^16.8.0",
         "fs-extra": "^11.2.0",
         "madge": "^6.1.0",

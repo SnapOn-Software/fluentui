@@ -1,6 +1,4 @@
-"use client"
-import { makeStyles, tokens } from "@fluentui/react-components";
-import { shorthands } from "@griffel/core";
+import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { ReactNode } from "react";
 import { Horizontal } from "./horizontal";
 
@@ -25,10 +23,9 @@ export function FieldSet({ title, children }: { title: string; children: ReactNo
 export function HorizontalFieldSet({ title, children }: { title: string; children: ReactNode }) {
     const css = useStyles();
 
-    return <fieldset className={css.fieldset}>
-        <legend>{title}</legend>
+    return <FieldSet title={title}>
         <Horizontal wrap css={[css.horizontal]}>
             {children}
         </Horizontal>
-    </fieldset>;
+    </FieldSet>;
 }

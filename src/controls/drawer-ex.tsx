@@ -1,5 +1,3 @@
-"use client"
-
 import { Drawer, DrawerBody, DrawerHeader, drawerHeaderClassNames, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, makeStyles, tokens } from "@fluentui/react-components";
 import { ReactNode } from "react";
 import { useCommonStyles } from "../styles/styles";
