@@ -7,13 +7,14 @@ import { ISectionProps, Section } from './section';
 const useStyles = makeStyles({
     horizontal: {
         ...mixins.flex,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        '&.wrap': mixins.wrap
     },
     vertical: {
         ...mixins.flex,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        '&.wrap': mixins.wrap
     },
-    wrap: mixins.wrap,
     nogap: mixins.nogap,
     centered: {
         alignItems: "center"
@@ -41,7 +42,7 @@ export const Stack = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IS
     ];
 
     if (props.wrap)
-        css.push(cssNames.wrap);
+        css.push(KnownClassNames.wrap);
     if (props.nogap)
         css.push(cssNames.nogap);
     if (props.centered)

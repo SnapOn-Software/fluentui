@@ -1,5 +1,6 @@
 import { makeStyles } from '@fluentui/react-components';
 import React from 'react';
+import { KnownClassNames } from '../styles';
 import { CardEX, iCardProps } from './card';
 import { Centered } from './centered';
 import { Horizontal } from './horizontal';
@@ -19,7 +20,7 @@ interface iProps {
 export const CardList: React.FunctionComponent<React.PropsWithChildren<iProps>> = (props) => {
     const classes = useStyles();
     return (
-        <Horizontal main wrap>
+        <Horizontal main wrap css={[KnownClassNames.cardList]}>
             {props.backfill && <div className={classes.emptyList}>
                 <Centered>
                     {props.backfill}

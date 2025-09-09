@@ -71,7 +71,9 @@ export const KnownClassNames = {
     isOpen: 'is-opened',
     progressBarStepLabel: 'step-label',
     left: 'float-left',
-    right: 'float-right'
+    right: 'float-right',
+    cardList: 'card-list',
+    wrap: 'wrap'
 }
 export const useCommonStyles = makeStyles({
     hintLabel: {
