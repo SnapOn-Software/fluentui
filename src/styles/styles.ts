@@ -1,5 +1,24 @@
 import { GriffelStyle, makeStyles, tokens } from "@fluentui/react-components";
 
+export const KnownClassNames = {
+    print: 'print-root',
+    printHide: 'print-hide',
+    printShow: 'print-show',
+    section: 'kfui-section',
+    vertical: 'kfui-vertical',
+    horizontal: 'kfui-horizontal',
+    list: 'kfui-list',
+    accordion: 'kfui-accordion',
+    accordionHeader: 'kfui-accordion-header',
+    accordionBody: 'kfui-accordion-body',
+    accordionBodyWrapper: 'kfui-accordion-body-wrapper',
+    isOpen: 'is-opened',
+    progressBarStepLabel: 'step-label',
+    left: 'float-left',
+    right: 'float-right',
+    cardList: 'card-list'
+}
+
 export module mixins {
     export const main: GriffelStyle = {
         flexShrink: 1,
@@ -39,7 +58,11 @@ export module mixins {
     }
 
     export const wrap: GriffelStyle = {
-        flexWrap: "wrap"
+        flexWrap: "wrap",
+        //for some reason priority here is not right
+        [`&.${KnownClassNames.horizontal},&.${KnownClassNames.vertical}`]: {
+            flexWrap: "wrap"
+        }
     }
     export const nogap: GriffelStyle = {
         rowGap: 0,
@@ -56,25 +79,6 @@ export module mixins {
     // }
 }
 
-export const KnownClassNames = {
-    print: 'print-root',
-    printHide: 'print-hide',
-    printShow: 'print-show',
-    section: 'kfui-section',
-    vertical: 'kfui-vertical',
-    horizontal: 'kfui-horizontal',
-    list: 'kfui-list',
-    accordion: 'kfui-accordion',
-    accordionHeader: 'kfui-accordion-header',
-    accordionBody: 'kfui-accordion-body',
-    accordionBodyWrapper: 'kfui-accordion-body-wrapper',
-    isOpen: 'is-opened',
-    progressBarStepLabel: 'step-label',
-    left: 'float-left',
-    right: 'float-right',
-    cardList: 'card-list',
-    wrap: 'wrap'
-}
 export const useCommonStyles = makeStyles({
     hintLabel: {
         color: tokens.colorNeutralForeground3,
