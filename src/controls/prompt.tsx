@@ -41,11 +41,13 @@ export interface IPrompterProps {
     /** do not fire ok/cancel on esc/enter press */
     disableKeyboardActions?: boolean;
 }
+
 const dialogsOrder: string[] = [];//can use dialogsDictionary keys but this would be faster and more efficient
 const dialogsDictionary: IDictionary<{
     findFirstFocusable: (container: HTMLElement) => HTMLElement;
     bodyRef: React.RefObject<HTMLDivElement>;
 }> = {};
+
 export const Prompter = React.forwardRef<HTMLDivElement, (IPrompterProps)>((props, ref) => {
     const ctx = useKWIZFluentContext();
     const disableKeyboardActions = React.useRef(props.disableKeyboardActions);
