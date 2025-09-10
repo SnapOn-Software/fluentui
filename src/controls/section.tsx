@@ -1,5 +1,5 @@
 import { makeStyles, mergeClasses, Portal, tokens } from '@fluentui/react-components';
-import { getScrollParent, isFunction, isNotEmptyArray, isNotEmptyString, isNullOrUndefined } from '@kwiz/common';
+import { getScrollParent, isFunction, isNotEmptyArray, isNotEmptyString } from '@kwiz/common';
 import React, { useEffect, useState } from 'react';
 import { useElementSize, useRefWithState } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
@@ -72,18 +72,10 @@ export const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<
 
     /** need scrollparent if we are sticky */
     const [scrollParent, setScrollParent] = useState<HTMLElement>(null);
-    const divRef = useRefWithState<HTMLDivElement>();
+    const divRef = useRefWithState<HTMLDivElement>(undefined, undefined, ref);
 
     //wait for my content to finish loading, it might change scrollparent
     const mySize = useElementSize(divRef.ref.current);
-
-    useEffect(() => {
-        //setting the forwardRef 
-        if (!isNullOrUndefined(ref)) {
-            if (isFunction(ref)) ref(divRef.ref.current);
-            else (ref as React.MutableRefObject<HTMLDivElement>).current = divRef.ref.current;
-        }
-    }, [divRef.value]);
 
     useEffect(() => {
         if (props.sticky) {

@@ -1,5 +1,5 @@
 import { makeStyles } from "@fluentui/react-components";
-import { isFunction, isNotEmptyArray, isNullOrEmptyString, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
+import { isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
 import { HTMLAttributes, MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { GetLogger } from "../_modules/config";
 import { mixins } from "../styles/styles";
@@ -138,13 +138,25 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
 }
 
 /** use a ref, that can be tracked as useEffect dependency */
-export function useRefWithState<T>(initialValue?: T, stateOptions: stateExOptions<T> = { skipUpdateIfSame: true, name: "useRefWithState" }) {
+export function useRefWithState<T>(initialValue?: T,
+    stateOptions: stateExOptions<T> = { skipUpdateIfSame: true, name: "useRefWithState" },
+    /** if used in a control that also needs a forwardRef, set this to keep them in sync */
+    forwardRef?: React.Ref<T>) {
     let asRef = useRef<T>(initialValue);
     let [asState, setState] = useStateEX<T>(initialValue, stateOptions);
     let setRef = useCallback((newValue: T) => {
         asRef.current = newValue;
         setState(newValue);
     }, useEffectOnlyOnMount);
+
+    useEffect(() => {
+        //setting the forwardRef 
+        if (!isNullOrUndefined(forwardRef)) {
+            if (isFunction(forwardRef)) forwardRef(asRef.current);
+            else (forwardRef as React.MutableRefObject<T>).current = asRef.current;
+        }
+    }, [asState]);
+
     return {
         /** ref object for getting latest value in handlers */
         ref: asRef,
