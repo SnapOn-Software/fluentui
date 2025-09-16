@@ -8,8 +8,6 @@ import { ButtonEX, ButtonEXProps } from '../button';
 import { Section } from '../section';
 import { IconToSVGAsync } from '../svg';
 
-//const logger = GetLogger("html-editor");
-
 const useStyles = makeStyles({
     htmlDiv: {
         border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStrokeAccessible}`,

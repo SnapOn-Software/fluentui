@@ -1,10 +1,9 @@
 import { Field, mergeClasses } from '@fluentui/react-components';
-import { isNullOrUndefined } from '@kwiz/common';
+import { GetLogger, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
-import { GetLogger } from '../_modules/config';
 import { InputEx, TextAreaEx } from './input';
 
-const logger = GetLogger('FieldEditor');
+const logger = new GetLogger('FieldEditor');
 
 interface IProps {
     required?: boolean;
@@ -19,7 +18,7 @@ interface IProps {
 }
 export const FieldEditor: React.FunctionComponent<IProps> = (props) => {
     if (isNullOrUndefined(props.value)) {
-        logger.error(`${props.label}: value should not be null`);
+        logger.i.error(`${props.label}: value should not be null`);
     }
     return (
         <Field required={props.required}

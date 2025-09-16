@@ -1,11 +1,11 @@
-import { makeStaticStyles, makeStyles, tokens } from "@fluentui/react-components";
+import { makeStaticStyles, makeStyles } from "@fluentui/react-components";
+import { GetLogger } from "@kwiz/common";
 import React, { PropsWithChildren, useEffect, useState } from "react";
-import { GetLogger } from "../_modules/config";
 import { KnownClassNames } from "../styles";
 import { iKWIZFluentContext, KWIZFluentContext } from "./context-const";
 import { DragDropContextProvider } from "./drag-drop";
 export type { iKWIZFluentContext } from "./context-const";
-const logger = GetLogger("KWIZFluentContextProvider");
+const logger = new GetLogger("KWIZFluentContextProvider");
 const useContextStyles = makeStyles({
     root: {
         "& *": {
@@ -48,7 +48,7 @@ export function useKWIZFluentContextProvider(options: {
     let v: iKWIZFluentContext = options && options.ctx || {};
     const [kwizFluentContext, setKwizFluentContext] = useState<iKWIZFluentContext>(v);
     useEffect(() => {
-        if (options.root?.current) logger.warn('Sending a root node is not recommended, if you have set up your packages correctly to mark react and fluent UI as external dialogs should open correctly.');
+        if (options.root?.current) logger.i.warn('Sending a root node is not recommended, if you have set up your packages correctly to mark react and fluent UI as external dialogs should open correctly.');
         let styleRoot = options.root?.current || document.body;
         styleRoot.classList.add(...classes.root.split(' '));
         // ref only updates in useEffect, not in useMemo or anything else.

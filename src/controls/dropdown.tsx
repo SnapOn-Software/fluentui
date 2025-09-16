@@ -1,10 +1,9 @@
 import { Dropdown, DropdownProps, makeStyles, mergeClasses, Option } from '@fluentui/react-components';
-import { filterEmptyEntries, firstOrNull, isNullOrUndefined } from '@kwiz/common';
+import { filterEmptyEntries, firstOrNull, GetLogger, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
-import { GetLogger } from '../_modules/config';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 
-const logger = GetLogger("DropdownEX");
+const logger = new GetLogger("DropdownEX");
 
 const useStyles = makeStyles({
     root: {
@@ -62,6 +61,6 @@ export const DropdownEX = React.forwardRef($DropdownEX);
 
 /** @deprecated use normal DropdownEX it is now generic */
 export function getDropdownEX<keyType extends string = string, dataType = never>() {
-    logger.warn('getDropdownEX is deprecated. use DropdownEX it now supports generic types');
+    logger.i.warn('getDropdownEX is deprecated. use DropdownEX it now supports generic types');
     return React.forwardRef($DropdownEX<keyType, dataType>);
 }

@@ -63,7 +63,7 @@
     "dependencies": {
         "@fluentui/react-datepicker-compat": "^0.4.53",
         "@fluentui/react-timepicker-compat": "^0.2.42",
-        "@kwiz/common": "^1.0.146",
+        "@kwiz/common": "^1.0.161",
         "@mismerge/core": "^1.2.1",
         "@mismerge/react": "^1.0.1",
         "esbuild": "^0.19.12",

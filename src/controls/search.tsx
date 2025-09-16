@@ -1,11 +1,10 @@
 import { Input, InputProps, makeStyles, mergeClasses } from '@fluentui/react-components';
 import { DismissRegular, SearchRegular } from "@fluentui/react-icons";
-import { debounce, isNullOrEmptyString, isNullOrUndefined } from '@kwiz/common';
+import { debounce, GetLogger, isNullOrEmptyString, isNullOrUndefined } from '@kwiz/common';
 import React, { useEffect, useRef } from 'react';
-import { GetLogger } from '../_modules/config';
 import { useEffectOnlyOnMount, useStateEX } from '../helpers';
 import { mixins } from '../styles/styles';
-const logger = GetLogger("Search");
+const logger = new GetLogger("Search");
 
 const useStyles = makeStyles({
     main: mixins.main,
@@ -38,7 +37,7 @@ export const Search: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
 
     //cannot call debounce every render, since it won't be the same debounced instance...
     var notifyParent = React.useCallback(debounce(v => {
-        logger.log(`Set: ${v}`);
+        logger.i.log(`Set: ${v}`);
         //Call the latest ref - we don't want to call an old version of this function
         refonChangeDeferred.current?.(v);
     }, delay * 1000), [delay]);

@@ -1,7 +1,7 @@
+import { GetLogger } from "@kwiz/common";
 import * as React from "react";
-import { GetLogger } from "../_modules/config";
 
-const logger = GetLogger("ErrorBoundary");
+const logger = new GetLogger("ErrorBoundary");
 
 interface iProps {
     errorComponent?: JSX.Element,
@@ -27,8 +27,8 @@ export class ErrorBoundary extends React.Component<React.PropsWithChildren<iProp
 
     componentDidCatch(error, errorInfo) {
         // You can also log the error to an error reporting service
-        logger.error(error);
-        logger.error(errorInfo);
+        logger.i.error(error);
+        logger.i.error(errorInfo);
     }
 
     render() {

@@ -1,7 +1,6 @@
 import { makeStyles } from "@fluentui/react-components";
-import { isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
+import { GetLogger, isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
 import { HTMLAttributes, MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
-import { GetLogger } from "../_modules/config";
 import { mixins } from "../styles/styles";
 
 /** Empty array ensures that effect is only run on mount */
@@ -35,8 +34,8 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
     options = options || {};
     const name = options.name || '';
 
-    let logger = GetLogger(`useStateWithTrack${isNullOrEmptyString(name) ? '' : ` ${name}`}`);
-    logger.setLevel(LoggerLevel.WARN);
+    let logger = new GetLogger(`useStateWithTrack${isNullOrEmptyString(name) ? '' : ` ${name}`}`);
+    logger.i.setLevel(LoggerLevel.WARN);
 
     const [value, setValueInState] = useState<ValueType>(initialValue);
 
@@ -89,8 +88,8 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
             result = true;
         }
 
-        return logger.groupSync(result ? 'value changed' : 'value not changed', log => {
-            if (logger.getLevel() === LoggerLevel.VERBOSE) {
+        return logger.i.groupSync(result ? 'value changed' : 'value not changed', log => {
+            if (logger.i.getLevel() === LoggerLevel.VERBOSE) {
                 log('old: ' + extractStringValue(currentValueForChecks.current));
                 log('new: ' + extractStringValue(newValue));
                 if (error) log({ label: "Error", value: error });
@@ -112,7 +111,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
     const setValue = useCallback((newState: ValueType) => new Promise<ValueType>(resolve => {
         if (!isMounted.current) {
             //unmounted may never resolve
-            logger.log(`resolved without wait`);
+            logger.i.log(`resolved without wait`);
             resolve(newState);
         }
         else {
