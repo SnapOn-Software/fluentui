@@ -12,7 +12,7 @@ export function getTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
 }
 
 
-const kThemeDefault: BrandVariants = {
+export const kThemeDefault: BrandVariants = {
     10: "#04010A",
     20: "#16103B",
     30: "#17176F",
@@ -31,7 +31,7 @@ const kThemeDefault: BrandVariants = {
     160: "#D9D2EE"
 };
 
-const kThemeOrange: BrandVariants = {
+export const kThemeOrange: BrandVariants = {
     10: "#040301",
     20: "#1E170A",
     30: "#312610",
@@ -50,7 +50,7 @@ const kThemeOrange: BrandVariants = {
     160: "#FFD47F"
 };
 
-const kThemeSecondary: BrandVariants = {
+export const kThemeSecondary: BrandVariants = {
     10: "#020304",
     20: "#101A1D",
     30: "#162B32",
