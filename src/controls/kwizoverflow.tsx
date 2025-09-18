@@ -21,8 +21,7 @@ interface IProps<ItemType> {
 const OverflowMenu = <ItemType,>(props: IProps<ItemType>) => {
     const ctx = useKWIZFluentContext();
 
-    const { ref, isOverflowing, overflowCount } =
-        useOverflowMenu<HTMLButtonElement>();
+    const { ref, isOverflowing, overflowCount } = useOverflowMenu<HTMLButtonElement>();
 
     if (!isOverflowing) {
         return null;
