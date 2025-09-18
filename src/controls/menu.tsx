@@ -16,6 +16,8 @@ interface iMenuItemEXItem {
     icon?: JSX.Element;
     items?: iMenuItemEX[];
     checked?: boolean;
+    /** render this control instead of the item */
+    as?: JSX.Element;
 }
 interface iMenuItemEXSeparator {
     type: "separator";
@@ -101,6 +103,7 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
                 case "item":
                 default:
                     const openKey = `${level}|${index}`;
+                    if (item.as) return item.as;
                     const menuItem = <MenuItem key={index} icon={item.icon}
                         disabled={item.disabled}
                         onClick={item.onClick}
