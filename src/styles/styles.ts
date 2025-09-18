@@ -105,10 +105,10 @@ export const useCommonStyles = makeStyles({
     header: {
         boxShadow: tokens.shadow4Brand,
         backgroundColor: tokens.colorBrandBackground,
-        color: tokens.colorNeutralBackground1,
+        color: tokens.colorBrandBackgroundInverted,
         padding: `${tokens.spacingVerticalXL} ${tokens.spacingHorizontalXL}`,
         '& button': {
-            color: tokens.colorNeutralBackground1
+            color: tokens.colorBrandBackgroundInverted
         }
     }
 });
