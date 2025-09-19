@@ -13,7 +13,6 @@ const logger = new GetLogger("OverflowV2");
 export interface iOverflowV2Props<ItemType> {
     /** you cannot have a menu with trigger in overflow items. put those in groupWrapper controls before/after rendering children. */
     items: ItemType[];
-    getKey: (item: ItemType, index: number) => string;
     /** when overflow:true, if using the OOB menu, should return a <MenuItem> */
     renderItem: (item: ItemType, index: number, overflow?: boolean) => JSX.Element;
     /** items will only have the items that need to overflow */

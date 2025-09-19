@@ -42,7 +42,6 @@ export const CardList: React.FunctionComponent<React.PropsWithChildren<iProps>> 
         </Horizontal>
         : <KWIZOverflowV2 root={{ css: [classes.rootStyle, classes.overflowStyle] }}
             items={props.cards}
-            getKey={(card, idx) => `i${idx}`}
             renderItem={(card) => <CardEX  {...card} />}
             renderOverflowMenuButton={props.renderOverflowMenuButton}
         >{props.backfill && <div className={classes.backfill}>

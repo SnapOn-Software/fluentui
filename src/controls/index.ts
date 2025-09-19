@@ -18,6 +18,7 @@ export * from './horizontal';
 export * from './html-editor/editor';
 export * from './input';
 export * from './kwizoverflow';
+export * from './kwizoverflow2';
 export * from './list';
 export * from './loading';
 export * from './menu';
