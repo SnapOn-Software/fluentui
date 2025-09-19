@@ -19,6 +19,7 @@ export interface iOverflowV2Props<ItemType> {
     renderOverflowMenuButton?: (props: iOverflowV2Props<ItemType>) => JSX.Element;
     root?: iHorizontalProps;
     nowrap?: boolean;
+    childrenBefore?: JSX.Element;
 }
 
 
@@ -68,6 +69,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
 
     return (
         <Horizontal ref={wrapperRef.set} style={{ overflow: "hidden", whiteSpace: props.nowrap ? "nowrap" : undefined }} {...props.root}>
+            {props.childrenBefore}
             {props.items.map((item, index) => <Section key={`s${index}`}>{props.renderItem(item, index, false)}</Section>)}
             <OverflowMenu {...props} items={props.items.slice(props.items.length - overflowItems)} />
             {props.children}
