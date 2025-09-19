@@ -1,8 +1,8 @@
 import { Menu, MenuButton, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
 import { MoreVerticalFilled } from "@fluentui/react-icons";
 import { GetLogger } from "@kwiz/common";
-import { PropsWithChildren, useEffect } from "react";
-import { useElementSize, useRefWithState, useStateEX } from "../helpers";
+import { PropsWithChildren, useEffect, useState } from "react";
+import { useElementSize, useRefWithState } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
 import { KnownClassNames } from "../styles";
 import { Horizontal, iHorizontalProps } from "./horizontal";
@@ -18,6 +18,7 @@ export interface iOverflowV2Props<ItemType> {
     /** items will only have the items that need to overflow */
     renderOverflowMenuButton?: (props: iOverflowV2Props<ItemType>) => JSX.Element;
     root?: iHorizontalProps;
+    nowrap?: boolean;
 }
 
 
@@ -45,7 +46,7 @@ const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType>) => {
 export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Props<ItemType>>) => {
     const wrapperRef = useRefWithState<HTMLDivElement>();
     const size = useElementSize(wrapperRef.ref.current);
-    const [overflowItems, setOverflowItems] = useStateEX(0, { skipUpdateIfSame: true });
+    const [overflowItems, setOverflowItems] = useState(0);
     useEffect(() => {
         if (wrapperRef.ref.current) {
             const div = wrapperRef.ref.current;
@@ -66,7 +67,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
     }, [size.height, size.width, wrapperRef.value]);
 
     return (
-        <Horizontal ref={wrapperRef.set} style={{ overflow: "hidden" }} {...props.root}>
+        <Horizontal ref={wrapperRef.set} style={{ overflow: "hidden", whiteSpace: props.nowrap ? "nowrap" : undefined }} {...props.root}>
             {props.items.map((item, index) => <Section key={`s${index}`}>{props.renderItem(item, index, false)}</Section>)}
             <OverflowMenu {...props} items={props.items.slice(props.items.length - overflowItems)} />
             {props.children}
