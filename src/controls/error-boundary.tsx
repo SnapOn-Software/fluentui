@@ -1,7 +1,7 @@
-import { GetLogger } from "@kwiz/common";
+import { CommonLogger } from "@kwiz/common";
 import * as React from "react";
 
-const logger = new GetLogger("ErrorBoundary");
+const logger = new CommonLogger("ErrorBoundary");
 
 interface iProps {
     errorComponent?: JSX.Element,

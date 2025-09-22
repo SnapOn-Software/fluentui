@@ -1,6 +1,6 @@
 import { Menu, MenuButton, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
 import { MoreVerticalFilled } from "@fluentui/react-icons";
-import { GetLogger } from "@kwiz/common";
+import { CommonLogger } from "@kwiz/common";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { useElementSize, useRefWithState } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
@@ -8,7 +8,7 @@ import { KnownClassNames } from "../styles";
 import { Horizontal, iHorizontalProps } from "./horizontal";
 import { Section } from "./section";
 
-const logger = new GetLogger("OverflowV2");
+const logger = new CommonLogger("OverflowV2");
 
 export interface iOverflowV2Props<ItemType> {
     /** you cannot have a menu with trigger in overflow items. put those in groupWrapper controls before/after rendering children. */

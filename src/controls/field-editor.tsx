@@ -1,9 +1,9 @@
 import { Field, mergeClasses } from '@fluentui/react-components';
-import { GetLogger, isNullOrUndefined } from '@kwiz/common';
+import { CommonLogger, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
 import { InputEx, TextAreaEx } from './input';
 
-const logger = new GetLogger('FieldEditor');
+const logger = new CommonLogger('FieldEditor');
 
 interface IProps {
     required?: boolean;

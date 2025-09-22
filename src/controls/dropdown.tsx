@@ -1,9 +1,9 @@
 import { Dropdown, DropdownProps, makeStyles, mergeClasses, Option } from '@fluentui/react-components';
-import { filterEmptyEntries, firstOrNull, GetLogger, isNullOrUndefined } from '@kwiz/common';
+import { filterEmptyEntries, firstOrNull, CommonLogger, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 
-const logger = new GetLogger("DropdownEX");
+const logger = new CommonLogger("DropdownEX");
 
 const useStyles = makeStyles({
     root: {

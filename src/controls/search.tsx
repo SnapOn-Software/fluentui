@@ -1,10 +1,10 @@
 import { Input, InputProps, makeStyles, mergeClasses } from '@fluentui/react-components';
 import { DismissRegular, SearchRegular } from "@fluentui/react-icons";
-import { debounce, GetLogger, isNullOrEmptyString, isNullOrUndefined } from '@kwiz/common';
+import { debounce, CommonLogger, isNullOrEmptyString, isNullOrUndefined } from '@kwiz/common';
 import React, { useEffect, useRef } from 'react';
 import { useEffectOnlyOnMount, useStateEX } from '../helpers';
 import { mixins } from '../styles/styles';
-const logger = new GetLogger("Search");
+const logger = new CommonLogger("Search");
 
 const useStyles = makeStyles({
     main: mixins.main,

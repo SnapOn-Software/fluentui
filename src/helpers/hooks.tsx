@@ -1,5 +1,5 @@
 import { makeStyles } from "@fluentui/react-components";
-import { GetLogger, isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
+import { CommonLogger, isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
 import { HTMLAttributes, MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { mixins } from "../styles/styles";
 
@@ -34,7 +34,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
     options = options || {};
     const name = options.name || '';
 
-    let logger = new GetLogger(`useStateWithTrack${isNullOrEmptyString(name) ? '' : ` ${name}`}`);
+    let logger = new CommonLogger(`useStateWithTrack${isNullOrEmptyString(name) ? '' : ` ${name}`}`);
     logger.i.setLevel(LoggerLevel.WARN);
 
     const [value, setValueInState] = useState<ValueType>(initialValue);

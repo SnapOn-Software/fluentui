@@ -1,11 +1,11 @@
 import { makeStaticStyles, makeStyles } from "@fluentui/react-components";
-import { GetLogger } from "@kwiz/common";
+import { CommonLogger } from "@kwiz/common";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { KnownClassNames } from "../styles";
 import { iKWIZFluentContext, KWIZFluentContext } from "./context-const";
 import { DragDropContextProvider } from "./drag-drop";
 export type { iKWIZFluentContext } from "./context-const";
-const logger = new GetLogger("KWIZFluentContextProvider");
+const logger = new CommonLogger("KWIZFluentContextProvider");
 const useContextStyles = makeStyles({
     root: {
         "& *": {
