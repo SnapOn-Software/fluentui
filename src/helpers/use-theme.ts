@@ -1,6 +1,7 @@
 "use client"
 import { deleteCookie, forEach, getCookie, getGlobal, IDictionary, isNullOrUndefined, setCookie } from "@kwiz/common";
 import { useEffect, useId, useState } from "react";
+import { useIsInPrint } from "./hooks-events";
 
 const $themeCookie = "KWTheme";
 export type themeScheme = "light" | "dark";
@@ -48,8 +49,10 @@ export function setThemeInfo(themeInfo: iThemeInfo) {
     forEach(globals.g_update_handlers, (name, value) => value(globals.theme));
 }
 
-export function useTheme() {
+export function useTheme(): iThemeInfo {
     const [theme, setTheme] = useState(globals.theme);
+    const isInPrint = useIsInPrint();
+
     const id = useId();
     useEffect(() => {
         globals.g_update_handlers[id] = (newTheme) => { setTheme(newTheme); };
@@ -57,5 +60,6 @@ export function useTheme() {
             delete globals.g_update_handlers[id];
         };
     }, [id]);
-    return theme;
+
+    return isInPrint ? { auto: false, scheme: "light" } : theme;
 }
