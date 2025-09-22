@@ -1,5 +1,5 @@
 "use client"
-import { deleteCookie, forEach, getCookie, getGlobal, IDictionary, isNullOrUndefined, setCookie } from "@kwiz/common";
+import { deleteCookie, dispatchCustomEvent, getCookie, getGlobal, isNullOrUndefined, setCookie } from "@kwiz/common";
 import { useEffect, useId, useState } from "react";
 import { useIsInPrint } from "./hooks-events";
 
@@ -28,10 +28,8 @@ function getThemeInfo(): iThemeInfo {
 
 const globals: {
     theme: iThemeInfo;
-    g_update_handlers: IDictionary<(theme: iThemeInfo) => void>;
 } = getGlobal("g_theme", {
-    theme: getThemeInfo(),
-    g_update_handlers: {}
+    theme: getThemeInfo()
 });
 
 export function setThemeInfo(themeInfo: iThemeInfo) {
@@ -46,7 +44,7 @@ export function setThemeInfo(themeInfo: iThemeInfo) {
     }
 
     globals.theme = newThemeInfo;
-    forEach(globals.g_update_handlers, (name, value) => value(globals.theme));
+    dispatchCustomEvent(globalThis as any as Window, "OnThemeChanged");
 }
 
 export function useTheme(): iThemeInfo {
@@ -55,9 +53,11 @@ export function useTheme(): iThemeInfo {
 
     const id = useId();
     useEffect(() => {
-        globals.g_update_handlers[id] = (newTheme) => { setTheme(newTheme); };
+        const listener = () => { setTheme(globals.theme); };
+
+        window.addEventListener("OnThemeChanged", listener);
         return () => {
-            delete globals.g_update_handlers[id];
+            window.removeEventListener("OnThemeChanged", listener);
         };
     }, [id]);
 
