@@ -22,6 +22,8 @@ export function getTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
             document.documentElement.style.color = 'var(--colorNeutralForeground1)';
         }
         catch (e) { console.log(e); }
+        //add the theme to the window global, so that sub products can use it.
+        window['fluentUITheme'] = theme;
     }
 
     return theme;
