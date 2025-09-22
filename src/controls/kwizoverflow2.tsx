@@ -1,5 +1,5 @@
-import { Menu, MenuButton, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
-import { MoreVerticalFilled } from "@fluentui/react-icons";
+import { Menu, MenuButton, MenuList, MenuPopover, MenuProps, MenuTrigger } from "@fluentui/react-components";
+import { MoreVerticalRegular } from "@fluentui/react-icons";
 import { CommonLogger } from "@kwiz/common";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { useElementSize, useRefWithState } from "../helpers";
@@ -17,21 +17,22 @@ export interface iOverflowV2Props<ItemType> {
     renderItem: (item: ItemType, index: number, overflow?: boolean) => JSX.Element;
     /** items will only have the items that need to overflow */
     renderOverflowMenuButton?: (props: iOverflowV2Props<ItemType>) => JSX.Element;
-    root?: iHorizontalProps;
+    root?: Partial<iHorizontalProps>;
     nowrap?: boolean;
     childrenBefore?: JSX.Element;
+    menu?: Partial<MenuProps>;
+    menuIcon?: JSX.Element;
 }
-
 
 const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType>) => {
     const ctx = useKWIZFluentContext();
     if (props.items.length === 0) return undefined;
     else if (props.renderOverflowMenuButton)
         return props.renderOverflowMenuButton(props);
-    return <Menu mountNode={ctx.mountNode}>
+    return <Menu mountNode={ctx.mountNode} {...(props.menu || {})}>
         <MenuTrigger disableButtonEnhancement>
             <MenuButton
-                icon={<MoreVerticalFilled />}
+                icon={props.menuIcon || <MoreVerticalRegular />}
                 aria-label="More items"
                 appearance="subtle"
             />
@@ -65,7 +66,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
             }
             setOverflowItems(overflowItems);
         }
-    }, [size.height, size.width, wrapperRef.value]);
+    }, [size.height, size.width, wrapperRef.value, props.items, props.children, props.childrenBefore]);
 
     return (
         <Horizontal ref={wrapperRef.set} style={{ overflow: "hidden", whiteSpace: props.nowrap ? "nowrap" : undefined }} {...props.root}>

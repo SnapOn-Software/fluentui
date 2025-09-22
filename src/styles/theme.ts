@@ -3,12 +3,28 @@ import { BrandVariants, Theme, createDarkTheme, createLightTheme, teamsDarkTheme
 export interface iThemeContext {
     teams?: boolean;
     dark?: boolean;
+    fullPage?: boolean;
 }
 
 export function getTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
-    return ctx.dark
+    const theme = ctx.dark
         ? getDarkTheme(ctx, t)
         : getLightTheme(ctx, t);
+
+    if (ctx.fullPage) {
+        try {
+            //make these variables available from the page root
+            document.documentElement.style.setProperty('--colorNeutralBackground1', theme.colorNeutralBackground1);
+            document.documentElement.style.setProperty('--colorNeutralForeground1', theme.colorNeutralForeground1);
+
+            //set html root element bg color to support scrolling in mobile beyound body
+            document.documentElement.style.backgroundColor = 'var(--colorNeutralBackground1)';
+            document.documentElement.style.color = 'var(--colorNeutralForeground1)';
+        }
+        catch (e) { console.log(e); }
+    }
+
+    return theme;
 }
 
 
