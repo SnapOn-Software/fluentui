@@ -30,9 +30,15 @@ export function useAlerts(): iAlerts {
                     _setPrompt(null);
                     if (isFunction(info.onCancel)) info.onCancel();
                 },
-                onOK: () => {
-                    _setPrompt(null);
-                    if (isFunction(info.onOK)) info.onOK();
+                onOK: async () => {
+                    let closeDialog = true;
+
+                    if (isFunction(info.onOK)) {
+                        closeDialog = (await info.onOK()) === false ? false : true;
+                    }
+
+                    if (closeDialog)
+                        _setPrompt(null);
                 }
             });
         }, 1);

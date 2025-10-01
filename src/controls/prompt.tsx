@@ -12,7 +12,7 @@ export interface IPrompterProps {
     hideCancel?: boolean;
     showCancelInTitle?: boolean;
     /** return false to prevent closing the dialog. */
-    onOK?: () => Promise<void> | void;
+    onOK?: () => Promise<void> | void | Promise<false> | false;
     onCancel?: () => void;
     /** OK */
     okButtonText?: string;

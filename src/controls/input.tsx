@@ -132,7 +132,7 @@ export const TextAreaEx: React.FunctionComponent<React.PropsWithChildren<IPropsT
 
 interface INumberProps extends Omit<IProps, "value" | "onChange" | "defaultValue" | "inputMode"> {
     defaultValue?: number;
-    onChange: (value: number) => void;
+    onChange: (value?: number) => void;
     allowDecimals?: boolean;
     /** if sent true - onChange will only be called when a valid non-empty value is being set */
     required?: boolean;
