@@ -4,8 +4,13 @@ import { useCallback } from "react";
 import { IPrompterProps, Prompter } from "../controls/prompt";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
 
+export type iAlertPrompterProps = Omit<IPrompterProps, "onOK"> & {
+    /** return false to prevent closing the dialog. */
+    onOK?: () => Promise<void> | void | Promise<boolean> | boolean;
+};
+
 export interface iAlerts {
-    promptEX: (info: IPrompterProps) => void;
+    promptEX: (info: iAlertPrompterProps) => void;
     confirmEX: (message: string | JSX.Element, onOK?: () => void, onCancel?: () => void) => Promise<boolean>;
     alertEX: (message: string | JSX.Element, onOK?: () => void) => Promise<void>;
     alertPrompt?: JSX.Element;
@@ -18,9 +23,9 @@ export interface iAlerts {
  * - render the navPrompt control to your page
  * FYI for page unload, most modern browsers won't show your message but a generic one instead. */
 export function useAlerts(): iAlerts {
-    const [_prompt, _setPrompt] = useStateEX<IPrompterProps>(null);
+    const [_prompt, _setPrompt] = useStateEX<iAlertPrompterProps>(null);
 
-    const promptEX = useCallback((info: IPrompterProps) => {
+    const promptEX = useCallback((info: iAlertPrompterProps) => {
         //need to release react to re-render the prompt
         window.setTimeout(() => {
             //prompt, if ok - clear messages and nav.
