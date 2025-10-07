@@ -24,10 +24,9 @@ export const PleaseWait: React.FunctionComponent<React.PropsWithChildren<IProps>
     );
 }
 
-export const PleaseWaitPrompt = (props: { message: string; step?: number; max?: number; }): IPrompterProps => ({
-    //title: 'please wait...',
+export const PleaseWaitPrompt = (props?: { message: string; step?: number; max?: number; }): IPrompterProps => ({
     hideOk: true, hideCancel: true,
-    children: <Field validationMessage={props.message} validationState="none">
-        <ProgressBar value={props.step} max={props.max} />
+    children: <Field validationMessage={props?.message || "please wait..."} validationState="none">
+        <ProgressBar value={props?.step} max={props?.max} />
     </Field>
 });
