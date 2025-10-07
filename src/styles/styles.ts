@@ -1,4 +1,4 @@
-import { GriffelStyle, makeStyles, tokens } from "@fluentui/react-components";
+import { buttonClassNames, GriffelStyle, makeStyles, tokens } from "@fluentui/react-components";
 
 export const KnownClassNames = {
     print: 'print-root',
@@ -13,13 +13,16 @@ export const KnownClassNames = {
     accordionBody: 'kfui-accordion-body',
     accordionBodyWrapper: 'kfui-accordion-body-wrapper',
     isOpen: 'is-opened',
-    progressBarStepLabel: 'step-label',
+    progressBarStepLabel: 'kfui-step-label',
     left: 'float-left',
     right: 'float-right',
-    cardList: 'card-list'
+    cardList: 'kfui-card-list',
+    tagSelected: 'kfui-tag-selected',
+    tagUnselected: 'kfui-tag-unselected',
+    tagNoSelection: 'kfui-tag-no-selection',
 }
 
-export module mixins {
+export namespace mixins {
     export const main: GriffelStyle = {
         flexShrink: 1,
         flexGrow: 1
@@ -74,9 +77,6 @@ export module mixins {
         overflow: 'hidden',
         textOverflow: 'ellipsis'
     }
-
-    // export const box: GriffelStyle = {
-    // }
 }
 
 export const useCommonStyles = makeStyles({
@@ -107,9 +107,19 @@ export const useCommonStyles = makeStyles({
         backgroundColor: tokens.colorBrandBackground,
         color: tokens.colorBrandBackgroundInverted,
         padding: `${tokens.spacingVerticalXL} ${tokens.spacingHorizontalXL}`,
-        '& button': {
+        [`& .${KnownClassNames.tagSelected} button`]: {
+            backgroundColor: tokens.colorBrandBackgroundSelected
+        },
+        [`& .${KnownClassNames.tagNoSelection} button`]: {
+            backgroundColor: tokens.colorBrandBackgroundInvertedSelected,
+            color: tokens.colorNeutralForeground1
+        },
+        [`& button, & button:hover, & a, & a:hover, & button:hover .${buttonClassNames.icon}`]: {
             color: tokens.colorBrandBackgroundInverted
-        }
+        },
+        '& button:hover': {
+            backgroundColor: tokens.colorBrandBackgroundHover
+        },
     }
 });
 
