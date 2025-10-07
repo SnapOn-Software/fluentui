@@ -1,4 +1,4 @@
-import { Drawer, DrawerBody, DrawerHeader, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, makeStyles, mergeClasses } from "@fluentui/react-components";
+import { Drawer, DrawerBody, DrawerBodyProps, DrawerHeader, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, makeStyles, mergeClasses } from "@fluentui/react-components";
 import React from "react";
 import { useCommonStyles } from "../styles/styles";
 
@@ -16,6 +16,7 @@ const useStyles = makeStyles({
 export const DrawerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<{
     headerProps?: DrawerHeaderProps;
     headerTitleProps?: DrawerHeaderTitleProps;
+    bodyProps?: DrawerBodyProps;
     title?: string | JSX.Element;
     titleActions?: JSX.Element;
 } & Omit<DrawerProps, "title">>)>((props, ref) => {
@@ -35,7 +36,7 @@ export const DrawerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildre
                 {props.title || props.headerTitleProps?.children}
             </DrawerHeaderTitle>
         </DrawerHeader>
-        <DrawerBody>
+        <DrawerBody {...props.bodyProps}>
             {props.children}
         </DrawerBody>
     </Drawer>;
