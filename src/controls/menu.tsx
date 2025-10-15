@@ -1,4 +1,4 @@
-import { Menu, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger } from '@fluentui/react-components';
+import { Menu, MenuButtonProps, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger, SplitButton } from '@fluentui/react-components';
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone, stopEvent } from '@kwiz/common';
 import React from 'react';
 import { useClickableDiv, useStateEX } from '../helpers';
@@ -30,18 +30,27 @@ interface iMenuItemEXGroup {
 }
 export type iMenuItemEX = iMenuItemEXItem | iMenuItemEXSeparator | iMenuItemEXGroup;
 
-interface IProps {
+interface IPropsBase {
     menuProps?: MenuProps;
     menuPopOverProps?: MenuPopoverProps;
     menuListProps?: MenuListProps;
-    trigger: JSX.Element | string | ButtonEXProps;
     items: iMenuItemEX[];
     /** default 8 null/false to disable */
     filterThreshold?: number | false;
     /** default 8, null/false to disable */
     pageSize?: number | false;
 }
-export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+interface IPropsNoSplit {
+    trigger: JSX.Element | string | ButtonEXProps;
+    SplitButton?: false;
+}
+interface IPropsSplit {
+    trigger: JSX.Element;
+    /** send to to render trigger element as primary action on a split button. Only works with trigger as JSX.Element for primary button */
+    SplitButton: true;
+}
+export type iMenuExProps = IPropsBase & (IPropsNoSplit | IPropsSplit);
+export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProps>> = (props) => {
     const ctx = useKWIZFluentContext();
     const [startIndexPerLevel, setStartIndexPerLevel] = useStateEX<IDictionary<number>>({});
     const [filterPerLevel, setFilterPerLevel] = useStateEX<IDictionary<string>>({});
@@ -179,15 +188,20 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = 
             else if (!keepOpen[0]) setOpened({ ...opened, 0: false });
         }}>
             <MenuTrigger disableButtonEnhancement>
-                {isString(props.trigger)
-                    ? <ButtonEX title={props.trigger} onClick={(e) => {
-                        stopEvent(e);
-                    }} />
-                    : isString((props.trigger as ButtonEXProps).title)
-                        ? <ButtonEX {...(props.trigger as ButtonEXProps)} onClick={(e) => {
+                {props.SplitButton === true
+                    ? (triggerProps: MenuButtonProps) => <SplitButton
+                        menuButton={triggerProps}
+                        primaryActionButton={props.trigger}
+                    />
+                    : isString(props.trigger)
+                        ? <ButtonEX title={props.trigger} onClick={(e) => {
                             stopEvent(e);
                         }} />
-                        : props.trigger as JSX.Element}
+                        : isString((props.trigger as ButtonEXProps).title)
+                            ? <ButtonEX {...(props.trigger as ButtonEXProps)} onClick={(e) => {
+                                stopEvent(e);
+                            }} />
+                            : props.trigger as JSX.Element}
             </MenuTrigger>
             <MenuPopover {...props.menuPopOverProps}>
                 <MenuList {...props.menuListProps}>
