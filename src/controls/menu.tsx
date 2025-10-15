@@ -1,4 +1,4 @@
-import { Menu, MenuButtonProps, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger, SplitButton } from '@fluentui/react-components';
+import { Menu, MenuButtonProps, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger, SplitButton, SplitButtonProps } from '@fluentui/react-components';
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone, stopEvent } from '@kwiz/common';
 import React from 'react';
 import { useClickableDiv, useStateEX } from '../helpers';
@@ -48,6 +48,7 @@ interface IPropsSplit {
     trigger: JSX.Element;
     /** send to to render trigger element as primary action on a split button. Only works with trigger as JSX.Element for primary button */
     SplitButton: true;
+    SplitButtonProps?: SplitButtonProps;
 }
 export type iMenuExProps = IPropsBase & (IPropsNoSplit | IPropsSplit);
 export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProps>> = (props) => {
@@ -190,6 +191,7 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProp
             <MenuTrigger disableButtonEnhancement>
                 {props.SplitButton === true
                     ? (triggerProps: MenuButtonProps) => <SplitButton
+                        {...props.SplitButtonProps}
                         menuButton={triggerProps}
                         primaryActionButton={props.trigger}
                     />
