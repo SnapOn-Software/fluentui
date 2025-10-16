@@ -45,10 +45,9 @@ interface IPropsNoSplit {
     SplitButton?: false;
 }
 interface IPropsSplit {
-    trigger: JSX.Element;
+    trigger: SplitButtonProps;
     /** send to to render trigger element as primary action on a split button. Only works with trigger as JSX.Element for primary button */
     SplitButton: true;
-    SplitButtonProps?: SplitButtonProps;
 }
 export type iMenuExProps = IPropsBase & (IPropsNoSplit | IPropsSplit);
 export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProps>> = (props) => {
@@ -191,9 +190,8 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProp
             <MenuTrigger disableButtonEnhancement>
                 {props.SplitButton === true
                     ? (triggerProps: MenuButtonProps) => <SplitButton
-                        {...props.SplitButtonProps}
+                        {...props.trigger}
                         menuButton={triggerProps}
-                        primaryActionButton={props.trigger}
                     />
                     : isString(props.trigger)
                         ? <ButtonEX title={props.trigger} onClick={(e) => {

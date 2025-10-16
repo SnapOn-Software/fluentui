@@ -1,14 +1,22 @@
 import { tokens } from '@fluentui/react-components';
+import { isNumber } from '@kwiz/common';
 import React from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 
 interface IProps {
-    size: number;
+    size?: number;
+    color?: string;
+}
+function getProps(props: IProps) {
+    const color = props.color || tokens.colorNeutralForeground1;
+    const size = isNumber(props.size) ? `${props.size}px` : tokens.fontSizeBase300;
+    return { color, size };
 }
 export const YouTubeIcon: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+    const { size } = getProps(props);
     return (
-        <svg height={`${props.size}px`} width={`${props.size}px`} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+        <svg height={`${size}px`} width={`${size}px`} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
             viewBox="0 0 461.001 461.001" xmlSpace="preserve">
             <g>
                 <path style={{ fill: "#F61C0D" }} d="M365.257,67.393H95.744C42.866,67.393,0,110.259,0,163.137v134.728
@@ -21,8 +29,10 @@ c0-3.774,3.982-6.22,7.348-4.514l126.06,63.881C304.363,229.873,304.298,235.248,30
 }
 
 export const MermaidIcon: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+    const { size } = getProps(props);
+
     return (
-        <svg height={`${props.size}px`} width={`${props.size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
+        <svg height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
             <defs>
                 <style>{`.mm-cls-1{fill:#ff3670;}.mm-cls-2{fill:#fff;}`}</style></defs>
             <rect className="mm-cls-1" width="490.16" height="490.16" rx="84.61" />
@@ -34,8 +44,10 @@ export const MermaidIcon: React.FunctionComponent<React.PropsWithChildren<IProps
 }
 
 export const TeamsIcon: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+    const { size } = getProps(props);
+
     return (
-        <svg height={`${props.size}px`} width={`${props.size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2228.833 2073.333">
+        <svg height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2228.833 2073.333">
             <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483c0,0,0,0,0,0v524.398 c0,199.901-162.051,361.952-361.952,361.952h0h-1.711c-199.901,0.028-361.975-162-362.004-361.901c0-0.017,0-0.034,0-0.052V828.971 C1503.167,800.544,1526.211,777.5,1554.637,777.5L1554.637,777.5z" />
             <circle fill="#5059C9" cx="1943.75" cy="440.583" r="233.25" />
             <circle fill="#7B83EB" cx="1218.083" cy="336.917" r="336.917" />
@@ -59,9 +71,11 @@ export const TeamsIcon: React.FunctionComponent<React.PropsWithChildren<IProps>>
     );
 }
 
-export const SVGLinkIcon = (props: { size: number }) => {
+export const SVGLinkIcon = (props: IProps) => {
+    const { color, size } = getProps(props);
+
     return (
-        <svg fill={tokens.colorNeutralForeground1} height={`${props.size}px`} width={`${props.size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
+        <svg fill={color} height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
             <g>
                 <g>
                     <path d="M409.657,32.474c-43.146-43.146-113.832-43.146-156.978,0l-84.763,84.762c29.07-8.262,60.589-6.12,88.129,6.732
@@ -80,23 +94,29 @@ export const SVGLinkIcon = (props: { size: number }) => {
     );
 }
 
-export const SVGSplitIcon = (props: { size: number }) => {
-    return <svg fill={tokens.colorNeutralForeground1} height={`${props.size}px`} width={`${props.size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
+export const SVGSplitIcon = (props: IProps) => {
+    const { color, size } = getProps(props);
+
+    return <svg fill={color} height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
         <path d="M10.646 13.146l0.707 0.707-2.853 2.854-2.854-2.854 0.707-0.707 1.647 1.647v-3.772h1v3.772l1.646-1.647zM8 2.207v3.772h1v-3.772l1.646 1.646 0.707-0.707-2.853-2.853-2.854 2.853 0.707 0.707 1.647-1.646zM0 8v1h17v-1h-17z" />
     </svg>;
 }
 
-export const HubSpotIcon = (props: { size: number }) => {
-    return <svg fill={tokens.colorNeutralForeground1} height={`${props.size}px`} width={`${props.size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+export const HubSpotIcon = (props: IProps) => {
+    const { color, size } = getProps(props);
+
+    return <svg fill={color} height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <path d="M267.4 211.6c-25.1 23.7-40.8 57.3-40.8 94.6 0 29.3 9.7 56.3 26 78L203.1 434c-4.4-1.6-9.1-2.5-14-2.5-10.8 0-20.9 4.2-28.5 11.8-7.6 7.6-11.8 17.8-11.8 28.6s4.2 20.9 11.8 28.5c7.6 7.6 17.8 11.6 28.5 11.6 10.8 0 20.9-3.9 28.6-11.6 7.6-7.6 11.8-17.8 11.8-28.5 0-4.2-.6-8.2-1.9-12.1l50-50.2c22 16.9 49.4 26.9 79.3 26.9 71.9 0 130-58.3 130-130.2 0-65.2-47.7-119.2-110.2-128.7V116c17.5-7.4 28.2-23.8 28.2-42.9 0-26.1-20.9-47.9-47-47.9S311.2 47 311.2 73.1c0 19.1 10.7 35.5 28.2 42.9v61.2c-15.2 2.1-29.6 6.7-42.7 13.6-27.6-20.9-117.5-85.7-168.9-124.8 1.2-4.4 2-9 2-13.8C129.8 23.4 106.3 0 77.4 0 48.6 0 25.2 23.4 25.2 52.2c0 28.9 23.4 52.3 52.2 52.3 9.8 0 18.9-2.9 26.8-7.6l163.2 114.7zm89.5 163.6c-38.1 0-69-30.9-69-69s30.9-69 69-69 69 30.9 69 69-30.9 69-69 69z" />
     </svg>;
 }
 
 
 //get icons as html
-export const GetSVGLinkIcon = (props: { size: number }) => {
+export const GetSVGLinkIcon = (props: IProps) => {
+    const { color, size } = getProps(props);
+
     return (
-        `<svg fill="${tokens.colorNeutralForeground1}" height="${props.size}px" width="${props.size}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
+        `<svg fill="${color}" height="${size}px" width="${size}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
             <g>
                 <g>
                     <path d="M409.657,32.474c-43.146-43.146-113.832-43.146-156.978,0l-84.763,84.762c29.07-8.262,60.589-6.12,88.129,6.732
@@ -115,19 +135,53 @@ export const GetSVGLinkIcon = (props: { size: number }) => {
     );
 }
 
-export const GetSVGSplitIcon = (props: { size: number }) => {
-    return `<svg fill="${tokens.colorNeutralForeground1}" height="${props.size}px" width="${props.size}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
+export const GetSVGSplitIcon = (props: IProps) => {
+    const { color, size } = getProps(props);
+
+    return `<svg fill="${color}" height="${size}px" width="${size}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
 	<path d="M10.646 13.146l0.707 0.707-2.853 2.854-2.854-2.854 0.707-0.707 1.647 1.647v-3.772h1v3.772l1.646-1.647zM8 2.207v3.772h1v-3.772l1.646 1.646 0.707-0.707-2.853-2.853-2.854 2.853 0.707 0.707 1.647-1.646zM0 8v1h17v-1h-17z" />
 </svg>`;
 }
 
-export function GetSVGCopyIcon(props: { size: number }) {
+export function GetSVGCopyIcon(props: IProps) {
+    const { color, size } = getProps(props);
+
     return (
-        `<svg fill="var(--colorNeutralForeground1)" width="${props.size}px" height="${props.size}px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        `<svg fill="${color}" width="${size}px" height="${size}px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M8 2a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8ZM7 4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4ZM4 6a2 2 0 0 1 1-1.73V14.5A2.5 2.5 0 0 0 7.5 17h6.23A2 2 0 0 1 12 18H7.5A3.5 3.5 0 0 1 4 14.5V6Z"></path>
         </svg>`
     )
 }
+
+export const SalesforceIcon = (props: IProps) => {
+    const { color, size } = getProps(props);
+
+    return <svg fill={color} height={size} width={size} xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 300.000000 211.000000"
+        preserveAspectRatio="xMidYMid meet">
+        <g transform="translate(0.000000,211.000000) scale(0.100000,-0.100000)"
+            fill={color} stroke="none">
+            {/* <path d="M0 1055 l0 -1055 1500 0 1500 0 0 1055 0 1055 -1500 0 -1500 0 0 -1055z m945 1020 c87 -23 172 -72 244 -142 l64 -62 46 39 c243 202 614 138 776 -134 9 -16 15 -15 70 6 51 19 80 22 200 22 127 0 146 -2 207 -26 140 -53 266 -155 336 -271 115 -191 123 -434 20 -640 -69 -136 -206 -256 -352 -307 -87 -31 -203 -45 -276 -33 l-60 10 -20 -32 c-26 -42 -118 -128 -160 -150 -115 -59 -264 -73 -376 -35 -34 12 -60 16 -62 11 -11 -34 -87 -134 -135 -178 -98 -89 -213 -133 -352 -133 -154 0 -264 47 -375 159 -50 51 -84 94 -100 131 l-24 55 -88 -3 c-281 -12 -507 208 -508 493 0 85 21 170 58 239 32 60 110 147 157 176 l33 20 -20 53 c-29 74 -36 222 -14 307 51 203 213 372 407 424 72 20 230 20 304 1z" /> */}
+            <path d="M722 2059 c-217 -21 -427 -220 -463 -441 -13 -73 -5 -208 15 -264 7 -21 12 -47 10 -57 -1 -10 -36 -51 -77 -91 -57 -56 -84 -92 -113 -152 -39 -78 -39 -80 -39 -199 0 -119 0 -120 39 -198 89 -178 257 -279 451 -270 80 3 92 -4 127 -76 35 -73 140 -171 228 -213 235 -111 496 -35 642 190 23 36 50 65 63 68 12 3 48 -2 79 -11 41 -12 85 -16 149 -13 130 4 205 40 305 146 l73 77 122 1 c102 2 134 6 195 27 201 69 333 206 397 409 44 139 32 304 -32 443 -71 155 -253 300 -421 334 -82 17 -200 13 -287 -9 -43 -11 -85 -20 -93 -20 -9 0 -46 34 -84 75 -79 85 -131 123 -214 156 -49 19 -77 23 -169 23 -132 0 -187 -18 -291 -94 -37 -28 -73 -50 -80 -50 -8 0 -38 22 -67 48 -149 135 -276 179 -465 161z m1077 -684 c19 -19 4 -65 -26 -80 -34 -17 -13 -41 24 -27 75 28 135 22 188 -20 l28 -22 19 27 c18 25 25 27 94 27 41 0 83 -5 93 -12 14 -9 27 -8 58 4 49 20 127 16 154 -8 19 -17 21 -17 51 0 18 11 52 19 83 20 81 2 128 -41 142 -129 4 -27 0 -38 -21 -60 -25 -25 -26 -29 -12 -44 20 -22 20 -55 1 -75 -8 -8 -39 -18 -69 -21 -43 -6 -63 -3 -101 14 -46 20 -49 21 -74 4 -35 -24 -126 -23 -166 1 -49 29 -67 62 -73 132 -4 53 -8 64 -23 64 -21 0 -32 -28 -34 -95 -4 -81 -4 -83 -21 -99 -26 -26 -63 -20 -82 14 l-17 29 -26 -25 c-15 -14 -46 -30 -70 -35 -103 -24 -181 35 -191 146 -2 22 -8 40 -13 40 -5 0 -21 -55 -36 -123 -15 -67 -33 -130 -40 -139 -8 -9 -31 -24 -52 -33 -46 -21 -94 -14 -114 17 -14 21 -13 25 14 50 16 16 38 33 48 39 34 19 10 25 -31 8 -44 -18 -105 -15 -152 9 -29 14 -34 14 -69 -4 -61 -31 -154 -19 -199 26 -22 21 -38 19 -49 -7 -13 -29 -60 -36 -86 -12 -18 16 -20 16 -39 -1 -15 -14 -38 -18 -99 -19 -68 -1 -84 3 -110 22 l-31 23 -31 -23 c-23 -18 -44 -23 -87 -23 -105 0 -153 48 -106 105 l26 30 -21 26 c-31 40 -28 96 8 136 28 31 33 33 95 32 48 -1 72 -7 93 -22 l27 -20 29 21 c41 31 143 31 186 -1 16 -12 33 -22 36 -22 3 0 5 24 5 53 0 64 20 97 59 97 40 0 54 -22 58 -93 2 -33 6 -63 8 -66 3 -2 13 3 23 12 60 55 149 57 208 5 l34 -30 21 26 c37 47 138 56 197 18 20 -13 25 -13 44 4 11 11 32 37 46 59 25 41 41 55 77 67 28 9 77 1 94 -17z" />
+            <path d="M960 1175 l0 -195 30 0 30 0 0 195 0 195 -30 0 -30 0 0 -195z" />
+            <path d="M1681 1353 c-12 -10 -28 -36 -36 -58 -10 -32 -18 -39 -34 -37 -12 2 -21 -1 -21 -7 0 -5 -3 -16 -6 -25 -5 -12 0 -16 21 -16 20 0 25 -4 21 -17 -3 -10 -14 -69 -25 -131 -25 -139 -33 -155 -72 -150 -21 3 -30 0 -35 -14 -8 -27 3 -38 39 -38 39 0 72 21 91 58 8 15 24 87 37 160 l23 132 33 0 c29 0 33 3 33 26 0 23 -3 25 -30 19 -35 -8 -40 7 -14 43 9 14 26 22 43 22 26 0 41 15 41 41 0 17 -87 10 -109 -8z" />
+            <path d="M479 1231 c-16 -16 -29 -39 -29 -50 0 -31 40 -69 95 -89 37 -13 50 -23 50 -37 0 -16 -8 -21 -43 -23 -27 -2 -53 3 -67 12 -24 16 -27 15 -38 -17 -9 -24 45 -47 106 -47 62 0 97 29 97 79 0 45 -17 63 -85 88 -37 14 -50 24 -50 38 0 16 8 21 37 23 20 2 46 -2 57 -8 16 -8 22 -7 31 9 14 27 14 28 -21 40 -59 20 -108 14 -140 -18z" />
+            <path d="M722 1250 c-17 -7 -22 -16 -20 -32 2 -14 9 -22 18 -19 81 20 130 9 130 -29 0 -15 -6 -17 -39 -13 -69 9 -131 -37 -131 -98 0 -11 14 -34 31 -51 30 -30 32 -31 106 -25 42 3 80 10 86 16 5 5 8 51 5 110 -5 126 -17 143 -105 148 -32 1 -68 -2 -81 -7z m128 -180 c0 -40 0 -40 -39 -40 -54 0 -71 8 -71 34 0 33 19 46 67 46 l43 0 0 -40z" />
+            <path d="M1128 1244 c-78 -42 -84 -191 -9 -241 37 -25 109 -31 156 -13 22 8 24 13 15 29 -8 17 -17 19 -62 14 -58 -6 -94 13 -100 51 -3 18 4 19 87 20 l90 1 -3 35 c-2 19 -8 48 -14 63 -20 52 -102 73 -160 41z m106 -56 c9 -12 16 -26 16 -30 0 -5 -27 -8 -60 -8 -45 0 -60 3 -60 14 0 45 77 62 104 24z" />
+            <path d="M1376 1238 c-59 -53 -35 -112 59 -146 37 -13 50 -23 50 -37 0 -16 -8 -21 -43 -23 -27 -2 -53 3 -66 12 -22 14 -24 13 -35 -10 -10 -23 -8 -26 24 -40 87 -36 175 -4 177 64 1 42 -22 65 -87 89 -37 14 -50 24 -50 38 0 16 8 21 37 23 20 2 47 -2 58 -8 25 -13 25 -13 34 16 5 18 1 24 -25 33 -53 18 -105 14 -133 -11z" />
+            <path d="M1818 1244 c-15 -8 -35 -28 -43 -44 -19 -37 -19 -123 0 -160 41 -79 169 -78 210 1 21 40 21 118 1 157 -29 57 -109 79 -168 46z m107 -54 c12 -13 17 -35 17 -70 0 -59 -21 -90 -60 -90 -44 0 -62 26 -62 88 0 64 18 92 60 92 15 0 35 -9 45 -20z" />
+            <path d="M1860 1161 c-16 -32 -12 -79 8 -90 26 -14 42 5 42 49 0 54 -30 78 -50 41z" />
+            <path d="M2050 1119 l0 -140 28 3 c27 3 27 3 32 100 5 106 13 121 59 121 21 0 31 6 35 20 3 11 3 24 0 29 -8 13 -46 9 -76 -6 -24 -13 -28 -13 -28 0 0 8 -10 14 -25 14 l-25 0 0 -141z" />
+            <path d="M2295 1250 c-43 -17 -68 -58 -73 -117 -9 -103 49 -160 150 -151 57 6 59 7 52 35 -5 20 -11 21 -54 16 -65 -8 -90 16 -90 87 0 69 25 94 87 87 39 -4 46 -2 52 17 5 13 4 24 -3 28 -15 10 -96 9 -121 -2z" />
+            <path d="M2511 1247 c-88 -45 -93 -195 -9 -247 26 -17 45 -20 95 -18 70 4 77 8 69 36 -6 18 -13 19 -65 15 -54 -5 -59 -4 -79 22 -37 47 -31 52 69 47 l92 -5 -5 54 c-5 43 -11 58 -37 81 -35 31 -87 37 -130 15z m96 -49 c31 -41 25 -48 -42 -48 -57 0 -64 2 -58 18 11 32 25 42 58 42 18 0 37 -6 42 -12z" />
+            <path d="M650 1185 c-23 -24 -23 -26 -7 -43 32 -31 72 14 45 51 -13 17 -15 17 -38 -8z" />
+            <path d="M1533 1181 l-22 -18 28 -27 c15 -14 30 -26 33 -26 12 0 18 51 8 70 -13 24 -19 24 -47 1z" />
+            <path d="M2326 1164 c-21 -20 -20 -68 0 -89 10 -10 29 -15 48 -13 29 3 32 7 40 52 7 37 6 50 -5 57 -22 14 -66 10 -83 -7z" />
+            <path d="M1306 1085 c-27 -21 -28 -23 -10 -33 15 -8 25 -5 47 14 25 21 26 24 10 33 -14 7 -25 3 -47 -14z" />
+        </g>
+    </svg>;
+}
+
 
 /** @deprecated unsafe use IconToSVGAsync instead */
 export function IconToSVG(icon: JSX.Element) {
