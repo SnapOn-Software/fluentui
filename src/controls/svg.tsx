@@ -116,7 +116,7 @@ export const GetSVGLinkIcon = (props: IProps) => {
     const { color, size } = getProps(props);
 
     return (
-        `<svg fill="${color}" height="${size}px" width="${size}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
+        `<svg fill="${color}" height="${size}" width="${size}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
             <g>
                 <g>
                     <path d="M409.657,32.474c-43.146-43.146-113.832-43.146-156.978,0l-84.763,84.762c29.07-8.262,60.589-6.12,88.129,6.732
@@ -138,7 +138,7 @@ export const GetSVGLinkIcon = (props: IProps) => {
 export const GetSVGSplitIcon = (props: IProps) => {
     const { color, size } = getProps(props);
 
-    return `<svg fill="${color}" height="${size}px" width="${size}px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
+    return `<svg fill="${color}" height="${size}" width="${size}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
 	<path d="M10.646 13.146l0.707 0.707-2.853 2.854-2.854-2.854 0.707-0.707 1.647 1.647v-3.772h1v3.772l1.646-1.647zM8 2.207v3.772h1v-3.772l1.646 1.646 0.707-0.707-2.853-2.853-2.854 2.853 0.707 0.707 1.647-1.646zM0 8v1h17v-1h-17z" />
 </svg>`;
 }
@@ -147,7 +147,7 @@ export function GetSVGCopyIcon(props: IProps) {
     const { color, size } = getProps(props);
 
     return (
-        `<svg fill="${color}" width="${size}px" height="${size}px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        `<svg fill="${color}" width="${size}" height="${size}" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M8 2a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8ZM7 4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4ZM4 6a2 2 0 0 1 1-1.73V14.5A2.5 2.5 0 0 0 7.5 17h6.23A2 2 0 0 1 12 18H7.5A3.5 3.5 0 0 1 4 14.5V6Z"></path>
         </svg>`
     )
