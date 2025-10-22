@@ -16,7 +16,7 @@ function getProps(props: IProps) {
 export const YouTubeIcon: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const { size } = getProps(props);
     return (
-        <svg height={`${size}px`} width={`${size}px`} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+        <svg height={size} width={size} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
             viewBox="0 0 461.001 461.001" xmlSpace="preserve">
             <g>
                 <path style={{ fill: "#F61C0D" }} d="M365.257,67.393H95.744C42.866,67.393,0,110.259,0,163.137v134.728
@@ -32,7 +32,7 @@ export const MermaidIcon: React.FunctionComponent<React.PropsWithChildren<IProps
     const { size } = getProps(props);
 
     return (
-        <svg height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
+        <svg height={size} width={size} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
             <defs>
                 <style>{`.mm-cls-1{fill:#ff3670;}.mm-cls-2{fill:#fff;}`}</style></defs>
             <rect className="mm-cls-1" width="490.16" height="490.16" rx="84.61" />
@@ -47,7 +47,7 @@ export const TeamsIcon: React.FunctionComponent<React.PropsWithChildren<IProps>>
     const { size } = getProps(props);
 
     return (
-        <svg height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2228.833 2073.333">
+        <svg height={size} width={size} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2228.833 2073.333">
             <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483c0,0,0,0,0,0v524.398 c0,199.901-162.051,361.952-361.952,361.952h0h-1.711c-199.901,0.028-361.975-162-362.004-361.901c0-0.017,0-0.034,0-0.052V828.971 C1503.167,800.544,1526.211,777.5,1554.637,777.5L1554.637,777.5z" />
             <circle fill="#5059C9" cx="1943.75" cy="440.583" r="233.25" />
             <circle fill="#7B83EB" cx="1218.083" cy="336.917" r="336.917" />
@@ -75,7 +75,7 @@ export const SVGLinkIcon = (props: IProps) => {
     const { color, size } = getProps(props);
 
     return (
-        <svg fill={color} height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
+        <svg fill={color} height={size} width={size} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490.16 490.16">
             <g>
                 <g>
                     <path d="M409.657,32.474c-43.146-43.146-113.832-43.146-156.978,0l-84.763,84.762c29.07-8.262,60.589-6.12,88.129,6.732
@@ -97,7 +97,7 @@ export const SVGLinkIcon = (props: IProps) => {
 export const SVGSplitIcon = (props: IProps) => {
     const { color, size } = getProps(props);
 
-    return <svg fill={color} height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
+    return <svg fill={color} height={size} width={size} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
         <path d="M10.646 13.146l0.707 0.707-2.853 2.854-2.854-2.854 0.707-0.707 1.647 1.647v-3.772h1v3.772l1.646-1.647zM8 2.207v3.772h1v-3.772l1.646 1.646 0.707-0.707-2.853-2.853-2.854 2.853 0.707 0.707 1.647-1.646zM0 8v1h17v-1h-17z" />
     </svg>;
 }
@@ -105,7 +105,7 @@ export const SVGSplitIcon = (props: IProps) => {
 export const HubSpotIcon = (props: IProps) => {
     const { color, size } = getProps(props);
 
-    return <svg fill={color} height={`${size}px`} width={`${size}px`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    return <svg fill={color} height={size} width={size} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <path d="M267.4 211.6c-25.1 23.7-40.8 57.3-40.8 94.6 0 29.3 9.7 56.3 26 78L203.1 434c-4.4-1.6-9.1-2.5-14-2.5-10.8 0-20.9 4.2-28.5 11.8-7.6 7.6-11.8 17.8-11.8 28.6s4.2 20.9 11.8 28.5c7.6 7.6 17.8 11.6 28.5 11.6 10.8 0 20.9-3.9 28.6-11.6 7.6-7.6 11.8-17.8 11.8-28.5 0-4.2-.6-8.2-1.9-12.1l50-50.2c22 16.9 49.4 26.9 79.3 26.9 71.9 0 130-58.3 130-130.2 0-65.2-47.7-119.2-110.2-128.7V116c17.5-7.4 28.2-23.8 28.2-42.9 0-26.1-20.9-47.9-47-47.9S311.2 47 311.2 73.1c0 19.1 10.7 35.5 28.2 42.9v61.2c-15.2 2.1-29.6 6.7-42.7 13.6-27.6-20.9-117.5-85.7-168.9-124.8 1.2-4.4 2-9 2-13.8C129.8 23.4 106.3 0 77.4 0 48.6 0 25.2 23.4 25.2 52.2c0 28.9 23.4 52.3 52.2 52.3 9.8 0 18.9-2.9 26.8-7.6l163.2 114.7zm89.5 163.6c-38.1 0-69-30.9-69-69s30.9-69 69-69 69 30.9 69 69-30.9 69-69 69z" />
     </svg>;
 }
