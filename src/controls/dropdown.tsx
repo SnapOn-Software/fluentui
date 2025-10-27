@@ -1,6 +1,6 @@
 import { Dropdown, DropdownProps, makeStyles, mergeClasses, Option } from '@fluentui/react-components';
-import { filterEmptyEntries, firstOrNull, CommonLogger, isNullOrUndefined } from '@kwiz/common';
-import React from 'react';
+import { CommonLogger, filterEmptyEntries, firstOrNull, isNotEmptyArray, isNotEmptyString, isNullOrUndefined } from '@kwiz/common';
+import React, { useMemo, useState } from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 
 const logger = new CommonLogger("DropdownEX");
@@ -9,6 +9,11 @@ const useStyles = makeStyles({
     root: {
         minWidth: "auto"
     },
+    filter: {
+        position: "absolute",
+        zIndex: 1,
+        top: "-8px", right: 0
+    }
 });
 
 type ForwardProps = Omit<DropdownProps, "onSelect" | "selectedOptions" | "clearable">;
@@ -41,9 +46,31 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: I
         return v ? v.value : ''
     })).join(', ');
 
+    const [filter, setFilter] = useState("");
+    const items = useMemo(() => {
+        const itms = props.items;
+        if (isNotEmptyArray(itms)) {
+            if (isNotEmptyString(filter))
+                return itms.filter(i => i.value.toLowerCase().includes(filter));
+        }
+
+        return itms;
+    }, [props.items, filter]);
+
     return (
         <Dropdown {...{ ...props, onSelect: undefined }} className={mergeClasses(classes.root, props.className)} ref={ref} clearable={!props.required && !props.multiselect}
             appearance={ctx.inputAppearance} mountNode={ctx.mountNode}
+            //clear filter every time we open the dropdown
+            onOpenChange={() => { if (isNotEmptyString(filter)) setFilter(""); }}
+            onKeyDown={(e) => {
+                if (e.key.match(/^[a-z0-9]$/i)) {
+                    e.defaultPrevented = true;
+                    setFilter(`${filter}${e.key}`.toLowerCase());
+                }
+                else if (e.key === "Backspace") {
+                    setFilter(filter.slice(0, filter.length - 1));
+                }
+            }}
             selectedOptions={selected} value={text} onOptionSelect={(e, data) => {
                 let o = firstOrNull(props.items, i => i.key === data.optionValue);
                 if (props.multiselect) {
@@ -52,7 +79,7 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: I
                 }
                 else props.onSelect(o);
             }}>
-            {props.items.map(i => <Option key={i.key} value={i.key} text={i.value}>{i.option ? i.option : i.value}</Option>)}
+            {items.map(i => <Option key={i.key} value={i.key} text={i.value}>{i.option ? i.option : i.value}</Option>)}
         </Dropdown>
     );
 }

@@ -176,6 +176,13 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProp
                     const s = jsonClone(filterPerLevel);
                     s[level] = newValue ? newValue.toLowerCase() : "";
                     setFilterPerLevel(s);
+
+                    //if user paged this level - bring it back to page 1
+                    const si = jsonClone(startIndexPerLevel);
+                    if (si[level] > 0) {
+                        delete si[level];
+                        setStartIndexPerLevel(si);
+                    }
                 }} />
             </Horizontal>);
         }
