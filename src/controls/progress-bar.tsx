@@ -1,8 +1,9 @@
 import { DividerProps, makeStyles, mergeClasses, ProgressBar, tokens } from '@fluentui/react-components';
-import { CheckmarkRegular, FluentIcon } from '@fluentui/react-icons';
+import { CheckmarkRegular } from '@fluentui/react-icons';
 import { isFunction, isNotEmptyString } from '@kwiz/common';
 import React from 'react';
 import { KnownClassNames } from '../styles/styles';
+import { FluentIconType } from '../types/common';
 import { Horizontal } from './horizontal';
 import { Section } from './section';
 import { Vertical } from './vertical';
@@ -64,7 +65,7 @@ interface IProps extends DividerProps {
     stepLabel?: string;
     css?: string[];
     /** optional, send an icon instead of the step number */
-    stepIcons?: FluentIcon[];
+    stepIcons?: FluentIconType[];
     onStepClick?: (step: number) => void;
 }
 export const ProgressBarEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<IProps>)>((props, ref) => {

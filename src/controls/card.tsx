@@ -1,7 +1,8 @@
 import { Card, CardFooter, cardFooterClassNames, CardHeader, CardPreview, Label, makeStyles, tokens } from '@fluentui/react-components';
-import { FluentIcon, MoreVerticalRegular } from '@fluentui/react-icons';
+import { MoreVerticalRegular } from '@fluentui/react-icons';
 import { isNotEmptyArray, isNotEmptyString, isNullOrEmptyArray, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
+import { FluentIconType } from '../types/common';
 import { iMenuItemEX, MenuEx } from './menu';
 
 const useStyles = makeStyles({
@@ -44,7 +45,7 @@ const useStyles = makeStyles({
 export interface iCardProps {
     title: string;
     description?: string;
-    icon: FluentIcon;
+    icon: FluentIconType;
     menuItems?: iMenuItemEX[];
     footer?: JSX.Element;
     onClick: React.MouseEventHandler<HTMLDivElement>;
