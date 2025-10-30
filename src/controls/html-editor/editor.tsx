@@ -2,6 +2,7 @@ import { makeStyles, Skeleton, tokens } from '@fluentui/react-components';
 import { ArrowMaximize16Regular, ArrowMinimize16Regular, Dismiss16Regular, Save16Regular } from '@fluentui/react-icons';
 import { isNullOrUndefined, isObject } from '@kwiz/common';
 import JoditEditor, { Jodit } from "jodit-react";
+import { IJodit } from 'jodit/esm/types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useEffectOnlyOnMount } from '../../helpers';
 import { ButtonEX, ButtonEXProps } from '../button';
@@ -44,7 +45,7 @@ interface IProps {
      */
     fullScreen?: boolean | ButtonEXProps;
 }
-type JoditExpanded = Jodit & {//& IViewBased<IViewOptions>
+type JoditExpanded = IJodit & {//& IViewBased<IViewOptions>
     //value: string;
     kwizInstance: {
         props: IProps,
@@ -146,7 +147,7 @@ export const HtmlEditor: React.FunctionComponent<React.PropsWithChildren<IProps>
         ? `${props.onSave && 'save,'}${props.onCancel && 'cancel,'}maximize,bold,ul,ol`//inline, with full screen option - show very minimal toolbar
         : `${props.onSave && 'save,'}${props.onCancel && 'cancel,'}${options.fullScreen && (showFullScreen
             ? fullScreenButton ? 'save,' : 'minimize,'//when in full screen, if we don't have a small editor but just a button - change the minimize button to save&close button
-            : 'maximize,')}${(props.onSave || props.onCancel || options.fullScreen) && '|,'}bold,italic,underline,strikethrough,|,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,copyformat,brush,eraser,|,${options.media && 'image,video,'}${options.spellcheck && 'spellcheck,'}${options.speech && 'speechRecognize,'}hr,${options.table && 'table,'}link,indent,outdent,${options.source && '---,source,'}`)
+            : 'maximize,')}${(props.onSave || props.onCancel || options.fullScreen) && '|,'}bold,italic,underline,strikethrough,|,ul,ol,font,fontsize,paragraph,lineHeight,superscript,subscript,copyformat,brush,eraser,|,${options.media && 'image,video,'}${options.spellcheck && 'spellcheck,'}${options.speech && 'speechRecognize,'}hr,${options.table && 'table,'}link,align,indent,outdent,${options.source && '---,source,'}`)
         .replace(/undefined/g, '');
     const removeButtons: string[] = minimalToolbar
         //some buttons must be explicitly removed
