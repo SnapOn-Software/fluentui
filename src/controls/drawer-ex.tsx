@@ -20,7 +20,7 @@ interface iProps {
     title?: string | JSX.Element;
     titleActions?: JSX.Element;
 }
-type tProps = iProps & Omit<DrawerProps, "title"> & (OverlayDrawerProps | InlineDrawerProps);
+type tProps = iProps & Omit<DrawerProps & (OverlayDrawerProps | InlineDrawerProps), "title">;
 export const DrawerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<tProps>)>((props, ref) => {
     const commonStyles = useCommonStyles();
     const css = useStyles();
