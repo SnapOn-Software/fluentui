@@ -1,4 +1,4 @@
-import { DialogProps, Drawer, DrawerBody, DrawerBodyProps, DrawerHeader, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, makeStyles, mergeClasses } from "@fluentui/react-components";
+import { Drawer, DrawerBody, DrawerBodyProps, DrawerHeader, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, InlineDrawerProps, makeStyles, mergeClasses, OverlayDrawerProps } from "@fluentui/react-components";
 import React from "react";
 import { useCommonStyles } from "../styles/styles";
 
@@ -13,13 +13,15 @@ const useStyles = makeStyles({
     }
 });
 
-export const DrawerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<{
+interface iProps {
     headerProps?: DrawerHeaderProps;
     headerTitleProps?: DrawerHeaderTitleProps;
     bodyProps?: DrawerBodyProps;
     title?: string | JSX.Element;
     titleActions?: JSX.Element;
-} & DialogProps & Omit<DrawerProps, "title">>)>((props, ref) => {
+}
+type tProps = iProps & Omit<DrawerProps, "title"> & (OverlayDrawerProps | InlineDrawerProps);
+export const DrawerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<tProps>)>((props, ref) => {
     const commonStyles = useCommonStyles();
     const css = useStyles();
     const rootProps: DrawerProps = {
