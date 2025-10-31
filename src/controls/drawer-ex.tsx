@@ -1,4 +1,4 @@
-import { Drawer, DrawerBody, DrawerBodyProps, DrawerHeader, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, InlineDrawerProps, makeStyles, mergeClasses, OverlayDrawerProps } from "@fluentui/react-components";
+import { Drawer, DrawerBody, DrawerBodyProps, DrawerHeader, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, makeStyles, mergeClasses } from "@fluentui/react-components";
 import React from "react";
 import { useCommonStyles } from "../styles/styles";
 
@@ -20,14 +20,16 @@ interface iProps {
     title?: string | JSX.Element;
     titleActions?: JSX.Element;
 }
-type tProps = iProps & Omit<DrawerProps & (OverlayDrawerProps | InlineDrawerProps), "title">;
+//todo: move deep omit to @kwiz/common
+type DeepOmit<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
+type tProps = iProps & DeepOmit<DrawerProps, "title">;
+
 export const DrawerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<tProps>)>((props, ref) => {
     const commonStyles = useCommonStyles();
     const css = useStyles();
     const rootProps: DrawerProps = {
         ...props,
-        title: "",
-        as: props.as
+        title: ""
     };
 
     return <Drawer ref={ref} {...rootProps}
