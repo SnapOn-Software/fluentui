@@ -1,6 +1,6 @@
 import { Dropdown, DropdownProps, makeStyles, mergeClasses, Option } from '@fluentui/react-components';
-import { CommonLogger, filterEmptyEntries, firstOrNull, isNotEmptyArray, isNotEmptyString, isNullOrUndefined } from '@kwiz/common';
-import React, { useMemo, useState } from 'react';
+import { CommonLogger, filterEmptyEntries, firstOrNull, isNotEmptyArray, isNotEmptyString, isNullOrUndefined, isUndefined } from '@kwiz/common';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 
 const logger = new CommonLogger("DropdownEX");
@@ -16,11 +16,10 @@ const useStyles = makeStyles({
     }
 });
 
-type ForwardProps = Omit<DropdownProps, "onSelect" | "selectedOptions" | "clearable">;
+type ForwardProps = Omit<DropdownProps, "onSelect" | "selectedOptions" | "clearable" | "defaultSelectedOptions">;
 
-interface IProps<keyType, dataType> extends ForwardProps {
+interface iProps<keyType, dataType> extends ForwardProps {
     required?: boolean;
-    selected: keyType | keyType[];
     items: {
         key: keyType, value: string, data?: dataType,
         /** display complex controls in the drop down */
@@ -32,16 +31,42 @@ interface IProps<keyType, dataType> extends ForwardProps {
         /** only sent for multi select - all selected options, in case of multi select */
         options?: { key: keyType, value: string, data?: dataType }[]) => void;
 }
+type tProps<keyType, dataType> = iProps<keyType, dataType> & ({
+    selected: keyType | keyType[];
+    defaultSelected?: never;
 
-function $DropdownEX<keyType extends string = string, dataType = never>(props: IProps<keyType, dataType>, ref: React.ForwardedRef<HTMLButtonElement>) {
+} | {
+    selected?: never;
+    defaultSelected: keyType | keyType[];
+});
+
+function $DropdownEX<keyType extends string = string, dataType = never>(props: tProps<keyType, dataType>, ref: React.ForwardedRef<HTMLButtonElement>) {
     const classes = useStyles();
     const ctx = useKWIZFluentContext();
-    const selected: keyType[] = Array.isArray(props.selected) ? props.selected : isNullOrUndefined(props.selected) ? [] : [props.selected];
+
+    const [isUnControlled, setIsUnControlled] = useState(!isUndefined(props.defaultSelected));
+
+    const __isUnControlled = !isUndefined(props.defaultSelected);
+    useEffect(() => {
+        if (__isUnControlled !== isUnControlled) {
+            logger.error(`A DropdownEX control was switched from controlled to uncontrolled mode. This is not supported.`);
+            setIsUnControlled(__isUnControlled);
+            if (!__isUnControlled) {
+                setUncontrolledSelected(props.selected);
+            }
+        }
+    }, [__isUnControlled, isUnControlled]);
+
+    const [uncontrolledSelected, setUncontrolledSelected] = useState(isUnControlled ? props.defaultSelected : props.selected);
+
+    const selectedValueToUse = isUnControlled ? uncontrolledSelected : props.selected;
+
+    const selected: keyType[] = Array.isArray(selectedValueToUse) ? selectedValueToUse : isNullOrUndefined(selectedValueToUse) ? [] : [selectedValueToUse];
 
     //sometimes control will lose value when re-rendered
     //use case: public forms when editing other fields after the dropdown was set
     //re-set the text value manually to fix
-    let text = filterEmptyEntries((Array.isArray(props.selected) ? props.selected : [props.selected]).map(s => {
+    let text = filterEmptyEntries((Array.isArray(selectedValueToUse) ? selectedValueToUse : [selectedValueToUse]).map(s => {
         let v = firstOrNull(props.items, i => i.key === s);
         return v ? v.value : ''
     })).join(', ');
@@ -75,9 +100,13 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: I
                 let o = firstOrNull(props.items, i => i.key === data.optionValue);
                 if (props.multiselect) {
                     let current = data.selectedOptions.map(s => firstOrNull(props.items, i => i.key === s));
+                    setUncontrolledSelected(current.map(o => o.key));
                     props.onSelect(o, current);
                 }
-                else props.onSelect(o);
+                else {
+                    setUncontrolledSelected(o.key);
+                    props.onSelect(o);
+                }
             }}>
             {items.map(i => <Option key={i.key} value={i.key} text={i.value}>{i.option ? i.option : i.value}</Option>)}
         </Dropdown>
