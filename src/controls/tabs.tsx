@@ -10,7 +10,7 @@ interface iProps<keyType extends string> {
     root?: TabListProps;
     onSelect?: (value: keyType) => void;
     /** default: {direction:"v"} */
-    container: IStackProps;
+    container?: IStackProps;
 }
 
 type tProps<keyType extends string> = iProps<keyType> & ({
