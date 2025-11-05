@@ -32,6 +32,7 @@ export * from './search';
 export * from './section';
 export * from './stack';
 export * from './svg';
+export * from './tabs';
 export * from './tag-ex';
 export * from './toolbar';
 export * from './vertical';
