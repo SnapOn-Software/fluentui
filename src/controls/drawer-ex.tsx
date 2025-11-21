@@ -1,4 +1,5 @@
 import { Drawer, DrawerBody, DrawerBodyProps, DrawerHeader, DrawerHeaderProps, DrawerHeaderTitle, DrawerHeaderTitleProps, DrawerProps, makeStyles, mergeClasses } from "@fluentui/react-components";
+import { DeepOmit } from "@kwiz/common";
 import React from "react";
 import { useCommonStyles } from "../styles/styles";
 
@@ -20,8 +21,7 @@ interface iProps {
     title?: string | JSX.Element;
     titleActions?: JSX.Element;
 }
-//todo: move deep omit to @kwiz/common
-type DeepOmit<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
+
 type tProps = iProps & DeepOmit<DrawerProps, "title">;
 
 export const DrawerEX = React.forwardRef<HTMLDivElement, (React.PropsWithChildren<tProps>)>((props, ref) => {

@@ -83,6 +83,9 @@ export function useBlockNav(): iBlockNav {
         // },
         // getMessages,
         // getMessagesArr,
+
+
+        /** single page applications, call this to navigate if ok */
         onNav,
         navPrompt: _prompt ? <Prompter {..._prompt} /> : undefined
     };
