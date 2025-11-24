@@ -1,6 +1,6 @@
 import { Card, CardFooter, cardFooterClassNames, CardHeader, CardPreview, InfoLabel, InfoLabelProps, Label, makeStyles, tokens } from '@fluentui/react-components';
 import { MoreVerticalRegular } from '@fluentui/react-icons';
-import { isNotEmptyArray, isNotEmptyString, isNullOrEmptyArray, isNullOrUndefined } from '@kwiz/common';
+import { isNotEmptyArray, isNotEmptyString, isNullOrEmptyArray, isNullOrUndefined, stopEvent } from '@kwiz/common';
 import React from 'react';
 import { FluentIconType } from '../types/common';
 import { iMenuItemEX, MenuEx } from './menu';
@@ -69,8 +69,8 @@ export const CardEX: React.FunctionComponent<React.PropsWithChildren<iCardProps>
             {hasDescription && <CardHeader
                 header={isNullOrUndefined(props.titleInfo)
                     ? <Label className={classes.cardLabels}>{props.title}</Label>
-                    : <InfoLabel className={classes.cardLabels} info={props.titleInfo}>{props.title}</InfoLabel>}
-                description={<Label className={classes.cardLabels} size='small'>{props.description}</Label>}
+                    : <InfoLabel infoButton={{ onClick: e => stopEvent(e) }} className={classes.cardLabels} info={props.titleInfo}>{props.title}</InfoLabel>}
+                description={<Label className={classes.cardLabels} size='small' title={props.description || ""}>{props.description || ""}</Label>}
             />}
             {hasActions && <CardFooter action={isNullOrEmptyArray(props.menuItems)
                 ? undefined
