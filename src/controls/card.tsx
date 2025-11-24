@@ -1,4 +1,4 @@
-import { Card, CardFooter, cardFooterClassNames, CardHeader, CardPreview, Label, makeStyles, tokens } from '@fluentui/react-components';
+import { Card, CardFooter, cardFooterClassNames, CardHeader, CardPreview, InfoLabel, InfoLabelProps, Label, makeStyles, tokens } from '@fluentui/react-components';
 import { MoreVerticalRegular } from '@fluentui/react-icons';
 import { isNotEmptyArray, isNotEmptyString, isNullOrEmptyArray, isNullOrUndefined } from '@kwiz/common';
 import React from 'react';
@@ -44,6 +44,7 @@ const useStyles = makeStyles({
 
 export interface iCardProps {
     title: string;
+    titleInfo?: InfoLabelProps['info'];
     description?: string;
     icon: FluentIconType;
     menuItems?: iMenuItemEX[];
@@ -66,7 +67,9 @@ export const CardEX: React.FunctionComponent<React.PropsWithChildren<iCardProps>
                 </div>
             </CardPreview>
             {hasDescription && <CardHeader
-                header={<Label className={classes.cardLabels}>{props.title}</Label>}
+                header={isNullOrUndefined(props.titleInfo)
+                    ? <Label className={classes.cardLabels}>{props.title}</Label>
+                    : <InfoLabel className={classes.cardLabels} info={props.titleInfo}>{props.title}</InfoLabel>}
                 description={<Label className={classes.cardLabels} size='small'>{props.description}</Label>}
             />}
             {hasActions && <CardFooter action={isNullOrEmptyArray(props.menuItems)
