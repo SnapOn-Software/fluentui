@@ -1,4 +1,4 @@
-import { Card, CardFooter, cardFooterClassNames, CardHeader, CardPreview, InfoLabel, InfoLabelProps, Label, makeStyles, tokens } from '@fluentui/react-components';
+import { Card, CardFooter, cardFooterClassNames, CardHeader, CardPreview, InfoLabel, InfoLabelProps, Label, labelClassNames, makeStyles, tokens } from '@fluentui/react-components';
 import { MoreVerticalRegular } from '@fluentui/react-icons';
 import { isNotEmptyArray, isNotEmptyString, isNullOrEmptyArray, isNullOrUndefined, stopEvent } from '@kwiz/common';
 import React from 'react';
@@ -40,6 +40,15 @@ const useStyles = makeStyles({
         textOverflow: "ellipsis",
         maxWidth: '166px'
     },
+    cardInfoLabel: {
+        display: "flex",
+        maxWidth: '166px',
+        [`& .${labelClassNames.root}`]: {
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+        }
+    }
 })
 
 export interface iCardProps {
@@ -68,8 +77,8 @@ export const CardEX: React.FunctionComponent<React.PropsWithChildren<iCardProps>
             </CardPreview>
             {hasDescription && <CardHeader
                 header={isNullOrUndefined(props.titleInfo)
-                    ? <Label className={classes.cardLabels}>{props.title}</Label>
-                    : <InfoLabel infoButton={{ onClick: e => stopEvent(e) }} className={classes.cardLabels} info={props.titleInfo}>{props.title}</InfoLabel>}
+                    ? <Label title={props.title} className={classes.cardLabels}>{props.title}</Label>
+                    : <InfoLabel title={props.title} infoButton={{ onClick: e => stopEvent(e) }} className={classes.cardInfoLabel} info={props.titleInfo}>{props.title}</InfoLabel>}
                 description={<Label className={classes.cardLabels} size='small' title={props.description || ""}>{props.description || ""}</Label>}
             />}
             {hasActions && <CardFooter action={isNullOrEmptyArray(props.menuItems)
