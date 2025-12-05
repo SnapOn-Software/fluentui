@@ -21,8 +21,14 @@ const useStyles = makeStyles({
     justified: {
         justifyContent: "center"
     },
-    justifiedSpaced: {
+    justifiedEvenly: {
         justifyContent: "space-evently"
+    },
+    justifiedBetween: {
+        justifyContent: "space-between"
+    },
+    justifiedAround: {
+        justifyContent: "space-around"
     },
 })
 
@@ -34,7 +40,7 @@ export interface IStackProps extends ISectionProps {
     /** align items */
     centered?: boolean;
     /** justify items */
-    justified?: boolean | "centered" | "spaced";
+    justified?: boolean | "centered" | "evenly" | "between" | "around";
 }
 export const Stack = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IStackProps>>((props, ref) => {
     const cssNames = useStyles();
@@ -50,10 +56,21 @@ export const Stack = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IS
     if (props.centered)
         css.push(cssNames.centered);
 
-    if (props.justified === "spaced")
-        css.push(cssNames.justifiedSpaced);
-    else if (props.justified === true || props.justified === "centered")
-        css.push(cssNames.justified);
+    switch (props.justified) {
+        case "evenly":
+            css.push(cssNames.justifiedEvenly);
+            break;
+        case "between":
+            css.push(cssNames.justifiedBetween);
+            break;
+        case "around":
+            css.push(cssNames.justifiedAround);
+            break;
+        case "centered":
+        case true:
+            css.push(cssNames.justified);
+            break;
+    }
 
     if (isNotEmptyArray(props.css)) css.push(...props.css);
 

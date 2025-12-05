@@ -7,11 +7,11 @@ export interface iHorizontalProps extends Omit<IStackProps, "direction" | "justi
     /** align items horizontal centered */
     hCentered?: boolean;
     /** horizontal space items evenly */
-    hSpaced?: boolean;
+    hSpaced?: boolean | "evenly" | "between" | "around";
 }
 export const Horizontal = React.forwardRef<HTMLDivElement, React.PropsWithChildren<iHorizontalProps>>((props, ref) => {
     return <Stack {...props} ref={ref}
         direction='h'
-        justified={props.hCentered ? "centered" : props.hSpaced ? "spaced" : false}
+        justified={props.hCentered === true ? "centered" : props.hSpaced === true ? "evenly" : props.hSpaced}
     />;
 });
