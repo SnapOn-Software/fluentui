@@ -22,7 +22,7 @@ const useStyles = makeStyles({
         justifyContent: "center"
     },
     justifiedEvenly: {
-        justifyContent: "space-evently"
+        justifyContent: "space-evenly"
     },
     justifiedBetween: {
         justifyContent: "space-between"
