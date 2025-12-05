@@ -6,9 +6,12 @@ interface IProps extends Omit<IStackProps, "direction" | "justified"> {
     centered?: boolean;
     /** align items vertical centered */
     vCentered?: boolean;
+    /** vertical space items evenly */
+    vSpaced?: boolean;
 }
 export const Vertical = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IProps>>((props, ref) => {
     return <Stack {...props}
         direction='v'
-        justified={props.vCentered} />;
+        justified={props.vCentered ? "centered" : props.vSpaced ? "spaced" : false}
+    />;
 });

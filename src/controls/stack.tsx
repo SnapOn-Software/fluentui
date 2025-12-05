@@ -21,6 +21,9 @@ const useStyles = makeStyles({
     justified: {
         justifyContent: "center"
     },
+    justifiedSpaced: {
+        justifyContent: "space-evently"
+    },
 })
 
 export interface IStackProps extends ISectionProps {
@@ -31,7 +34,7 @@ export interface IStackProps extends ISectionProps {
     /** align items */
     centered?: boolean;
     /** justify items */
-    justified?: boolean;
+    justified?: boolean | "centered" | "spaced";
 }
 export const Stack = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IStackProps>>((props, ref) => {
     const cssNames = useStyles();
@@ -46,7 +49,10 @@ export const Stack = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IS
         css.push(cssNames.nogap);
     if (props.centered)
         css.push(cssNames.centered);
-    if (props.justified)
+
+    if (props.justified === "spaced")
+        css.push(cssNames.justifiedSpaced);
+    else if (props.justified === true || props.justified === "centered")
         css.push(cssNames.justified);
 
     if (isNotEmptyArray(props.css)) css.push(...props.css);
