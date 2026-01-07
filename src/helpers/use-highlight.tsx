@@ -49,18 +49,18 @@ export function useHighlight(): {
     return {
         highlight: (elm, o) => {
             if (elm && elm.classList) {
-                const mainClass = o?.type === "box"
+                const mainClass = (o?.type === "box"
                     ? o?.intent === "warn" ? css.highlightBoxWarn : css.highlightBox
-                    : o?.intent === "warn" ? css.highlightWarn : css.highlight;
-                const animClass = o?.type === "box" ? css.highlightedBox : css.highlighted;
+                    : o?.intent === "warn" ? css.highlightWarn : css.highlight).split(' ');
+                const animClass = (o?.type === "box" ? css.highlightedBox : css.highlighted).split(' ');
 
-                elm.classList.add(animClass);//enable animations
+                elm.classList.add(...animClass);//enable animations
 
                 window.setTimeout(() => {
-                    elm?.classList.add(mainClass)
+                    elm?.classList.add(...mainClass)
                 }, o?.delayIn > 0 ? o.delayIn * 1000 : 1000);
                 window.setTimeout(() => {
-                    elm?.classList.remove(mainClass)
+                    elm?.classList.remove(...mainClass)
                 }, o?.delayOut > 0 ? o.delayOut * 1000 : 2000);
             }
         }
