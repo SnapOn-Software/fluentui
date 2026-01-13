@@ -1,3 +1,4 @@
+import { makeStyles, mergeClasses } from "@fluentui/react-components";
 import { IDictionary } from "@kwiz/common";
 import Editor from '@monaco-editor/react';
 
@@ -10,9 +11,16 @@ export interface iCodeEditorProps {
     hideLineNumbers?: boolean;
 }
 
+const useStyles = makeStyles({
+    root: {
+        direction: "ltr"//editor must be LTR
+    }
+});
+
 /** it is recommended to lazy load this control into its own chunk */
 export function CodeEditor(props: iCodeEditorProps) {
-    return <Editor defaultLanguage={props.defaultLanguage}
+    const css = useStyles();
+    return <Editor className={mergeClasses(css.root)} defaultLanguage={props.defaultLanguage}
         options={{
             minimap: { enabled: false },
             lineNumbers: props.hideLineNumbers ? "off" : undefined
