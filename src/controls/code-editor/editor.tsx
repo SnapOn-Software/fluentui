@@ -11,16 +11,11 @@ export interface iCodeEditorProps {
     hideLineNumbers?: boolean;
 }
 
-const useStyles = makeStyles({
-    root: {
-        direction: "ltr"//editor must be LTR
-    }
-});
-
 /** it is recommended to lazy load this control into its own chunk */
 export function CodeEditor(props: iCodeEditorProps) {
-    const css = useStyles();
-    return <Editor className={mergeClasses(css.root)} defaultLanguage={props.defaultLanguage}
+    return <>
+    <style>{`.force-ltr{direction:ltr;}`}</style>
+    <Editor className="force-ltr" defaultLanguage={props.defaultLanguage}
         options={{
             minimap: { enabled: false },
             lineNumbers: props.hideLineNumbers ? "off" : undefined
@@ -36,5 +31,5 @@ export function CodeEditor(props: iCodeEditorProps) {
         onChange={(value, ev) => {
             props.onChange(value);
         }}
-    />;
+    /></>;
 }
