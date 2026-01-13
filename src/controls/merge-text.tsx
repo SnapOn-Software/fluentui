@@ -90,7 +90,7 @@ export const MergeText: React.FunctionComponent<React.PropsWithChildren<IProps>>
 
     return <Drawer type='overlay' open size='full' className={classes.root} mountNode={ctx.mountNode}>
         <DrawerHeader>
-            <DrawerHeaderTitle action={<ButtonEX icon={<DismissRegular />} title="Close" onClick={props.cancel} />}>
+            <DrawerHeaderTitle action={<ButtonEX icon={<DismissRegular />} title={ctx.strings?.btn_close?.() || "Close"} onClick={props.cancel} />}>
                 {props.title}
             </DrawerHeaderTitle>
         </DrawerHeader>

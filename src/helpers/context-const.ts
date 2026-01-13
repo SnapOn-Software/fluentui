@@ -1,4 +1,5 @@
 import React from "react";
+export type iKWIZFluentStringValueType = (options?: { cap?: boolean; param?: string; }) => string;
 export interface iKWIZFluentContext {
     /**
      * Where the portal children are mounted on DOM
@@ -24,6 +25,23 @@ export interface iKWIZFluentContext {
     buttonShape?: 'rounded' | 'circular' | 'square';
     /** true if using dark theme */
     dark?: boolean;
+    strings?: {
+        btn_ok?: iKWIZFluentStringValueType;
+        btn_cancel?: iKWIZFluentStringValueType;
+        btn_close?: iKWIZFluentStringValueType;
+        btn_clear?: iKWIZFluentStringValueType;
+        btn_open_param?: iKWIZFluentStringValueType;
+        gallery?: iKWIZFluentStringValueType;
+        more?: iKWIZFluentStringValueType;
+        color_picker?: iKWIZFluentStringValueType;
+        choose_color?: iKWIZFluentStringValueType;
+        placeholder_input?: iKWIZFluentStringValueType;
+        drop_or_select_file?: iKWIZFluentStringValueType;
+        drop_or_select_files?: iKWIZFluentStringValueType;
+        more_param?: iKWIZFluentStringValueType;
+        items?: iKWIZFluentStringValueType;
+        prompt_wait?: iKWIZFluentStringValueType;
+    }
 }
 
 //create context

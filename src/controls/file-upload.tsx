@@ -3,6 +3,7 @@ import { ArrowUploadRegular } from "@fluentui/react-icons";
 import { isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, lastOrNull } from '@kwiz/common';
 import * as React from "react";
 import { dropFiles, useDragDropContext, useEffectOnlyOnMount } from "../helpers";
+import { useKWIZFluentContext } from "../helpers/context-internal";
 import { ButtonEX, ButtonEXProps, CompoundButtonEXSecondary } from "./button";
 
 const useStyles = makeStyles({
@@ -29,6 +30,7 @@ interface iProps {
 }
 
 export const FileUpload = React.forwardRef<HTMLButtonElement, (iProps)>((props, ref) => {
+    const ctx = useKWIZFluentContext();
     const classes = useStyles();
     const hiddenFileInput = React.useRef(null);
     const onChangeRef = React.useRef(props.onChange);
@@ -36,7 +38,11 @@ export const FileUpload = React.forwardRef<HTMLButtonElement, (iProps)>((props, 
 
     const isMulti = props.allowMultiple === true;
     const icon = props.icon || <ArrowUploadRegular />;
-    const title = isNotEmptyString(props.title) ? props.title : `Drop or select ${isMulti ? 'files' : 'file'}`;
+    let title = isNotEmptyString(props.title)
+        ? props.title
+        : (
+            isMulti ? ctx.strings?.drop_or_select_files?.({ cap: true }) : ctx.strings?.drop_or_select_file?.({ cap: true })
+        ) || `Drop or select ${isMulti ? 'files' : 'file'}`;
 
     //keep onChange up to date
     React.useEffect(() => {

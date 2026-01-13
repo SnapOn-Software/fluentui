@@ -4,6 +4,7 @@ import { isFunction, isNullOrEmptyString, isNumber } from "@kwiz/common";
 import * as React from "react";
 import ColorPicker, { Color } from 'react-pick-color';
 import { useEffectOnlyOnMount, useStateEX } from "../helpers";
+import { useKWIZFluentContext } from "../helpers/context-internal";
 import { ButtonEX } from "./button";
 import { InputEx } from "./input";
 import { Prompter } from "./prompt";
@@ -27,6 +28,7 @@ export interface iProps {
 }
 
 export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
+    const ctx = useKWIZFluentContext();
     const [isOpen, setIsOpen] = useStateEX<boolean>(false);
     const [selectedColor, setSelectedColor] = useStateEX<string>(props.value);
 
@@ -36,10 +38,11 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
         ];
         return cells;
     }, useEffectOnlyOnMount);
+    const lblOpenColorPicker = ctx.strings?.btn_open_param?.({ cap: true, param: ctx.strings?.color_picker?.({ cap: true }) || "color picker" }) || "Open color picker";
     return <>
         {props.buttonOnly
             ? <ButtonEX disabled={props.disabled}
-                title="Open color picker"
+                title={lblOpenColorPicker}
                 icon={<ColorRegular
                     color={selectedColor} />
                 }
@@ -49,7 +52,7 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
                 validationMessage={props.showValidationErrors && props.required === true && isNullOrEmptyString(selectedColor) ? "You can't leave this blank." : undefined}
             >
                 <InputEx disabled={props.disabled}
-                    placeholder={props.placeholder || "Enter value here"}
+                    placeholder={props.placeholder || ctx.strings?.placeholder_input?.({ cap: true }) || "Enter value here"}
                     style={isNumber(props.width) ? { width: props.width } : undefined}
                     value={selectedColor}
                     onChange={(e, data) => {
@@ -59,7 +62,7 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
                         }
                     }}
                     contentAfter={<ButtonEX disabled={props.disabled}
-                        title="Open color picker"
+                        title={lblOpenColorPicker}
                         icon={<ColorRegular
                             color={selectedColor} />
                         }
@@ -74,7 +77,7 @@ export const ColorPickerEx: React.FunctionComponent<iProps> = (props) => {
                 }
                 setIsOpen(false);
             }} showCancelInTitle
-            title={props.label || "Choose a color"}
+            title={props.label || ctx.strings?.choose_color?.({ cap: true }) || "Choose a color"}
         >
             <ColorPicker color={selectedColor} onChange={color => setSelectedColor(color.hex)}
                 presets={getColorCells()}

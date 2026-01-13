@@ -33,7 +33,7 @@ const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType>) => {
         <MenuTrigger disableButtonEnhancement>
             <MenuButton
                 icon={props.menuIcon || <MoreVerticalRegular />}
-                aria-label="More items"
+                aria-label={ctx.strings?.more?.({ cap: true, param: ctx.strings?.items?.() || "items" }) || "More items"}
                 appearance="subtle"
             />
         </MenuTrigger>

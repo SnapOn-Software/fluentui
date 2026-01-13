@@ -1,6 +1,7 @@
 import { Field, ProgressBar } from '@fluentui/react-components';
 import { isFunction } from '@kwiz/common';
 import React from 'react';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { IPrompterProps, Prompter } from './prompt';
 
 interface IProps {
@@ -12,7 +13,8 @@ interface IProps {
     label?: string;
 }
 export const PleaseWait: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
-    const field = <Field validationMessage={props.label || "please wait..."} validationState="none">
+    const ctx = useKWIZFluentContext();
+    const field = <Field validationMessage={props.label || ctx.strings?.prompt_wait?.({ cap: true }) || "please wait..."} validationState="none">
         <ProgressBar value={props.step} max={props.max} />
     </Field>;
     return (props.contentOnly

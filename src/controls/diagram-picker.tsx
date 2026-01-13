@@ -2,8 +2,8 @@ import { Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTr
 import { ImageSparkleRegular } from '@fluentui/react-icons';
 import { DiagramOptions, stockUrl } from '@kwiz/common';
 import React from 'react';
-import { useKWIZFluentContext } from '../helpers/context-internal';
 import { useStateEX } from '../helpers';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { ButtonEXPrimarySubtle } from './button';
 import { Horizontal } from './horizontal';
 import { Section } from './section';
@@ -51,7 +51,7 @@ export const DiagramPicker = React.forwardRef<HTMLDivElement, (React.PropsWithCh
             setIsOpen(data.open);
         }}>
             <DialogTrigger disableButtonEnhancement>
-                {props.trigger || <ButtonEXPrimarySubtle icon={<ImageSparkleRegular />} title='Open gallery' showTitleWithIcon dontCenterText />}
+                {props.trigger || <ButtonEXPrimarySubtle icon={<ImageSparkleRegular />} title={ctx.strings?.btn_open_param?.({ param: ctx.strings?.gallery?.() || 'gallery' }) || 'Open gallery'} showTitleWithIcon dontCenterText />}
             </DialogTrigger>
             <DialogSurface mountNode={ctx.mountNode} className={classes.dialog}>
                 <DialogBody className={classes.dialogBody}>

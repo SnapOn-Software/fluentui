@@ -2,6 +2,7 @@ import { Card, CardFooter, cardFooterClassNames, CardHeader, CardPreview, InfoLa
 import { MoreVerticalRegular } from '@fluentui/react-icons';
 import { isNotEmptyArray, isNotEmptyString, isNullOrEmptyArray, isNullOrUndefined, stopEvent } from '@kwiz/common';
 import React from 'react';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { FluentIconType } from '../types/common';
 import { iMenuItemEX, MenuEx } from './menu';
 
@@ -61,6 +62,7 @@ export interface iCardProps {
     onClick: React.MouseEventHandler<HTMLDivElement>;
 }
 export const CardEX: React.FunctionComponent<React.PropsWithChildren<iCardProps>> = (props) => {
+    const ctx = useKWIZFluentContext();
     const classes = useStyles();
     const hasDescription = isNotEmptyString(props.description);
     const hasActions = isNotEmptyArray(props.menuItems) || !isNullOrUndefined(props.footer);
@@ -83,7 +85,7 @@ export const CardEX: React.FunctionComponent<React.PropsWithChildren<iCardProps>
             />}
             {hasActions && <CardFooter action={isNullOrEmptyArray(props.menuItems)
                 ? undefined
-                : <MenuEx trigger={{ title: 'more', icon: <MoreVerticalRegular /> }}
+                : <MenuEx trigger={{ title: ctx.strings?.more?.() || 'more', icon: <MoreVerticalRegular /> }}
                     items={props.menuItems} />}>
                 {props.footer}
             </CardFooter>}

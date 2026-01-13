@@ -4,8 +4,8 @@ import { TimePicker, TimePickerProps } from '@fluentui/react-timepicker-compat';
 import { CalendarCancelRegular } from '@fluentui/react-icons';
 import { isDate } from '@kwiz/common';
 import * as React from 'react';
-import { useKWIZFluentContext } from '../helpers/context-internal';
 import { useStateEX } from '../helpers';
+import { useKWIZFluentContext } from '../helpers/context-internal';
 import { Horizontal } from './horizontal';
 
 interface IProps {
@@ -62,7 +62,7 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
         onSelectDate={(newDate) => {
             changeDateHandler(newDate);
         }}
-        contentBefore={showClear && <CalendarCancelRegular title='Clear' onClick={() => reset()} />}
+        contentBefore={showClear && <CalendarCancelRegular title={ctx.strings?.btn_clear?.({ cap: true }) || 'Clear'} onClick={() => reset()} />}
     />
 
     const TimePickerControl = <TimePicker
