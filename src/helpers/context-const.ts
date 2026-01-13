@@ -1,5 +1,5 @@
 import React from "react";
-export type iKWIZFluentStringValueType = (options?: { cap?: boolean; param?: string; }) => string;
+export type iKWIZFluentStringValueType = (options?: { cap?: boolean; param?: string | number | Date; }) => string;
 export interface iKWIZFluentContext {
     /**
      * Where the portal children are mounted on DOM
