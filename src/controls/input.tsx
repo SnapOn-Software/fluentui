@@ -138,14 +138,19 @@ interface INumberProps extends Omit<IProps, "value" | "onChange" | "defaultValue
     required?: boolean;
 }
 export const InputNumberEx: React.FunctionComponent<React.PropsWithChildren<INumberProps>> = (props) => {
+    const ctx = useKWIZFluentContext();
     const commonStyles = useCommonStyles();
     const [valueStr, setValueStr] = React.useState(isNumber(props.defaultValue) ? `${props.defaultValue}` : '');
     const [isValid, setIsValid] = React.useState(true);
     const onChange = React.useCallback((ev: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
         const newValue = data.value;
         setValueStr(newValue);//update text box anyways
-        const asNumber = props.allowDecimals ? parseFloat(newValue) : parseInt(newValue, 10);
-        const isValid = props.required ? !isNullOrNaN(asNumber) : isNullOrUndefined(asNumber) || !isNaN(asNumber);
+        const asNumber = isNullOrEmptyString(newValue)
+            ? null//empty value shoudl be null, not parsed into NaN
+            : props.allowDecimals ? parseFloat(newValue) : parseInt(newValue, 10);
+        const isValid = props.required
+            ? !isNullOrNaN(asNumber)
+            : isNullOrUndefined(asNumber) || !isNaN(asNumber);
         setIsValid(isValid);
         props.onChange(isValid ? asNumber : null);
     }, [props.allowDecimals, props.onChange, props.required]);
@@ -155,7 +160,7 @@ export const InputNumberEx: React.FunctionComponent<React.PropsWithChildren<INum
     return (
         <Vertical nogap>
             <InputEx dir="ltr" inputMode={props.allowDecimals ? "decimal" : "numeric"} {...passProps} value={valueStr} onChange={onChange} />
-            {!isValid && <Label className={commonStyles.validationLabel}>this is not a valid value</Label>}
+            {!isValid && <Label className={commonStyles.validationLabel}>{ctx.strings?.validation_invalid?.({ context: "number" }) || "value must be a valid number"}</Label>}
         </Vertical>
     );
 }
