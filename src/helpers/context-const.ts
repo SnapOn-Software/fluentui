@@ -40,6 +40,7 @@ export interface iKWIZFluentContext {
         drop_or_select_files?: iKWIZFluentStringValueType;
         more_param?: iKWIZFluentStringValueType;
         items?: iKWIZFluentStringValueType;
+        direction?: iKWIZFluentStringValueType;
         prompt_wait?: iKWIZFluentStringValueType;
     }
 }

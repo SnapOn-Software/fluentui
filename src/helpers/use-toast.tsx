@@ -5,6 +5,7 @@ import { useKWIZFluentContext } from "./context-internal";
 export type toastDispatcherType = (info: {
     title?: string;
     body?: string;
+    /** shows only with body */
     subtitle?: string;
     titleAction?: { text: string, onClick: () => void };
     footerActions?: { text: string, onClick: () => void }[];

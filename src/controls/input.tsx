@@ -154,7 +154,7 @@ export const InputNumberEx: React.FunctionComponent<React.PropsWithChildren<INum
 
     return (
         <Vertical nogap>
-            <InputEx inputMode={props.allowDecimals ? "decimal" : "numeric"} {...passProps} value={valueStr} onChange={onChange} />
+            <InputEx dir="ltr" inputMode={props.allowDecimals ? "decimal" : "numeric"} {...passProps} value={valueStr} onChange={onChange} />
             {!isValid && <Label className={commonStyles.validationLabel}>this is not a valid value</Label>}
         </Vertical>
     );
