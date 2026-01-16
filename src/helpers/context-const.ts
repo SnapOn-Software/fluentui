@@ -25,12 +25,18 @@ export interface iKWIZFluentContext {
     buttonShape?: 'rounded' | 'circular' | 'square';
     /** true if using dark theme */
     dark?: boolean;
+    /** RTL (or, pass strings.dir()==="rtl") */
+    isRtl?: boolean;
     strings?: {
+        btn_save?: iKWIZFluentStringValueType;
         btn_ok?: iKWIZFluentStringValueType;
         btn_cancel?: iKWIZFluentStringValueType;
         btn_close?: iKWIZFluentStringValueType;
         btn_clear?: iKWIZFluentStringValueType;
+        btn_remove?: iKWIZFluentStringValueType;
         btn_open_param?: iKWIZFluentStringValueType;
+        btn_edit_param?: iKWIZFluentStringValueType;
+        btn_edit?: iKWIZFluentStringValueType;
         gallery?: iKWIZFluentStringValueType;
         more?: iKWIZFluentStringValueType;
         color_picker?: iKWIZFluentStringValueType;
@@ -40,9 +46,15 @@ export interface iKWIZFluentContext {
         drop_or_select_files?: iKWIZFluentStringValueType;
         more_param?: iKWIZFluentStringValueType;
         items?: iKWIZFluentStringValueType;
-        direction?: iKWIZFluentStringValueType;
+        dir?: iKWIZFluentStringValueType;
         prompt_wait?: iKWIZFluentStringValueType;
         validation_invalid?: iKWIZFluentStringValueType;
+        lbl_value?: iKWIZFluentStringValueType;
+        lbl_text?: iKWIZFluentStringValueType;
+        confirm_remove?: iKWIZFluentStringValueType;
+        add_custom?: iKWIZFluentStringValueType;
+        option?: iKWIZFluentStringValueType;
+        options?: iKWIZFluentStringValueType;
     }
 }
 

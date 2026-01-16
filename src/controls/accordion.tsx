@@ -40,13 +40,14 @@ interface iProps {
 }
 export const AccordionEX: React.FunctionComponent<iProps> = (props) => {
     const ctx = useKWIZFluentContext();
-    const isRtl = ctx.strings?.direction?.() === "rtl";
     const classes = useStyles();
     const [opened, setOpened] = React.useState(props.opened || props.groups[0].key);
     return (<Vertical main css={[classes.root, props.fillHeight && classes.rootFill, KnownClassNames.accordion]}>
         {props.groups.map(group => <React.Fragment key={group.key}>
             <ButtonEX className={`${classes.header} ${KnownClassNames.accordionHeader} ${opened === group.key ? ` ${KnownClassNames.isOpen}` : ''}`}
-                icon={<ChevronRightRegular className={opened === group.key ? classes.opened : ''} />}
+                icon={ctx.isRtl
+                    ? <ChevronLeftRegular className={opened === group.key ? classes.opened : ''} />
+                    : <ChevronRightRegular className={opened === group.key ? classes.opened : ''} />}
                 title={group.title} showTitleWithIcon dontCenterText
                 onClick={() => setOpened(group.key)}
             />

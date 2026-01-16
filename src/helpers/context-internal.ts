@@ -10,5 +10,7 @@ export function useKWIZFluentContext() {
         ctx.inputAppearance = "underline";
     if (isNullOrUndefined(ctx.buttonShape))
         ctx.buttonShape = "circular";
+
+    ctx.isRtl = ctx.isRtl || ctx.strings?.dir?.() === "rtl";
     return ctx;
 }
