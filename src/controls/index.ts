@@ -24,6 +24,7 @@ export * from './list';
 export * from './loading';
 export * from './menu';
 export * from './merge-text';
+export * from './options-editor';
 export * from './please-wait';
 export * from './progress-bar';
 export * from './prompt';
