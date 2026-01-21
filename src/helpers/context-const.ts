@@ -28,6 +28,9 @@ export interface iKWIZFluentContext {
     /** RTL (or, pass strings.dir()==="rtl") */
     isRtl?: boolean;
     strings?: {
+        btn_next?: iKWIZFluentStringValueType;
+        btn_previous?: iKWIZFluentStringValueType;
+        btn_tokens?: iKWIZFluentStringValueType;
         btn_save?: iKWIZFluentStringValueType;
         btn_ok?: iKWIZFluentStringValueType;
         btn_cancel?: iKWIZFluentStringValueType;

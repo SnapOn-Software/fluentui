@@ -1,6 +1,6 @@
 import { GriffelStyle, Input, InputOnChangeData, InputProps, Label, Link, makeStyles, mergeClasses, Textarea, TextareaOnChangeData, TextareaProps } from '@fluentui/react-components';
 import { isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, pasteTextAtCursor, stopEvent } from '@kwiz/common';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useEffectOnlyOnMount, useRefWithState } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { useCommonStyles } from '../styles/styles';
@@ -29,13 +29,17 @@ export const InputEx: React.FunctionComponent<React.PropsWithChildren<IProps>> =
             : undefined
         }
     />;
+
+    const tokensStr = useMemo(() => props.tokenMenuLabel || ctx.strings?.btn_tokens?.().toLowerCase() || "tokens",
+        [ctx.strings, props.tokenMenuLabel]);
+
     return (
         isNotEmptyArray(props.tokens)
             ? <Vertical nogap>
                 {input}
                 <Horizontal nogap>
                     <Section main />
-                    <MenuEx trigger={<Link>{props.tokenMenuLabel || "tokens"}</Link>} items={props.tokens.map(token =>
+                    <MenuEx trigger={<Link>{tokensStr}</Link>} items={props.tokens.map(token =>
                     ({
                         title: token.title, onClick: () => {
                             let newValue = props.value || "";

@@ -1,6 +1,6 @@
 import { Menu, MenuButtonProps, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger, SplitButton, SplitButtonProps } from '@fluentui/react-components';
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone, stopEvent } from '@kwiz/common';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useClickableDiv, useStateEX } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { ButtonEX, ButtonEXProps } from './button';
@@ -76,6 +76,14 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProp
         }, 100);
     }, [opened]);
 
+    const { nextStr, prevStr } = useMemo(() => {
+        const prevStr = ctx.strings?.btn_previous?.().toLowerCase() || "previous";
+        const nextStr = ctx.strings?.btn_next?.().toLowerCase() || "next";
+        return { prevStr, nextStr };
+    },
+        [ctx.strings]);
+
+
     function renderItems(items: iMenuItemEX[], level: number) {
         const myLevelFilter = filterPerLevel[level];
 
@@ -150,24 +158,24 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProp
             let hasMore = menuItems.length > start + pageSize;
             menuItems = menuItems.slice(start, start + pageSize);
             if (start > 0) {
-                menuItems.splice(0, 0, <DividerEX key="$prev" title='Previous'
+                menuItems.splice(0, 0, <DividerEX key="$prev" title={prevStr}
                     {...clickableDiv}
                     onClick={() => {
                         const s = jsonClone(startIndexPerLevel);
                         s[level] = start - pageSize;
                         setStartIndexPerLevel(s);
                     }}
-                >previous</DividerEX>);
+                >{prevStr}</DividerEX>);
             }
             if (hasMore)
-                menuItems.push(<DividerEX key="$next" title='Next'
+                menuItems.push(<DividerEX key="$next" title={nextStr}
                     {...clickableDiv}
                     onClick={() => {
                         const s = jsonClone(startIndexPerLevel);
                         s[level] = start + pageSize;
                         setStartIndexPerLevel(s);
                     }}
-                >next</DividerEX>);
+                >{nextStr}</DividerEX>);
         }
         if (filtered) {
             //just filter - no paging
