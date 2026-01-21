@@ -41,7 +41,7 @@ export interface iKWIZFluentContext {
         btn_edit_param?: iKWIZFluentStringValueType;
         btn_edit?: iKWIZFluentStringValueType;
         gallery?: iKWIZFluentStringValueType;
-        more?: iKWIZFluentStringValueType;
+        btn_more_dots?: iKWIZFluentStringValueType;
         color_picker?: iKWIZFluentStringValueType;
         choose_color?: iKWIZFluentStringValueType;
         placeholder_input?: iKWIZFluentStringValueType;

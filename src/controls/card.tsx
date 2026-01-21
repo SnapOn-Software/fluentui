@@ -85,7 +85,7 @@ export const CardEX: React.FunctionComponent<React.PropsWithChildren<iCardProps>
             />}
             {hasActions && <CardFooter action={isNullOrEmptyArray(props.menuItems)
                 ? undefined
-                : <MenuEx trigger={{ title: ctx.strings?.more?.() || 'more', icon: <MoreVerticalRegular /> }}
+                : <MenuEx trigger={{ title: ctx.strings?.btn_more_dots?.().toLowerCase() || 'more...', icon: <MoreVerticalRegular /> }}
                     items={props.menuItems} />}>
                 {props.footer}
             </CardFooter>}
