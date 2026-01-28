@@ -10,7 +10,7 @@ interface IProps extends Omit<IStackProps, "direction" | "justified"> {
     vSpaced?: boolean | "evenly" | "between" | "around";
 }
 export const Vertical = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IProps>>((props, ref) => {
-    return <Stack {...props}
+    return <Stack {...props} ref={ref}
         direction='v'
         justified={props.vCentered === true ? "centered" : props.vSpaced === true ? "evenly" : props.vSpaced}
     />;
