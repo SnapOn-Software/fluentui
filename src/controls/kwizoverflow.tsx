@@ -34,7 +34,7 @@ const OverflowMenu = <ItemType,>(props: IProps<ItemType>) => {
                 : <MenuButton
                     icon={<MoreHorizontalFilled />}
                     ref={props.menuRef || ref}
-                    aria-label={ctx.strings?.more?.({ cap: true, param: ctx.strings?.items?.() || "items" }) || "More items"}
+                    aria-label={ctx.strings?.more_param?.({ cap: true, param: ctx.strings?.items?.() || "items" }) || "More items"}
                     appearance="subtle"
                 />}
         </MenuTrigger>
