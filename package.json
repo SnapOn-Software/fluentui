@@ -1,6 +1,6 @@
 {
     "name": "@kwiz/fluentui",
-    "version": "1.0.153",
+    "version": "1.0.154",
     "description": "KWIZ common controls for FluentUI",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
