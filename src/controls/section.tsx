@@ -1,9 +1,9 @@
-import { makeStyles, mergeClasses, Portal, tokens } from '@fluentui/react-components';
+import { makeStyles, Portal, tokens } from '@fluentui/react-components';
 import { getScrollParent, isFunction, isNotEmptyArray, isNotEmptyString } from '@kwiz/common';
 import React, { useEffect, useState } from 'react';
 import { useElementSize, useRefWithState } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
-import { KnownClassNames, mixins, useCommonStyles } from '../styles/styles';
+import { KnownClassNames, mergeClassesEX, mixins, useCommonStyles } from '../styles/styles';
 
 const useStyles = makeStyles({
     main: mixins.main,
@@ -111,7 +111,7 @@ export const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<
     if (isNotEmptyArray(props.css)) props.css.filter(c => isNotEmptyString(c)).forEach(c => css.push(...c.split(" ")));
     if (props.fullscreen) css.push(commonStyles.fullscreen);
     const control = <div ref={divRef.set} {...(props.rootProps || {})} title={props.title} style={props.style}
-        className={mergeClasses(...css)}
+        className={mergeClassesEX(...css)}
         onClick={props.onClick}>
         {props.children}
     </div>;

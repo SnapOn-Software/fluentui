@@ -1,6 +1,6 @@
-import { Menu, MenuButton, MenuList, MenuPopover, MenuProps, MenuTrigger } from "@fluentui/react-components";
+import { makeStyles, Menu, MenuButton, MenuList, MenuPopover, MenuProps, MenuTrigger, tabClassNames } from "@fluentui/react-components";
 import { MoreVerticalRegular } from "@fluentui/react-icons";
-import { CommonLogger } from "@kwiz/common";
+import { CommonLogger, isNumber } from "@kwiz/common";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { useElementSize, useRefWithState } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
@@ -19,9 +19,13 @@ export interface iOverflowV2Props<ItemType> {
     renderOverflowMenuButton?: (props: iOverflowV2Props<ItemType>) => JSX.Element;
     root?: Partial<iHorizontalProps>;
     nowrap?: boolean;
+    /** if you have this inside a TabList, turn this flag on to make sure tabs don't wrap / shrink text */
+    nowrapTabs?: boolean;
     childrenBefore?: JSX.Element;
     menu?: Partial<MenuProps>;
     menuIcon?: JSX.Element;
+    /** when hiding items, lower priority items will be collapsed first */
+    priority?: (item: ItemType) => number;
 }
 
 const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType>) => {
@@ -45,35 +49,98 @@ const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType>) => {
     </Menu>;
 }
 
+const useStyles = makeStyles({
+    root: {
+        overflow: "hidden",
+        width: "100%"
+    },
+    nowrap: {
+        whiteSpace: "nowrap",
+    },
+    nowrapTabs: {
+        [`& .${tabClassNames.content}`]: {
+            overflow: "visible",
+        }
+    },
+});
 export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Props<ItemType>>) => {
+    const css = useStyles();
     const wrapperRef = useRefWithState<HTMLDivElement>();
     const size = useElementSize(wrapperRef.ref.current);
-    const [overflowItems, setOverflowItems] = useState(0);
+    const [overflowIndexes, setOverflowIndexes] = useState<number[]>([]);
+
+    function getPriority(item: ItemType) {
+        const p = props?.priority?.(item) || 0;
+        if (!isNumber(p) || p < 0) return 0;
+        else return p;
+    }
+
     useEffect(() => {
         if (wrapperRef.ref.current) {
             const div = wrapperRef.ref.current;
             const childrenE = div.querySelectorAll(`:scope>.${KnownClassNames.section}`);
-            const children: HTMLDivElement[] = [];
-            childrenE.forEach(e => children.push(e as HTMLDivElement));
-            children.forEach(c => c.style.display = "");
-            children.reverse();
-            let overflowItems = 0;
-            while (div.scrollWidth > div.clientWidth) {
-                if (overflowItems >= children.length) { logger.warn("no more items to hide, can't overflow"); break; }
-                else {
-                    children[overflowItems++].style.display = "none";
+            let allChildren: { div: HTMLDivElement, priority: number; itemIndex: number; }[] = [];
+            let highestPriority = 0;
+            childrenE.forEach(e => {
+                const div = e as HTMLDivElement;
+                const itemIndex = Number(div.dataset.itemIndex);
+                if (itemIndex > 0 && itemIndex <= props.items.length) {
+                    const priority = getPriority(props.items[itemIndex]);
+                    if (priority > highestPriority) highestPriority = priority;
+                    allChildren.push({ div, priority, itemIndex });
+                }
+            });
+
+            //show all items to provoke overflow
+            allChildren.forEach(c => c.div.style.display = "");
+            //reverse order so we start hiding last items
+            allChildren.reverse();
+            //collect hidden items indexes here
+            const newOverflowIndexes: number[] = [];
+
+            let currentPriority = 0;//exit loop
+            while (
+                //have more higher priority items to hide
+                currentPriority <= highestPriority
+                //still need to hide items
+                && div.scrollWidth > div.clientWidth
+            ) {
+                const currentLevelChildren = allChildren.filter(c => c.priority === currentPriority);
+                currentPriority++;
+
+                let currentChild = 0;//exit loop
+                while (
+                    //have more children
+                    currentChild < currentLevelChildren.length
+                    //still need to hide items
+                    && div.scrollWidth > div.clientWidth
+                ) {
+                    const child = currentLevelChildren[currentChild++];
+                    newOverflowIndexes.push(child.itemIndex);
+                    child.div.style.display = "none";
                 }
             }
-            setOverflowItems(overflowItems);
+
+            if (currentPriority > highestPriority)//we progressed beyond the items we have and could not get rid of the scroll
+                logger.warn("no more items to hide, can't overflow");
+
+            //set the hidden indexes, in their correct order (reverse back)
+            setOverflowIndexes(newOverflowIndexes.reverse());
         }
     }, [size.height, size.width, wrapperRef.value, props.items, props.children, props.childrenBefore]);
 
+    const cssClasses = [css.root, (props.nowrap || props.nowrapTabs) && css.nowrap, props.nowrapTabs && css.nowrapTabs,
+    ...(props.root?.css || [])
+    ];
+
     return (
-        <Horizontal ref={wrapperRef.set} style={{ overflow: "hidden", whiteSpace: props.nowrap ? "nowrap" : undefined }} {...props.root}>
+        <Horizontal ref={wrapperRef.set} {...props.root} css={cssClasses}>
             {props.childrenBefore}
-            {props.items.map((item, index) => <Section key={`s${index}`}>{props.renderItem(item, index, false)}</Section>)}
-            <OverflowMenu {...props} items={props.items.slice(props.items.length - overflowItems)} />
+            {props.items.map((item, index) => <Section key={`s${index}`} rootProps={{
+                "data-item-index": index//set the item id - we use it using dataset.itemIndex
+            } as any}>{props.renderItem(item, index, false)}</Section>)}
+            <OverflowMenu {...props} items={overflowIndexes.map(itemIndex => props.items[itemIndex])} />
             {props.children}
         </Horizontal>
-    )
+    );
 };
