@@ -311,9 +311,9 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
     const filterMenuItemOperator: iMenuItemEX = useMemo(() => ({
         title: "Op", onClick: () => { },
         as: <Horizontal hSpaced>
-            <ButtonEX icon={filterop === "lt" ? <ChevronCircleLeftFilled /> : <ChevronCircleLeftRegular />} title="Less than" onClick={() => setFilterop("lt")} />
-            <ButtonEX icon={filterop === "eq" ? <EqualCircleFilled /> : <EqualCircleRegular />} title="Equals" onClick={() => setFilterop("eq")} />
-            <ButtonEX icon={filterop === "gt" ? <ChevronCircleRightFilled /> : <ChevronCircleRightRegular />} title="Greater than" onClick={() => setFilterop("gt")} />
+            <ButtonEX icon={filterop === "lt" ? <ChevronCircleLeftFilled /> : <ChevronCircleLeftRegular />} title="Less than" onClick={(e) => { stopEvent(e); setFilterop("lt"); }} />
+            <ButtonEX icon={filterop === "eq" ? <EqualCircleFilled /> : <EqualCircleRegular />} title="Equals" onClick={(e) => { stopEvent(e); setFilterop("eq"); }} />
+            <ButtonEX icon={filterop === "gt" ? <ChevronCircleRightFilled /> : <ChevronCircleRightRegular />} title="Greater than" onClick={(e) => { stopEvent(e); setFilterop("gt"); }} />
         </Horizontal>
     }), [filterop]);
     // #endregion
@@ -383,39 +383,37 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
                     {...(col.sortable ? headerSortProps(col.key) : {})}>
                     {isString(col.renderer) ? col.renderer : col.renderer()}
                     {col.filter
-                        //stop event to stop triggering sort...
-                        ? <div onClick={(e) => stopEvent(e)}>
-                            <MenuEx trigger={{
-                                icon: col.key === filter?.column ? <FilterFilled /> : <FilterRegular />,
-                                title: "Filtering", className: col.key === filter?.column ? '' : cssNames.showOnHover
-                            }}
-                                items={[...(col.filter === "string"
+                        ? <MenuEx trigger={{
+                            icon: col.key === filter?.column ? <FilterFilled /> : <FilterRegular />,
+                            title: "Filtering", className: col.key === filter?.column ? '' : cssNames.showOnHover
+                        }}
+                            items={[...(col.filter === "string"
+                                ? [
+                                    { title: "Filter text", onClick: () => { }, as: <InputEx value={filter?.value as string || ""} onClick={e => stopEvent(e)} onChange={(e, data) => setFilter(isNullOrEmptyString(data.value) ? null : { column: col.key, value: data.value })} /> },
+                                ]
+                                : col.filter === "number"
                                     ? [
-                                        { title: "Filter text", onClick: () => { }, as: <InputEx value={filter?.value as string || ""} onChange={(e, data) => setFilter(isNullOrEmptyString(data.value) ? null : { column: col.key, value: data.value })} /> },
+                                        { title: "Filter number", onClick: () => { }, as: <InputNumberEx defaultValue={filter?.value as number} onClick={e => stopEvent(e)} onChange={(num) => setFilter(isNullOrNaN(num) ? null : { column: col.key, value: num })} /> },
+                                        filterMenuItemOperator
                                     ]
-                                    : col.filter === "number"
+                                    : col.filter === "bool"
                                         ? [
-                                            { title: "Filter number", onClick: () => { }, as: <InputNumberEx defaultValue={filter?.value as number} onChange={(num) => setFilter(isNullOrNaN(num) ? null : { column: col.key, value: num })} /> },
-                                            filterMenuItemOperator
+                                            { title: "On", icon: <CheckboxCheckedRegular />, onClick: (e) => { stopEvent(e); setFilter({ column: col.key, value: true }); } },
+                                            { title: "Off", icon: <CheckboxUncheckedRegular />, onClick: (e) => { stopEvent(e); setFilter({ column: col.key, value: false }); } }
                                         ]
-                                        : col.filter === "bool"
+                                        : col.filter === "date"
                                             ? [
-                                                { title: "On", icon: <CheckboxCheckedRegular />, onClick: () => setFilter({ column: col.key, value: true }) },
-                                                { title: "Off", icon: <CheckboxUncheckedRegular />, onClick: () => setFilter({ column: col.key, value: false }) }
+                                                {
+                                                    title: "Filter date", onClick: () => { }, as: <DatePickerEx value={filter?.value as Date} onDateChange={date => {
+                                                        console.log(date);
+                                                        setFilter(!isDate(date) ? null : { column: col.key, value: date });
+                                                    }} />
+                                                },
+                                                filterMenuItemOperator
                                             ]
-                                            : col.filter === "date"
-                                                ? [
-                                                    {
-                                                        title: "Filter date", onClick: () => { }, as: <DatePickerEx value={filter?.value as Date} onDateChange={date => {
-                                                            console.log(date);
-                                                            setFilter(!isDate(date) ? null : { column: col.key, value: date });
-                                                        }} />
-                                                    },
-                                                    filterMenuItemOperator
-                                                ]
-                                                : []),
-                                { title: "Clear filter", icon: <FilterDismissRegular />, onClick: () => { stopEvent(window.event); setFilter(null); } },
-                                ]} /></div>
+                                            : []),
+                            { title: "Clear filter", icon: <FilterDismissRegular />, onClick: (e) => { stopEvent(e); setFilter(null); } },
+                            ]} />
                         : undefined}
                 </TableHeaderCell>)}
             </TableRow>

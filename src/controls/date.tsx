@@ -2,7 +2,7 @@ import { DatePicker, DatePickerProps } from '@fluentui/react-datepicker-compat';
 import { TimePicker, TimePickerProps } from '@fluentui/react-timepicker-compat';
 
 import { CalendarCancelRegular } from '@fluentui/react-icons';
-import { isDate } from '@kwiz/common';
+import { isDate, stopEvent } from '@kwiz/common';
 import * as React from 'react';
 import { useStateEX } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
@@ -55,6 +55,7 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
     }, [dateValue]);
 
     const DatePickerControl = <DatePicker
+        onClick={e => { stopEvent(e); e.stopPropagation() }}
         {...(props.datePickerProps || {})}
         appearance={ctx.inputAppearance}
         mountNode={ctx.mountNode}
@@ -62,10 +63,12 @@ export const DatePickerEx: React.FunctionComponent<React.PropsWithChildren<IProp
         onSelectDate={(newDate) => {
             changeDateHandler(newDate);
         }}
-        contentBefore={showClear && <CalendarCancelRegular title={ctx.strings?.btn_clear?.({ cap: true }) || 'Clear'} onClick={() => reset()} />}
+        contentBefore={showClear && <CalendarCancelRegular title={ctx.strings?.btn_clear?.({ cap: true }) || 'Clear'} onClick={(e) => { stopEvent(e); reset(); }} />}
+        popupSurface={{ onClick: e => stopEvent(e) }}
     />
 
     const TimePickerControl = <TimePicker
+        onClick={e => stopEvent(e)}
         appearance={ctx.inputAppearance}
         mountNode={ctx.mountNode}
         {...props.timePickerProps}

@@ -11,7 +11,7 @@ import { Search } from './search';
 interface iMenuItemEXItem {
     type?: "item";
     title: string;
-    onClick: () => void;
+    onClick: (e:React.MouseEvent) => void;
     disabled?: boolean;
     icon?: JSX.Element;
     items?: iMenuItemEX[];
