@@ -30,6 +30,12 @@ const useStyles = makeStyles({
     justifiedAround: {
         justifyContent: "space-around"
     },
+    reversedVertical: {
+        flexDirection: "column-reverse"
+    },
+    reversedHorizontal: {
+        flexDirection: "row-reverse"
+    }
 })
 
 export interface IStackProps extends ISectionProps {
@@ -41,6 +47,8 @@ export interface IStackProps extends ISectionProps {
     centered?: boolean;
     /** justify items */
     justified?: boolean | "centered" | "evenly" | "between" | "around";
+    /** flex-direction reversed */
+    reversed?: boolean;
 }
 export const Stack = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IStackProps>>((props, ref) => {
     const cssNames = useStyles();
@@ -48,6 +56,9 @@ export const Stack = React.forwardRef<HTMLDivElement, React.PropsWithChildren<IS
         props.direction === "h" ? KnownClassNames.horizontal : KnownClassNames.vertical,
         props.direction === "h" ? cssNames.horizontal : cssNames.vertical
     ];
+
+    if (props.reversed)
+        css.push(props.direction === "h" ? cssNames.reversedHorizontal : cssNames.reversedVertical);
 
     if (props.wrap)
         css.push(cssNames.wrap);

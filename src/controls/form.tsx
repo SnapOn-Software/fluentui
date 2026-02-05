@@ -81,7 +81,7 @@ export function FormDialogEX<FormData>({ defaultValues, fields, buttonIcon, butt
                     try {
                         serverError = await onSubmit(values);
                     } catch (e) {
-                        console.log(e);
+                        console.error(e);
                         serverError = "Unknown server error";
                     }
                     if (isNotEmptyString(serverError)) {

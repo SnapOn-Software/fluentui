@@ -143,10 +143,11 @@ export function useRefWithState<T>(initialValue?: T,
     forwardRef?: React.Ref<T>) {
     let asRef = useRef<T>(initialValue);
     let [asState, setState] = useStateEX<T>(initialValue, stateOptions);
-    let setRef = useCallback((newValue: T) => {
+    //incorrect to use useCallback with no dependencies, broke licensing vertical tab list
+    function setRef(newValue: T) {
         asRef.current = newValue;
         setState(newValue);
-    }, useEffectOnlyOnMount);
+    };
 
     useEffect(() => {
         //setting the forwardRef 

@@ -23,12 +23,12 @@ export function ComboboxEX(props: iProps) {
         value={text}
         selectedOptions={isNotEmptyString(value) ? [selectedOption ? selectedOption.key : freeFormKey] : []}
         onChange={(e) => {
-            console.log(e.currentTarget.value);
+            //console.log(e.currentTarget.value);
             onChange(e.currentTarget.value);
         }}
         onOptionSelect={(e, data) => {
             if (isNotEmptyString(data.optionValue)) {
-                console.log(data.optionValue);
+                //console.log(data.optionValue);
                 onChange(data.optionValue);
             }
         }}>

@@ -2,6 +2,7 @@ import { createTableColumn, makeStyles, Table, TableBody, TableCell, TableCellAc
 import { CheckboxCheckedRegular, CheckboxUncheckedRegular, ChevronCircleLeftFilled, ChevronCircleLeftRegular, ChevronCircleRightFilled, ChevronCircleRightRegular, EqualCircleFilled, EqualCircleRegular, FilterDismissRegular, FilterFilled, FilterRegular, MoreVerticalRegular } from "@fluentui/react-icons";
 import { dateFormat, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyString, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
 import { ReactNode, useMemo, useState } from "react";
+import { useShowOnHover } from "../helpers";
 import { mergeClassesEX } from "../styles/styles";
 import { ButtonEX } from "./button";
 import { DatePickerEx } from "./date";
@@ -63,7 +64,6 @@ type iProps<ItemType extends itemTypeBase> = iPropsUnfreezed<ItemType> | iPropsF
 
 
 const cssNames = {
-    showOnHover: "show-hover",
     sortIcon: "sort-icon",
     selectableTable: "selectable-table"
 };
@@ -171,21 +171,13 @@ const useStyles = makeStyles({
     },
     nowrap: {
         whiteSpace: "nowrap"
-    },
-    //remove menu cell, rowmenu, repurpose for filter on hover
-    hoverParent: {
-        [`& .${cssNames.showOnHover}`]: {
-            visibility: "hidden",
-        },
-        [`:hover .${cssNames.showOnHover}`]: {
-            visibility: "visible"
-        }
     }
 });
 
 export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) {
     const { items, columns, getItemMenu, selectionMode, onSelectionChange, selection } = props;
     const css = useStyles();
+    const showOnHover = useShowOnHover();
 
     const fProps = props as iPropsFreezed<ItemType>;
     const freezed = fProps.stickyTop || fProps.stickyLeft || isString(props.maxHeight);
@@ -200,7 +192,7 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
 
     // #region Styles
     const secondCellClass = fProps.stickyLeftGap === "cover" ? css.secondCellCover : fProps.stickyLeftGap === "medium" ? css.secondCellMedium : css.secondCellSmall;
-    const headerCellClasses = fProps.stickyTop ? [css.th, css.hoverParent] : [css.hoverParent];
+    const headerCellClasses = fProps.stickyTop ? [css.th, showOnHover.hoverParent] : [showOnHover.hoverParent];
     const firstHeaderCellClasses: string[] = headerCellClasses.slice();
     const secondHeaderCellClasses: string[] = headerCellClasses.slice();
     const firstCellClasses: string[] = fProps.stickyLeft ? [css.firstCell] : [];
@@ -310,7 +302,7 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
     }, [items, filter, normalizedCols, filterop]);
     const filterMenuItemOperator: iMenuItemEX = useMemo(() => ({
         title: "Op", onClick: () => { },
-        as: <Horizontal hSpaced>
+        as: <Horizontal hSpaced key="filterMenuItemOperator">
             <ButtonEX icon={filterop === "lt" ? <ChevronCircleLeftFilled /> : <ChevronCircleLeftRegular />} title="Less than" onClick={(e) => { stopEvent(e); setFilterop("lt"); }} />
             <ButtonEX icon={filterop === "eq" ? <EqualCircleFilled /> : <EqualCircleRegular />} title="Equals" onClick={(e) => { stopEvent(e); setFilterop("eq"); }} />
             <ButtonEX icon={filterop === "gt" ? <ChevronCircleRightFilled /> : <ChevronCircleRightRegular />} title="Greater than" onClick={(e) => { stopEvent(e); setFilterop("gt"); }} />
@@ -385,15 +377,15 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
                     {col.filter
                         ? <MenuEx trigger={{
                             icon: col.key === filter?.column ? <FilterFilled /> : <FilterRegular />,
-                            title: "Filtering", className: col.key === filter?.column ? '' : cssNames.showOnHover
+                            title: "Filtering", className: col.key === filter?.column ? '' : showOnHover.showOnHover
                         }}
                             items={[...(col.filter === "string"
                                 ? [
-                                    { title: "Filter text", onClick: () => { }, as: <InputEx value={filter?.value as string || ""} onClick={e => stopEvent(e)} onChange={(e, data) => setFilter(isNullOrEmptyString(data.value) ? null : { column: col.key, value: data.value })} /> },
+                                    { title: "Filter text", onClick: () => { }, as: <InputEx key="filterInput" value={filter?.value as string || ""} onClick={e => stopEvent(e)} onChange={(e, data) => setFilter(isNullOrEmptyString(data.value) ? null : { column: col.key, value: data.value })} /> },
                                 ]
                                 : col.filter === "number"
                                     ? [
-                                        { title: "Filter number", onClick: () => { }, as: <InputNumberEx defaultValue={filter?.value as number} onClick={e => stopEvent(e)} onChange={(num) => setFilter(isNullOrNaN(num) ? null : { column: col.key, value: num })} /> },
+                                        { title: "Filter number", onClick: () => { }, as: <InputNumberEx key="filterInput" defaultValue={filter?.value as number} onClick={e => stopEvent(e)} onChange={(num) => setFilter(isNullOrNaN(num) ? null : { column: col.key, value: num })} /> },
                                         filterMenuItemOperator
                                     ]
                                     : col.filter === "bool"
@@ -404,8 +396,8 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
                                         : col.filter === "date"
                                             ? [
                                                 {
-                                                    title: "Filter date", onClick: () => { }, as: <DatePickerEx value={filter?.value as Date} onDateChange={date => {
-                                                        console.log(date);
+                                                    title: "Filter date", onClick: () => { }, as: <DatePickerEx key="filterInput" value={filter?.value as Date} onDateChange={date => {
+                                                        //console.log(date);
                                                         setFilter(!isDate(date) ? null : { column: col.key, value: date });
                                                     }} />
                                                 },

@@ -1,12 +1,15 @@
-import { makeStyles, Menu, MenuButton, MenuList, MenuPopover, MenuProps, MenuTrigger, tabClassNames } from "@fluentui/react-components";
+import { makeStyles, MenuProps, tabClassNames } from "@fluentui/react-components";
 import { MoreVerticalRegular } from "@fluentui/react-icons";
-import { CommonLogger, isNumber } from "@kwiz/common";
-import { PropsWithChildren, useEffect, useState } from "react";
+import { CommonLogger, isNullOrEmptyString, isNumber } from "@kwiz/common";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useElementSize, useRefWithState } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
 import { KnownClassNames } from "../styles";
+import { ButtonEXProps } from "./button";
 import { Horizontal, iHorizontalProps } from "./horizontal";
+import { iMenuExProps, MenuEx } from "./menu";
 import { Section } from "./section";
+import { Vertical } from "./vertical";
 
 const logger = new CommonLogger("OverflowV2");
 
@@ -26,33 +29,44 @@ export interface iOverflowV2Props<ItemType> {
     menuIcon?: JSX.Element;
     /** when hiding items, lower priority items will be collapsed first */
     priority?: (item: ItemType) => number;
+    /** makes this a vertical overflow */
+    vertical?: boolean;
+    overflowButtonProps?: Partial<ButtonEXProps>;
+    overflowProps?: Partial<iMenuExProps>;
+    /** optional, send in a maxHeight or maxWidth to the root component */
+    size?: string;
+    /** if you would like to update the priority/overflow when seleciton changes even if size did not change - set this prop */
+    selection?: unknown;
 }
 
 const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType>) => {
     const ctx = useKWIZFluentContext();
+    const closeMenu = useRef<() => void>();
+
     if (props.items.length === 0) return undefined;
     else if (props.renderOverflowMenuButton)
         return props.renderOverflowMenuButton(props);
-    return <Menu mountNode={ctx.mountNode} {...(props.menu || {})}>
-        <MenuTrigger disableButtonEnhancement>
-            <MenuButton
-                icon={props.menuIcon || <MoreVerticalRegular />}
-                aria-label={ctx.strings?.more_param?.({ cap: true, param: ctx.strings?.items?.() || "items" }) || "More items"}
-                appearance="subtle"
-            />
-        </MenuTrigger>
-        <MenuPopover>
-            <MenuList>
-                {props.items.map((item, index) => <Section key={`s${index}`}>{props.renderItem(item, index, true)}</Section>)}
-            </MenuList>
-        </MenuPopover>
-    </Menu>;
+
+    const moreText = ctx.strings?.more_param?.({ cap: true, param: ctx.strings?.items?.() || "items" }) || "More items";
+    return <MenuEx menuProps={props.menu} closeMenu={closeMenu}
+        trigger={{
+            icon: props.menuIcon || <MoreVerticalRegular />,
+            title: moreText, showTitleWithIcon: props.vertical,
+            dontStretch: true, dontCenterText: true,
+            iconPosition: props.vertical ? "after" : "before",
+            ...(props.overflowButtonProps || {})
+        }}
+        items={props.items.map((item, index) => ({
+            title: `s${index}`, onClick: () => { }, as: <Section key={`s${index}`} onClick={() => closeMenu.current?.()}>{props.renderItem(item, index, true)}</Section>
+        }))}
+    />;
 }
 
 const useStyles = makeStyles({
     root: {
         overflow: "hidden",
-        width: "100%"
+        width: "100%",
+        maxWidth: "100%"
     },
     nowrap: {
         whiteSpace: "nowrap",
@@ -62,6 +76,11 @@ const useStyles = makeStyles({
             overflow: "visible",
         }
     },
+    rootVertical: {
+        overflow: "hidden",
+        height: "100%",
+        maxHeight: "100%"
+    }
 });
 export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Props<ItemType>>) => {
     const css = useStyles();
@@ -73,6 +92,12 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
         const p = props?.priority?.(item) || 0;
         if (!isNumber(p) || p < 0) return 0;
         else return p;
+    }
+
+    function tooBig(div: HTMLDivElement) {
+        return props.vertical
+            ? div.scrollHeight > div.clientHeight
+            : div.scrollWidth > div.clientWidth;
     }
 
     useEffect(() => {
@@ -103,7 +128,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
                 //have more higher priority items to hide
                 currentPriority <= highestPriority
                 //still need to hide items
-                && div.scrollWidth > div.clientWidth
+                && tooBig(div)
             ) {
                 const currentLevelChildren = allChildren.filter(c => c.priority === currentPriority);
                 currentPriority++;
@@ -113,7 +138,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
                     //have more children
                     currentChild < currentLevelChildren.length
                     //still need to hide items
-                    && div.scrollWidth > div.clientWidth
+                    && tooBig(div)
                 ) {
                     const child = currentLevelChildren[currentChild++];
                     newOverflowIndexes.push(child.itemIndex);
@@ -121,26 +146,30 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
                 }
             }
 
-            if (currentPriority > highestPriority)//we progressed beyond the items we have and could not get rid of the scroll
-                logger.warn("no more items to hide, can't overflow");
+            // if (currentPriority > highestPriority)//we progressed beyond the items we have and could not get rid of the scroll
+            //     logger.warn("no more items to hide, can't overflow");
 
             //set the hidden indexes, in their correct order (reverse back)
             setOverflowIndexes(newOverflowIndexes.reverse());
         }
-    }, [size.height, size.width, wrapperRef.value, props.items, props.children, props.childrenBefore]);
+    }, [size.height, size.width, wrapperRef.value, props.items, props.children, props.childrenBefore, props.size, props.selection]);
 
-    const cssClasses = [css.root, (props.nowrap || props.nowrapTabs) && css.nowrap, props.nowrapTabs && css.nowrapTabs,
+    const cssClasses = [props.vertical ? css.rootVertical : css.root, (props.nowrap || props.nowrapTabs) && css.nowrap, props.nowrapTabs && css.nowrapTabs,
     ...(props.root?.css || [])
     ];
 
+    const Wrapper = (props.vertical ? Vertical : Horizontal);
+
     return (
-        <Horizontal ref={wrapperRef.set} {...props.root} css={cssClasses}>
+        <Wrapper ref={wrapperRef.set} {...props.root} css={cssClasses} style={isNullOrEmptyString(props.size)
+            ? undefined
+            : props.vertical ? { minHeight: props.size, maxHeight: props.size } : { width: props.size }}>
             {props.childrenBefore}
             {props.items.map((item, index) => <Section key={`s${index}`} rootProps={{
                 "data-item-index": index//set the item id - we use it using dataset.itemIndex
             } as any}>{props.renderItem(item, index, false)}</Section>)}
             <OverflowMenu {...props} items={overflowIndexes.map(itemIndex => props.items[itemIndex])} />
             {props.children}
-        </Horizontal>
+        </Wrapper>
     );
 };

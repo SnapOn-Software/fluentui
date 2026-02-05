@@ -61,8 +61,7 @@ const useStyles = makeStyles({
             color: tokens.colorStatusWarningForeground1
         }
     }
-})
-
+});
 
 export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
     const ctx = useKWIZFluentContext();

@@ -1,6 +1,6 @@
 import { Menu, MenuButtonProps, MenuDivider, MenuGroup, MenuGroupHeader, MenuItem, MenuList, MenuListProps, MenuPopover, menuPopoverClassNames, MenuPopoverProps, MenuProps, MenuTrigger, SplitButton, SplitButtonProps } from '@fluentui/react-components';
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isNumber, isString, isUndefined, jsonClone, stopEvent } from '@kwiz/common';
-import React, { useMemo } from 'react';
+import React, { MutableRefObject, useMemo } from 'react';
 import { useClickableDiv, useStateEX } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { ButtonEX, ButtonEXProps } from './button';
@@ -11,12 +11,12 @@ import { Search } from './search';
 interface iMenuItemEXItem {
     type?: "item";
     title: string;
-    onClick: (e:React.MouseEvent) => void;
+    onClick: (e: React.MouseEvent) => void;
     disabled?: boolean;
     icon?: JSX.Element;
     items?: iMenuItemEX[];
     checked?: boolean;
-    /** render this control instead of the item */
+    /** render this control instead of the item IMPORTANT! pass in a key to this control */
     as?: JSX.Element;
 }
 interface iMenuItemEXSeparator {
@@ -31,7 +31,7 @@ interface iMenuItemEXGroup {
 export type iMenuItemEX = iMenuItemEXItem | iMenuItemEXSeparator | iMenuItemEXGroup;
 
 interface IPropsBase {
-    menuProps?: MenuProps;
+    menuProps?: Partial<MenuProps>;
     menuPopOverProps?: MenuPopoverProps;
     menuListProps?: MenuListProps;
     items: iMenuItemEX[];
@@ -39,6 +39,7 @@ interface IPropsBase {
     filterThreshold?: number | false;
     /** default 8, null/false to disable */
     pageSize?: number | false;
+    closeMenu?: MutableRefObject<() => void>
 }
 interface IPropsNoSplit {
     trigger: JSX.Element | string | ButtonEXProps;
@@ -60,6 +61,8 @@ export const MenuEx: React.FunctionComponent<React.PropsWithChildren<iMenuExProp
     //when hovering over sub menu the parent would close - have menu trigger keep open on the parent level
     const [keepOpen, setKeepOpen] = useStateEX<IDictionary<boolean>>({});
     const [opened, setOpened] = useStateEX<IDictionary<boolean>>({});
+
+    if (props.closeMenu) props.closeMenu.current = () => setOpened({ 0: false });
 
     const clickableDiv = useClickableDiv();
 
