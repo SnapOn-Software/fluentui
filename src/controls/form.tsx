@@ -73,7 +73,10 @@ export function FormDialogEX<FormData>({ defaultValues, fields, buttonIcon, butt
             setShow(false);
             onClose?.();
         }}
-            okButtonProps={{ disabled: !valid }}
+            okButtonProps={{
+                //disabled: !valid >> no other way to show field validations
+                appearance: "primary"
+            }}
             onOK={async () => {
                 if (valid) {
                     setInProgress(true);
@@ -92,6 +95,7 @@ export function FormDialogEX<FormData>({ defaultValues, fields, buttonIcon, butt
                     }
                     setInProgress(false);
                 }
+                else setSubmitError("Some form values are not valid.");
             }}>
             <Vertical>
                 {inProgress && <PleaseWait />}
