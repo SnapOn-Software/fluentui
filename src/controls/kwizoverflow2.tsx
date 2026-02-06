@@ -1,7 +1,7 @@
 import { makeStyles, MenuProps, tabClassNames } from "@fluentui/react-components";
 import { MoreVerticalRegular } from "@fluentui/react-icons";
 import { CommonLogger, isNullOrEmptyString, isNumber } from "@kwiz/common";
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useElementSize, useRefWithState } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
 import { KnownClassNames } from "../styles";
@@ -37,13 +37,20 @@ export interface iOverflowV2Props<ItemType> {
     size?: string;
     /** if you would like to update the priority/overflow when seleciton changes even if size did not change - set this prop */
     selection?: unknown;
+    ref?: React.Ref<HTMLDivElement>;
 }
 
-const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType>) => {
+const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType> & {
+    overflowItems: {
+        item: ItemType;
+        /** used internally for the overflow menu */
+        $originalIndex?: number;
+    }[];
+}) => {
     const ctx = useKWIZFluentContext();
     const closeMenu = useRef<() => void>();
 
-    if (props.items.length === 0) return undefined;
+    if (props.overflowItems.length === 0) return undefined;
     else if (props.renderOverflowMenuButton)
         return props.renderOverflowMenuButton(props);
 
@@ -56,8 +63,8 @@ const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType>) => {
             iconPosition: props.vertical ? "after" : "before",
             ...(props.overflowButtonProps || {})
         }}
-        items={props.items.map((item, index) => ({
-            title: `s${index}`, onClick: () => { }, as: <Section key={`s${index}`} onClick={() => closeMenu.current?.()}>{props.renderItem(item, index, true)}</Section>
+        items={props.overflowItems.map((oItem) => ({
+            title: `s${oItem.$originalIndex}`, onClick: () => { }, as: <Section key={`s${oItem.$originalIndex}`} onClick={() => closeMenu.current?.()}>{props.renderItem(oItem.item, oItem.$originalIndex, true)}</Section>
         }))}
     />;
 }
@@ -82,9 +89,10 @@ const useStyles = makeStyles({
         maxHeight: "100%"
     }
 });
+
 export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Props<ItemType>>) => {
     const css = useStyles();
-    const wrapperRef = useRefWithState<HTMLDivElement>();
+    const wrapperRef = useRefWithState<HTMLDivElement>(undefined, undefined, props.ref);
     const size = useElementSize(wrapperRef.ref.current);
     const [overflowIndexes, setOverflowIndexes] = useState<number[]>([]);
 
@@ -160,6 +168,10 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
 
     const Wrapper = (props.vertical ? Vertical : Horizontal);
 
+    useEffect(() => {
+        setOverflowIndexes([]);
+    }, [props.items]);
+
     return (
         <Wrapper ref={wrapperRef.set} {...props.root} css={cssClasses} style={isNullOrEmptyString(props.size)
             ? undefined
@@ -168,7 +180,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
             {props.items.map((item, index) => <Section key={`s${index}`} rootProps={{
                 "data-item-index": index//set the item id - we use it using dataset.itemIndex
             } as any}>{props.renderItem(item, index, false)}</Section>)}
-            <OverflowMenu {...props} items={overflowIndexes.map(itemIndex => props.items[itemIndex])} />
+            <OverflowMenu {...props} overflowItems={overflowIndexes.map(itemIndex => ({ item: props.items[itemIndex], $originalIndex: itemIndex }))} />
             {props.children}
         </Wrapper>
     );

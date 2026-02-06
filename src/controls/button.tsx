@@ -16,6 +16,7 @@ interface IProps {
     /** href will be set to an onclick, with either window.open(href) or window.location.href={href} depending on the target */
     href?: string;
     target?: HTMLAttributeAnchorTarget;
+    variant?: "danger" | "success" | "primary-subtle" | "danger-subtle";
 }
 interface IPropsCompound extends IProps {
     width?: string | number;
@@ -27,6 +28,7 @@ export type CompoundButtonEXProps = IPropsCompound & Omit<CompoundButtonProps, "
 const useStyles = makeStyles({
     buttonNoCenter: {
         justifyContent: 'flex-start',
+        textAlign: 'start',
         '& *': {
             /* a button with no center that has content of a vertical, or multiple labels */
             alignItems: 'flex-start'
@@ -76,6 +78,22 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
 
     const cssNames = useStyles();
     let css: string[] = [];
+    if (isNotEmptyString(props.variant)) {
+        switch (props.variant) {
+            case "danger":
+                if (!props.disabled) css.push(cssNames.danger);
+                break;
+            case "danger-subtle":
+                if (!props.disabled) css.push(cssNames.dangerSubtle);
+                break;
+            case "primary-subtle":
+                if (!props.disabled) css.push(cssNames.primarySubtle);
+                break;
+            case "success":
+                css.push(cssNames.success);
+                break;
+        }
+    }
 
     if (props.hideOnPrint) PushNoDuplicate(css, KnownClassNames.printHide);
     if (props.dontCenterText) PushNoDuplicate(css, cssNames.buttonNoCenter);
@@ -149,25 +167,25 @@ export const ButtonEXPrimary = React.forwardRef<HTMLButtonElement, (ButtonEXProp
 export const ButtonEXDanger = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
     const cssNames = useStyles();
     return (
-        <ButtonEXSecondary ref={ref} className={props.disabled ? undefined : cssNames.danger} {...props}>{props.children}</ButtonEXSecondary>
+        <ButtonEXSecondary ref={ref} variant='danger' {...props}>{props.children}</ButtonEXSecondary>
     );
 });
 export const ButtonEXSuccess = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
     const cssNames = useStyles();
     return (
-        <ButtonEX ref={ref} className={cssNames.success} {...props}>{props.children}</ButtonEX>
+        <ButtonEX ref={ref} variant="success" {...props}>{props.children}</ButtonEX>
     );
 });
 export const ButtonEXPrimarySubtle = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
     const cssNames = useStyles();
     return (
-        <ButtonEX ref={ref} className={props.disabled ? undefined : cssNames.primarySubtle} {...props}>{props.children}</ButtonEX>
+        <ButtonEX ref={ref} variant="primary-subtle" {...props}>{props.children}</ButtonEX>
     );
 });
 export const ButtonEXDangerSubtle = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
     const cssNames = useStyles();
     return (
-        <ButtonEX ref={ref} className={props.disabled ? undefined : cssNames.dangerSubtle} {...props}>{props.children}</ButtonEX>
+        <ButtonEX ref={ref} variant="danger-subtle" {...props}>{props.children}</ButtonEX>
     );
 });
 

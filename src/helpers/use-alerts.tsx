@@ -1,6 +1,7 @@
 import { Label } from "@fluentui/react-components";
-import { isFunction, isString } from "@kwiz/common";
+import { isFunction, isNullOrUndefined, isString } from "@kwiz/common";
 import { useCallback } from "react";
+import { ButtonEXProps } from "../controls";
 import { IPrompterProps, Prompter } from "../controls/prompt";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
 
@@ -9,9 +10,25 @@ export type iAlertPrompterProps = Omit<IPrompterProps, "onOK"> & {
     onOK?: () => Promise<void> | void | Promise<boolean> | boolean;
 };
 
+type confirmOptions = {
+    onOK?: () => void;
+    onCancel?: () => void;
+    okProps?: Partial<ButtonEXProps>;
+    cancelProps?: Partial<ButtonEXProps>;
+};
+
+type confirmEXOverloads = {
+    (message: string | JSX.Element, onOK?: () => void, onCancel?: () => void): Promise<boolean>;
+    (message: string | JSX.Element, options?: confirmOptions): Promise<boolean>;
+};
+
+function isConfirmOptions(param?: confirmOptions | (() => void)): param is confirmOptions {
+    return isFunction(param) ? false : true;
+}
+
 export interface iAlerts {
     promptEX: (info: iAlertPrompterProps) => void;
-    confirmEX: (message: string | JSX.Element, onOK?: () => void, onCancel?: () => void) => Promise<boolean>;
+    confirmEX: confirmEXOverloads;
     alertEX: (message: string | JSX.Element, onOK?: () => void) => Promise<void>;
     alertPrompt?: JSX.Element;
     close: () => void;
@@ -49,18 +66,26 @@ export function useAlerts(): iAlerts {
         }, 1);
     }, useEffectOnlyOnMount);
 
-    const confirmEX = useCallback((message: string | JSX.Element, onOK?: () => void, onCancel?: () => void) => {
+    const confirmEX = useCallback<confirmEXOverloads>((message: string | JSX.Element, onOKOrOptions?: confirmOptions | (() => void), onCancel?: () => void) => {
+        const options: confirmOptions = isNullOrUndefined(onOKOrOptions)
+            ? { onCancel: onCancel }
+            : isConfirmOptions(onOKOrOptions) ? onOKOrOptions : {
+                onOK: onOKOrOptions,
+                onCancel: onCancel
+            };
         return new Promise<boolean>(resolve => {
             promptEX({
                 children: isString(message) ? <Label>{message}</Label> : message,
                 onCancel: () => {
-                    if (isFunction(onCancel)) onCancel();
+                    if (isFunction(options.onCancel)) options.onCancel();
                     resolve(false);
                 },
                 onOK: () => {
-                    if (isFunction(onOK)) onOK();
+                    if (isFunction(options.onOK)) options.onOK();
                     resolve(true);
-                }
+                },
+                okButtonProps: options.okProps,
+                cancelButtonProps: options.cancelProps,
             });
         });
     }, useEffectOnlyOnMount);

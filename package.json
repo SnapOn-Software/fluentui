@@ -13,15 +13,14 @@
         "./package.json": "./package.json"
     },
     "scripts": {
-        "watch": "tsc -watch",
+        "watch": "tsc-watch --onSuccess \"yalc push\"",
         "build": "npm run test && tsc",
         "build-explain": "tsc --explainFiles",
         "check-dependencies": "madge --circular ./src",
+        "yalc-link": "yalc publish",
         "create-link": "npm link",
         "test": "npm run prestart && depcruise src && node --import tsx --test src",
         "link-local-kwiz": "npm link @kwiz/common",
-        "yalc-link": "yalc publish",
-        "yalc-watch": "tsc-watch --onSuccess \"yalc push\"",
         "__update-kwiz-packages": "npm install @kwiz/common@latest",
         "npm-v-patch": "npm version patch && git push origin main:main && git push --tags",
         "npm-v-major": "npm version major && git push origin main:main && git push --tags",
