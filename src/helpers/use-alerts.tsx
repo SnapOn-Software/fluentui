@@ -1,7 +1,7 @@
 import { Label } from "@fluentui/react-components";
 import { isFunction, isNullOrUndefined, isString } from "@kwiz/common";
 import { useCallback } from "react";
-import { ButtonEXProps } from "../controls";
+import { ButtonEXProps } from "../controls/button";
 import { IPrompterProps, Prompter } from "../controls/prompt";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
 
