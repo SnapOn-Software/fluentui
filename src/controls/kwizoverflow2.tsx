@@ -5,7 +5,7 @@ import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useElementSize, useRefWithState } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
 import { KnownClassNames } from "../styles";
-import { ButtonEXProps } from "./button";
+import { ButtonEXProps } from "../types";
 import { Horizontal, iHorizontalProps } from "./horizontal";
 import { iMenuExProps, MenuEx } from "./menu";
 import { Section } from "./section";

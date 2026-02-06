@@ -1,8 +1,8 @@
 import { Label } from "@fluentui/react-components";
 import { isFunction, isNullOrUndefined, isString } from "@kwiz/common";
 import { useCallback } from "react";
-import { ButtonEXProps } from "../controls/button";
 import { IPrompterProps, Prompter } from "../controls/prompt";
+import { ButtonEXProps } from "../types";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
 
 export type iAlertPrompterProps = Omit<IPrompterProps, "onOK"> & {

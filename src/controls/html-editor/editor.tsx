@@ -5,7 +5,8 @@ import JoditEditor, { Jodit } from "jodit-react";
 import { IJodit } from 'jodit/esm/types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useEffectOnlyOnMount } from '../../helpers';
-import { ButtonEX, ButtonEXProps } from '../button';
+import { ButtonEXProps } from '../../types';
+import { ButtonEX } from '../button';
 import { Section } from '../section';
 import { IconToSVGAsync } from '../svg';
 

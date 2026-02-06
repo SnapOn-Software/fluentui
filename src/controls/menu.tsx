@@ -3,7 +3,8 @@ import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, is
 import React, { MutableRefObject, useMemo } from 'react';
 import { useClickableDiv, useStateEX } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
-import { ButtonEX, ButtonEXProps } from './button';
+import { ButtonEXProps } from '../types';
+import { ButtonEX } from './button';
 import { DividerEX } from './divider';
 import { Horizontal } from './horizontal';
 import { Search } from './search';

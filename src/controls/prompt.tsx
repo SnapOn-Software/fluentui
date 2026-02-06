@@ -5,7 +5,8 @@ import React from 'react';
 import { useRefWithState } from '../helpers';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { useKeyDown } from '../helpers/hooks-events';
-import { ButtonEX, ButtonEXProps, ButtonEXSecondary } from './button';
+import { ButtonEXProps } from '../types';
+import { ButtonEX, ButtonEXSecondary } from './button';
 
 export interface IPrompterProps {
     hideOk?: boolean;

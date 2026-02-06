@@ -4,7 +4,8 @@ import { isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, las
 import * as React from "react";
 import { dropFiles, useDragDropContext, useEffectOnlyOnMount } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
-import { ButtonEX, ButtonEXProps, CompoundButtonEXSecondary } from "./button";
+import { ButtonEXProps } from "../types";
+import { ButtonEX, CompoundButtonEXSecondary } from "./button";
 
 const useStyles = makeStyles({
     addRowIsOver: {

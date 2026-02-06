@@ -1,29 +1,11 @@
 import { Button, ButtonProps, CompoundButton, compoundButtonClassNames, CompoundButtonProps, makeStyles, mergeClasses, tokens, Tooltip } from '@fluentui/react-components';
 import { capitalizeFirstLetter, isFunction, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, isString, PushNoDuplicate } from '@kwiz/common';
-import React, { HTMLAttributeAnchorTarget } from 'react';
+import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { commonSizes, KnownClassNames } from '../styles/styles';
+import { ButtonEXProps, CompoundButtonEXProps } from '../types';
 
-interface IProps {
-    title: string;//required
-    showTitleWithIcon?: boolean;
-    dontStretch?: boolean;
-    hideOnPrint?: boolean;
-    dontCenterText?: boolean;
-    hoverIcon?: JSX.Element;
-    hoverTitle?: string;
-    onClick?: (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => void | undefined;//type the onClick arg
-    /** href will be set to an onclick, with either window.open(href) or window.location.href={href} depending on the target */
-    href?: string;
-    target?: HTMLAttributeAnchorTarget;
-    variant?: "danger" | "success" | "primary-subtle" | "danger-subtle";
-}
-interface IPropsCompound extends IProps {
-    width?: string | number;
-}
 
-export type ButtonEXProps = IProps & Omit<ButtonProps, "onClick" | "title">;
-export type CompoundButtonEXProps = IPropsCompound & Omit<CompoundButtonProps, "onClick" | "title">;
 
 const useStyles = makeStyles({
     buttonNoCenter: {
