@@ -1,7 +1,7 @@
 import { makeStyles, MenuProps, tabClassNames } from "@fluentui/react-components";
 import { MoreVerticalRegular } from "@fluentui/react-icons";
-import { CommonLogger, isNullOrEmptyString, isNumber } from "@kwiz/common";
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { CommonLogger, debounce, isNotEmptyArray, isNullOrEmptyString, isNumber } from "@kwiz/common";
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
 import { useElementSize, useRefWithState } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
 import { KnownClassNames } from "../styles";
@@ -12,13 +12,14 @@ import { Section } from "./section";
 import { Vertical } from "./vertical";
 
 const logger = new CommonLogger("OverflowV2");
+export const kwizOVerflowMoreMenuCSSName = "kfui-overflow-more";
 
 export interface iOverflowV2Props<ItemType> {
     /** you cannot have a menu with trigger in overflow items. put those in groupWrapper controls before/after rendering children. */
     items: ItemType[];
     /** when overflow:true, if using the OOB menu, should return a <MenuItem> */
     renderItem: (item: ItemType, index: number, overflow?: boolean) => JSX.Element;
-    /** items will only have the items that need to overflow */
+    /** items will only have the items that need to overflow. Add kwizOVerflowMoreMenuCSSName to the button */
     renderOverflowMenuButton?: (props: iOverflowV2Props<ItemType>) => JSX.Element;
     root?: Partial<iHorizontalProps>;
     nowrap?: boolean;
@@ -57,6 +58,7 @@ const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType> & {
     const moreText = ctx.strings?.more_param?.({ cap: true, param: ctx.strings?.items?.() || "items" }) || "More items";
     return <MenuEx menuProps={props.menu} closeMenu={closeMenu}
         trigger={{
+            className: kwizOVerflowMoreMenuCSSName,
             icon: props.menuIcon || <MoreVerticalRegular />,
             title: moreText, showTitleWithIcon: props.vertical,
             dontStretch: true, dontCenterText: true,
@@ -108,17 +110,22 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
             : div.scrollWidth > div.clientWidth;
     }
 
-    useEffect(() => {
-        if (wrapperRef.ref.current) {
-            const div = wrapperRef.ref.current;
+    const resize = useCallback(debounce((info: {
+        div: HTMLDivElement;
+        items: ItemType[];
+
+    }) => {
+        if (info.div) {
+            const div = info.div;
             const childrenE = div.querySelectorAll(`:scope>.${KnownClassNames.section}`);
+            const overflowMenu = div.querySelector(`.${kwizOVerflowMoreMenuCSSName}`);
             let allChildren: { div: HTMLDivElement, priority: number; itemIndex: number; }[] = [];
             let highestPriority = 0;
             childrenE.forEach(e => {
                 const div = e as HTMLDivElement;
                 const itemIndex = Number(div.dataset.itemIndex);
-                if (itemIndex > 0 && itemIndex <= props.items.length) {
-                    const priority = getPriority(props.items[itemIndex]);
+                if (itemIndex > 0 && itemIndex <= info.items.length) {
+                    const priority = getPriority(info.items[itemIndex]);
                     if (priority > highestPriority) highestPriority = priority;
                     allChildren.push({ div, priority, itemIndex });
                 }
@@ -159,7 +166,15 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
 
             //set the hidden indexes, in their correct order (reverse back)
             setOverflowIndexes(newOverflowIndexes.reverse());
+            //did not have the overflow menu, but have newOverflowIndexes -> call this again after we render with the menu
+            if (!overflowMenu && isNotEmptyArray(newOverflowIndexes))
+                window.setTimeout(() => resize(info), 100);
         }
+    }, 100), []);
+
+
+    useEffect(() => {
+        resize({ div: wrapperRef.ref.current, items: props.items });
     }, [size.height, size.width, wrapperRef.value, props.items, props.children, props.childrenBefore, props.size, props.selection]);
 
     const cssClasses = [props.vertical ? css.rootVertical : css.root, (props.nowrap || props.nowrapTabs) && css.nowrap, props.nowrapTabs && css.nowrapTabs,

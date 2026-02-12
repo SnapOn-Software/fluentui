@@ -163,7 +163,7 @@ const useStyles = makeStyles({
 
         }
     },
-    first2TH: {
+    first2THWhenSticky: {
         zIndex: 30
     },
     table: {
@@ -201,10 +201,10 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
     const selectionCellClasses: string[] = [];
     if (fProps.stickyLeft) {
         firstHeaderCellClasses.splice(0, 0, css.firstCell);
-        firstHeaderCellClasses.push(css.first2TH);
+        firstHeaderCellClasses.push(css.first2THWhenSticky);
         if (fProps.stickyLeft === 2) {
             secondHeaderCellClasses.splice(0, 0, secondCellClass);
-            secondHeaderCellClasses.push(css.first2TH);
+            secondHeaderCellClasses.push(css.first2THWhenSticky);
             secondCellClasses.push(css.stickyColumnCell);
             secondCellClasses.push(css.stickyColumnCellPre);
         }

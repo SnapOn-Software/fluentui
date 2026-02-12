@@ -1,5 +1,5 @@
 import { buttonClassNames, GriffelStyle, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
-import { filterEmptyEntries, isNotEmptyArray, isNotEmptyString } from "@kwiz/common";
+import { filterEmptyEntries, isString } from "@kwiz/common";
 
 export const KnownClassNames = {
     print: 'print-root',
@@ -133,15 +133,8 @@ export const commonSizes = {
     extraWidthWide: 820,
 }
 
-/** calls mergeClasses handle string[] that might have multi class (split by space) elements */
+/** calls mergeClasses handle string or string[], clean up null/undefined - later items maintain higher priority */
 export function mergeClassesEX(...css: (string | string[])[]) {
-    const combined = filterEmptyEntries((css || []).flatMap(c =>
-        isNotEmptyArray(c)
-            ? c.flatMap(c2 => isNotEmptyString(c2)
-                ? c2.split(" ") : [])
-            : isNotEmptyString(c)
-                ? c.split(" ")
-                : []));
-
+    const combined = filterEmptyEntries(css || []).map(i => isString(i) ? [i] : i).flat();
     return mergeClasses(...combined);
 }
