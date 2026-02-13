@@ -77,12 +77,12 @@ export const Prompter = React.forwardRef<HTMLDivElement, (IPrompterProps)>((prop
     let okProps: ButtonEXProps = {
         ...(props.okButtonProps as any || {}),
         onClick: () => onOK(),
-        title: props.okButtonText || ctx.strings?.btn_ok?.() || 'OK'
+        title: props.okButtonText || props.okButtonProps?.title || ctx.strings?.btn_ok?.() || 'OK'
     };
     let cancelProps: ButtonEXProps = {
         ...(props.cancelButtonProps as any || {}),
         onClick: () => onCancel(),
-        title: props.cancelButtonText || ctx.strings?.btn_cancel?.() || 'Cancel'
+        title: props.cancelButtonText || props.cancelButtonProps?.title || ctx.strings?.btn_cancel?.() || 'Cancel'
     };
 
     useKeyDown({
