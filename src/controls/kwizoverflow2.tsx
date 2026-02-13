@@ -98,11 +98,11 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
     const size = useElementSize(wrapperRef.ref.current);
     const [overflowIndexes, setOverflowIndexes] = useState<number[]>([]);
 
-    function getPriority(item: ItemType) {
+    const getPriority = useCallback((item: ItemType) => {
         const p = props?.priority?.(item) || 0;
         if (!isNumber(p) || p < 0) return 0;
         else return p;
-    }
+    }, [props.priority]);
 
     function tooBig(div: HTMLDivElement) {
         return props.vertical
@@ -116,18 +116,19 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
 
     }) => {
         if (info.div) {
-            const div = info.div;
-            const childrenE = div.querySelectorAll(`:scope>.${KnownClassNames.section}`);
-            const overflowMenu = div.querySelector(`.${kwizOVerflowMoreMenuCSSName}`);
+            const divContainer = info.div;
+            const childrenE = divContainer.querySelectorAll(`:scope>.${KnownClassNames.section}`);
+            const overflowMenu = divContainer.querySelector(`.${kwizOVerflowMoreMenuCSSName}`);
             let allChildren: { div: HTMLDivElement, priority: number; itemIndex: number; }[] = [];
             let highestPriority = 0;
             childrenE.forEach(e => {
-                const div = e as HTMLDivElement;
-                const itemIndex = Number(div.dataset.itemIndex);
-                if (itemIndex > 0 && itemIndex <= info.items.length) {
+                const divItem = e as HTMLDivElement;
+                const itemIndex = Number(divItem.dataset.itemIndex);
+                if (itemIndex >= 0 && itemIndex <= info.items.length) {
                     const priority = getPriority(info.items[itemIndex]);
+                    divItem.dataset.itemPriority = priority.toString(10);//allows easier debugging on caller, but we don't rely on this value
                     if (priority > highestPriority) highestPriority = priority;
-                    allChildren.push({ div, priority, itemIndex });
+                    allChildren.push({ div: divItem, priority, itemIndex });
                 }
             });
 
@@ -143,7 +144,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
                 //have more higher priority items to hide
                 currentPriority <= highestPriority
                 //still need to hide items
-                && tooBig(div)
+                && tooBig(divContainer)
             ) {
                 const currentLevelChildren = allChildren.filter(c => c.priority === currentPriority);
                 currentPriority++;
@@ -153,7 +154,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
                     //have more children
                     currentChild < currentLevelChildren.length
                     //still need to hide items
-                    && tooBig(div)
+                    && tooBig(divContainer)
                 ) {
                     const child = currentLevelChildren[currentChild++];
                     newOverflowIndexes.push(child.itemIndex);
@@ -170,7 +171,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
             if (!overflowMenu && isNotEmptyArray(newOverflowIndexes))
                 window.setTimeout(() => resize(info), 100);
         }
-    }, 100), []);
+    }, 100), [getPriority]);
 
 
     useEffect(() => {
