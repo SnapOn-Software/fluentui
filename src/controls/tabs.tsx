@@ -10,7 +10,7 @@ interface iProps<keyType extends string> {
     root?: TabListProps;
     onSelect?: (value: keyType) => void;
     /** default: {direction:"v"} */
-    container?: IStackProps;
+    container?: Partial<IStackProps>;
 }
 
 type tProps<keyType extends string> = iProps<keyType> & ({
@@ -43,7 +43,7 @@ export function TabsEX<keyType extends string>(props: tProps<keyType>) {
         return firstOrNull(props.tabs, t => t.key === selectedValueToUse);
     }, [props.tabs, selectedValueToUse]);
 
-    return <Stack {...props.container || { direction: "v" }}>
+    return <Stack direction="v" {...(props.container || {})}>
         <TabList {...props.root} selectedValue={selectedValueToUse} onTabSelect={(e, data) => {
             setUncontrolledSelected(data.value as keyType);
             props.onSelect?.(data.value as keyType);

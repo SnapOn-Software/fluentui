@@ -120,7 +120,7 @@ export function FormEX<FormData>({ defaultValues, fields, onSubmit, clear, submi
             setInProgress(false);
         }
         else setSubmitError("Some form values are not valid.");
-    }, [valid, values]);
+    }, [valid, values, onSubmit]);
     if (submit) submit.current = submitForm;
 
     return <FormEX_internal<FormData> fields={fields} setValid={setValid} inProgress={inProgress} submitError={submitError}
