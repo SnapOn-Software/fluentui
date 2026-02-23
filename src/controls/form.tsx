@@ -1,6 +1,7 @@
 import { MessageBar } from "@fluentui/react-components";
 import { CommonConfig, filterEmptyEntries, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, jsonClone } from "@kwiz/common";
 import { MutableRefObject, useCallback, useRef, useState } from "react";
+import { ButtonEXProps } from "../types";
 import { ButtonEXPrimarySubtle } from "./button";
 import { FormFieldEX } from "./field";
 import { Internal_FormEX } from "./form-context";
@@ -37,20 +38,23 @@ type FormField<FormData> = {
         key: FieldName;
         validation?: (value: FormData[FieldName], values: FormData) => string;
         /** should not be an uncontrolled control */
-        fieldControl: (value: FormData[FieldName], setValue: (value: FormData[FieldName]) => void) => JSX.Element;
+        fieldControl: (value: FormData[FieldName], setValue: (value: FormData[FieldName], otherValues?: Partial<FormData>) => void, values: FormData) => JSX.Element;
     }
 }[keyof FormData & string];
 
 /** render a form in a dialog, with or without a trigger button to open/close the dialog. */
-export function FormDialogEX<FormData>({ defaultValues, fields, buttonIcon, buttonTitle, dialogTitle, onSubmit, onClose }: {
+export function FormDialogEX<FormData>({ defaultValues, fields, buttonIcon, buttonTitle, buttonProps, dialogTitle, onSubmit, onClose, actions }: {
     defaultValues: FormData;
     fields: FormField<FormData>[];
     buttonIcon?: JSX.Element;
     buttonTitle?: string;
+    buttonProps?: Partial<ButtonEXProps>;
     dialogTitle: string;
     /** called if form fields are all valid */
     onSubmit: (values: FormData) => Promise<string>;
     onClose?: () => void;
+    /** additional button actions at the bottom */
+    actions?: JSX.Element[];
 }) {
     const addButton = !isNullOrUndefined(buttonIcon) || isNotEmptyString(buttonTitle);
     const [show, setShow] = useState(false);
@@ -58,17 +62,19 @@ export function FormDialogEX<FormData>({ defaultValues, fields, buttonIcon, butt
     const submit = useRef<() => void>();
 
     return <>
-        {addButton && <ButtonEXPrimarySubtle icon={buttonIcon} title={buttonTitle}
+        {addButton && <ButtonEXPrimarySubtle {...(buttonProps || {})} icon={buttonIcon} title={buttonTitle}
             onClick={() => { clear.current?.(); setShow(true); }} />}
-        {(show || !addButton) && <Prompter title={dialogTitle} onCancel={() => {
-            setShow(false);
-            onClose?.();
-        }}
+        {(show || !addButton) && <Prompter title={dialogTitle}
+            onCancel={() => {
+                setShow(false);
+                onClose?.();
+            }}
             okButtonProps={{
                 //disabled: !valid >> no other way to show field validations
                 appearance: "primary"
             }}
-            onOK={() => submit.current?.()}>
+            onOK={() => submit.current?.()}
+            actions={actions}>
             <FormEX<FormData> defaultValues={defaultValues} fields={fields}
                 submit={submit} clear={clear}
                 onSubmit={async values => {
@@ -145,7 +151,7 @@ function FormEX_internal<FormData>({ fields, setValid, inProgress, submitError, 
                 } : undefined}
             >
                 {isNullOrUndefined(values[field.key]) && CommonConfig.i.IsLocalDev && <MessageBar layout="multiline" intent="warning">This should be a controlled element, value should never be null or your control might get out of sync.</MessageBar>}
-                {field.fieldControl(values[field.key], newValue => setValues({ ...values, [field.key]: newValue }))}
+                {field.fieldControl(values[field.key], (newValue, otherValues) => setValues({ ...values, ...(otherValues || {}), [field.key]: newValue }), values)}
             </FormFieldEX>)}
         </Internal_FormEX>
     </Vertical>;

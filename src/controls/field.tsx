@@ -28,7 +28,7 @@ export function FormFieldEX<ValueType>(props: iProps<ValueType>) {
         return error;
     }, [validation, required, value]);
 
-    const [error, setError] = useState(validate_internal());
+    const [error, setError] = useState("");
 
     useEffect(() => {
         const newError = validate_internal();

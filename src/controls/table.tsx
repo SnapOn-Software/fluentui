@@ -1,7 +1,7 @@
-import { createTableColumn, makeStyles, Table, TableBody, TableCell, TableCellActions, TableCellLayout, TableColumnDefinition, TableColumnId, TableHeader, TableHeaderCell, TableRow, TableSelectionCell, tokens, useArrowNavigationGroup, useTableFeatures, useTableSelection, useTableSort } from "@fluentui/react-components";
+import { createTableColumn, makeStyles, Table, TableBody, TableCell, TableCellActions, TableCellLayout, TableColumnDefinition, TableColumnId, TableHeader, TableHeaderCell, TableRow, TableSelectionCell, tokens, useArrowNavigationGroup, useTableFeatures, useTableSort } from "@fluentui/react-components";
 import { CheckboxCheckedRegular, CheckboxUncheckedRegular, ChevronCircleLeftFilled, ChevronCircleLeftRegular, ChevronCircleRightFilled, ChevronCircleRightRegular, EqualCircleFilled, EqualCircleRegular, FilterDismissRegular, FilterFilled, FilterRegular, MoreVerticalRegular } from "@fluentui/react-icons";
-import { dateFormat, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyString, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
-import { ReactNode, useMemo, useState } from "react";
+import { dateFormat, filterEmptyEntries, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyString, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useShowOnHover } from "../helpers";
 import { mergeClassesEX } from "../styles/styles";
 import { ButtonEX } from "./button";
@@ -35,6 +35,20 @@ export type tableItemExpandedValueType = {
 export type tableItemValueType = primitiveTypes | tableItemExpandedValueType;
 //function isItemExpandedValueType
 type itemTypeBase = IDictionary<tableItemValueType>;
+
+interface iPropsBaseNoSelect {
+    selectionMode?: never;
+    getItemKey?: never;
+    selection?: never;
+    onSelect?: never;
+}
+interface iPropsSelect<ItemType extends itemTypeBase, ItemKeyType extends string | number> {
+    selectionMode: "single" | "multiselect";
+    getItemKey: (item: ItemType) => ItemKeyType;
+    selection: ItemKeyType[];
+    onSelect: (selection: ItemKeyType[]) => void;
+}
+
 interface iPropsBase<ItemType extends itemTypeBase> {
     columns: colType[];
     /** item is a dictionary. Values are primitives, or tableItemExpandedValueType */
@@ -42,15 +56,12 @@ interface iPropsBase<ItemType extends itemTypeBase> {
     css?: string[];
     rowCss?: string[];
     getItemMenu?: (item: ItemType, index: number) => iMenuItemEX[];
-    selectionMode?: "single" | "multiselect";
-    /* if you want to control the selected items - pass an array. otherwise it will be uncontrolled */
-    selection?: number[];
-    onSelectionChange?: (selected: number[]) => void;
 }
-interface iPropsUnfreezed<ItemType extends itemTypeBase> extends iPropsBase<ItemType> {
+
+interface iPropsUnfreezed<ItemType extends itemTypeBase, ItemKeyType extends string | number> extends iPropsBase<ItemType> {
     maxHeight: never;
 }
-interface iPropsFreezed<ItemType extends itemTypeBase> extends iPropsBase<ItemType> {
+interface iPropsFreezed<ItemType extends itemTypeBase, ItemKeyType extends string | number> extends iPropsBase<ItemType> {
     stickyTop?: true;
     stickyLeft?: true | 1 | 2;
     /** default: small - keep 40px of first cell visible. medium=80px cover=none */
@@ -60,8 +71,11 @@ interface iPropsFreezed<ItemType extends itemTypeBase> extends iPropsBase<ItemTy
      */
     maxHeight?: string;
 }
-type iProps<ItemType extends itemTypeBase> = iPropsUnfreezed<ItemType> | iPropsFreezed<ItemType>;
-
+type iProps<ItemType extends itemTypeBase, ItemKeyType extends string | number> =
+    iPropsUnfreezed<ItemType, ItemKeyType> & iPropsSelect<ItemType, ItemKeyType> |
+    iPropsFreezed<ItemType, ItemKeyType> & iPropsSelect<ItemType, ItemKeyType> |
+    iPropsUnfreezed<ItemType, ItemKeyType> & iPropsBaseNoSelect |
+    iPropsFreezed<ItemType, ItemKeyType> & iPropsBaseNoSelect;
 
 const cssNames = {
     sortIcon: "sort-icon",
@@ -174,12 +188,12 @@ const useStyles = makeStyles({
     }
 });
 
-export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) {
-    const { items, columns, getItemMenu, selectionMode, onSelectionChange, selection } = props;
+export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends string | number>(props: iProps<ItemType, ItemKeyType>) {
+    const { items, columns, getItemMenu, selectionMode } = props;
     const css = useStyles();
     const showOnHover = useShowOnHover();
 
-    const fProps = props as iPropsFreezed<ItemType>;
+    const fProps = props as iPropsFreezed<ItemType, ItemKeyType>;
     const freezed = fProps.stickyTop || fProps.stickyLeft || isString(props.maxHeight);
 
     const keyboardNavAttr = useArrowNavigationGroup({ axis: "grid" });
@@ -310,7 +324,7 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
     }), [filterop]);
     // #endregion
 
-    // #region Sort and Select
+    // #region Sort
     const table_columns: TableColumnDefinition<ItemType>[] = useMemo(() => normalizedCols.map(col => createTableColumn<ItemType>({
         columnId: col.key,
         compare: (a, b) => {
@@ -333,13 +347,6 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
         [
             useTableSort({
                 defaultSortState: { sortColumn: normalizedCols[0].key, sortDirection: "ascending" }
-            }),
-            useTableSelection({
-                selectionMode,
-                selectedItems: selection,
-                onSelectionChange: (e, data) => {
-                    onSelectionChange?.([...data.selectedItems as Set<number>]);
-                }
             })
         ]);
 
@@ -353,21 +360,44 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
     const rows = table_features.sort.sort(table_features.getRows());
     // #endregion
 
+    // #selection
+    const { onSelect, selection, getItemKey } = { selection: [], ...props as iPropsSelect<ItemType, ItemKeyType> };
+    const allSelected = selection.length === rows.length;
+    const toggleRow = useCallback((item: ItemType) => {
+        const key = getItemKey(item);
+        if (!isNullOrUndefined(key)) {
+            if (!selection.includes(key)) {
+                if (selectionMode === "multiselect")
+                    onSelect([...selection, key]);//add
+                else
+                    onSelect([key]);//change - select one
+            }
+            else//selected
+            {
+                if (selectionMode === "multiselect")//remove selected
+                {
+                    onSelect(selection.filter(s => s !== item.key));
+                }
+            }
+        }
+    }, [selection, onSelect, selectionMode]);
+    // #endregion
+
     const tbl = <Table className={mergeClassesEX(css.table, props.css)}
         {...keyboardNavAttr}>
         <TableHeader>
             <TableRow>
                 {isNotEmptyString(selectionMode) && <TableSelectionCell type="checkbox" className={mergeClassesEX(selectionCellClasses, selectionCellHeaderClasses)}
                     checked={
-                        table_features.selection.allRowsSelected ? true : table_features.selection.someRowsSelected ? "mixed" : false
+                        allSelected ? true : selection.length > 0 ? "mixed" : false
                     }
                     onClick={selectionMode === "multiselect"
-                        ? table_features.selection.toggleAllRows : undefined}
+                        ? () => onSelect(filterEmptyEntries(allSelected ? [] : rows.map(r => getItemKey(r.item)))) : undefined}
                     onKeyDown={selectionMode === "multiselect"
                         ? (e: React.KeyboardEvent) => {
                             if (e.key === " ") {
                                 stopEvent(e);
-                                table_features.selection.toggleAllRows(e);
+                                onSelect(filterEmptyEntries(allSelected ? [] : rows.map(r => getItemKey(r.item))));
                             }
                         } : undefined}
                 />}
@@ -412,17 +442,17 @@ export function TableEX<ItemType extends itemTypeBase>(props: iProps<ItemType>) 
         </TableHeader>
         <TableBody>
             {rows.map((row, rowi) => <TableRow key={`i${rowi}`} className={mergeClassesEX(props.rowCss)}
-                onClick={(e: React.MouseEvent) => table_features.selection.toggleRow(e, row.rowId)}
+                onClick={(e: React.MouseEvent) => toggleRow(row.item)}
                 onKeyDown={(e: React.KeyboardEvent) => {
                     if (e.key === " ") {
                         stopEvent(e);
-                        table_features.selection.toggleRow(e, row.rowId)
+                        toggleRow(row.item);
                     }
                 }}
             >
-                {isNotEmptyString(selectionMode) && <TableSelectionCell
+                {isNotEmptyString(selectionMode) && <TableSelectionCell subtle
                     className={mergeClassesEX(selectionCellClasses)}
-                    checked={table_features.selection.isRowSelected(row.rowId)}
+                    checked={selection.includes(getItemKey(row.item))}
                     type={selectionMode === "single" ? "radio" : "checkbox"}
                     radioIndicator={{ "aria-label": "Select row" }}
                 />}

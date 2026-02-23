@@ -39,6 +39,7 @@ export * from './svg';
 export * from './table';
 export * from './tabs';
 export * from './tag-ex';
+export * from './tag-picker-ex';
 export * from './toolbar';
 export * from './vertical';
 export * from './vertical-content';

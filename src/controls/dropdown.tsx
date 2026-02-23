@@ -1,7 +1,8 @@
 import { Dropdown, DropdownProps, makeStyles, mergeClasses, Option } from '@fluentui/react-components';
-import { CommonLogger, filterEmptyEntries, firstOrNull, isNotEmptyArray, isNotEmptyString, isNullOrUndefined, isUndefined } from '@kwiz/common';
-import React, { useEffect, useMemo, useState } from 'react';
+import { CommonLogger, filterEmptyEntries, firstOrNull, isNotEmptyArray, isNotEmptyString, isNullOrUndefined } from '@kwiz/common';
+import React, { useMemo, useState } from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
+import { useControlledStateTracker } from '../helpers/use-controlled-state-tracker';
 
 const logger = new CommonLogger("DropdownEX");
 
@@ -44,29 +45,19 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: t
     const classes = useStyles();
     const ctx = useKWIZFluentContext();
 
-    const [isUnControlled, setIsUnControlled] = useState(!isUndefined(props.defaultSelected));
+    const { valueToUse, setValue } = useControlledStateTracker({
+        name: "DropdownEX",
+        value: props.selected,
+        defaultValue: props.defaultSelected
+    });
 
-    const __isUnControlled = !isUndefined(props.defaultSelected);
-    useEffect(() => {
-        if (__isUnControlled !== isUnControlled) {
-            logger.error(`A DropdownEX control was switched from controlled to uncontrolled mode. This is not supported.`);
-            setIsUnControlled(__isUnControlled);
-            if (!__isUnControlled) {
-                setUncontrolledSelected(props.selected);
-            }
-        }
-    }, [__isUnControlled, isUnControlled]);
-
-    const [uncontrolledSelected, setUncontrolledSelected] = useState(isUnControlled ? props.defaultSelected : props.selected);
-
-    const selectedValueToUse = isUnControlled ? uncontrolledSelected : props.selected;
-
-    const selected: keyType[] = Array.isArray(selectedValueToUse) ? selectedValueToUse : isNullOrUndefined(selectedValueToUse) ? [] : [selectedValueToUse];
+    //normalized as array
+    const selected: keyType[] = Array.isArray(valueToUse) ? valueToUse : isNullOrUndefined(valueToUse) ? [] : [valueToUse];
 
     //sometimes control will lose value when re-rendered
     //use case: public forms when editing other fields after the dropdown was set
     //re-set the text value manually to fix
-    let text = filterEmptyEntries((Array.isArray(selectedValueToUse) ? selectedValueToUse : [selectedValueToUse]).map(s => {
+    let text = filterEmptyEntries(selected.map(s => {
         let v = firstOrNull(props.items, i => i.key === s);
         return v ? v.value : ''
     })).join(', ');
@@ -100,11 +91,11 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: t
                 let o = firstOrNull(props.items, i => i.key === data.optionValue);
                 if (props.multiselect) {
                     let current = data.selectedOptions.map(s => firstOrNull(props.items, i => i.key === s));
-                    setUncontrolledSelected(current.map(o => o.key));
+                    setValue(current.map(o => o.key));
                     props.onSelect(o, current);
                 }
                 else {
-                    setUncontrolledSelected(o.key);
+                    setValue(o?.key);
                     props.onSelect(o);
                 }
             }}>

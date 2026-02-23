@@ -4,10 +4,10 @@ export * from './drag-drop';
 export * from './hooks';
 export * from './hooks-events';
 export * from './use-alerts';
-export * from './use-editable-control';
+export * from './use-track-changes';
 export * from './use-highlight';
 export * from './use-reload';
 export * from './use-show-on-hover';
 export * from './use-theme';
 export * from './use-toast';
-
+export * from './use-controlled-state-tracker';

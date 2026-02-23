@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { useStateEX } from "./hooks";
 
 export interface iUseReloadTracker {
-    /** marker to set as dependency */
+    /** marker to set as dependency when you want to re-run the effect when reload was called */
     reloadKey: number;
     /** call to reload */
     reload: () => void;
@@ -27,7 +27,7 @@ export function useReloadTracker(): iUseReloadTracker {
             //if no more promises - set loading to false
             if (promises.length === 0) setLoading(false);
         });
-    },[]);
+    }, []);
     const [isLoading, setLoading] = useStateEX(true, { skipUpdateIfSame: true });
     const promises: { id: number; promise: Promise<any> }[] = [];
     let counter = 1;
