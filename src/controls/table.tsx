@@ -364,19 +364,21 @@ export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends strin
     const { onSelect, selection, getItemKey } = { selection: [], ...props as iPropsSelect<ItemType, ItemKeyType> };
     const allSelected = selection.length === rows.length;
     const toggleRow = useCallback((item: ItemType) => {
-        const key = getItemKey(item);
-        if (!isNullOrUndefined(key)) {
-            if (!selection.includes(key)) {
-                if (selectionMode === "multiselect")
-                    onSelect([...selection, key]);//add
-                else
-                    onSelect([key]);//change - select one
-            }
-            else//selected
-            {
-                if (selectionMode === "multiselect")//remove selected
+        if (isNotEmptyString(selectionMode)) {
+            const key = getItemKey(item);
+            if (!isNullOrUndefined(key)) {
+                if (!selection.includes(key)) {
+                    if (selectionMode === "multiselect")
+                        onSelect([...selection, key]);//add
+                    else
+                        onSelect([key]);//change - select one
+                }
+                else//selected
                 {
-                    onSelect(selection.filter(s => s !== item.key));
+                    if (selectionMode === "multiselect")//remove selected
+                    {
+                        onSelect(selection.filter(s => s !== item.key));
+                    }
                 }
             }
         }
