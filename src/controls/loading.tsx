@@ -1,18 +1,16 @@
 import { LOGO_ANIM_DARK, LOGO_ANIM_LIGHT } from '@kwiz/common';
 import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
-import { Centered } from './centered';
+import { Centered, iCenteredProps } from './centered';
 
-interface IProps {
+export interface iLoadingProps extends iCenteredProps {
     dark?: boolean;
 }
-export const Loading: React.FunctionComponent<IProps> = (props) => {
+export const Loading: React.FunctionComponent<iLoadingProps> = (props) => {
     const ctx = useKWIZFluentContext();
     const src = props.dark === true || ctx.dark
         ? LOGO_ANIM_DARK
         : LOGO_ANIM_LIGHT;
 
-    return (
-        <Centered><img src={src} alt="loading" style={{ width: '15vw' }} /></Centered>
-    );
+    return <Centered {...props}><img src={src} alt="loading" style={{ width: '15vw' }} /></Centered>
 }

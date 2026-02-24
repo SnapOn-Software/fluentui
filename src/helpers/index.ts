@@ -6,7 +6,7 @@ export * from './hooks-events';
 export * from './use-alerts';
 export * from './use-track-changes';
 export * from './use-highlight';
-export * from './use-reload';
+export * from './use-reload-tracker';
 export * from './use-show-on-hover';
 export * from './use-theme';
 export * from './use-toast';

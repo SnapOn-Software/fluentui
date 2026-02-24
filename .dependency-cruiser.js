@@ -200,7 +200,7 @@ module.exports = {
       },
       to: {
         path: "src/controls",
-        pathNot: ["src/controls/prompt", "src/controls/please-wait"]
+        pathNot: ["src/controls/prompt", "src/controls/please-wait", "src/controls/loading"]
       }
     }
   ],

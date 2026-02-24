@@ -55,7 +55,7 @@ export function useTrackChanges(): {
 
     const doIfNoChanges = useCallback(<ReturnType,>(handler: () => ReturnType, prompt?: string) => {
         if (hasChanges)
-            alerts.confirmEX(prompt || "You will lose unsaved changes. Continue?").then(result => {
+            alerts.confirmEX(prompt || "You will lose unsaved changes. Continue?", { okProps: { variant: "danger" } }).then(result => {
                 if (result) {
                     setHasChanges(false);
                     return handler();

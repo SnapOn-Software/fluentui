@@ -78,6 +78,15 @@ export namespace mixins {
         overflow: 'hidden',
         textOverflow: 'ellipsis'
     }
+    export const full: GriffelStyle = {
+        top: 0, bottom: 0, left: 0, right: 0,
+        zIndex: 1,
+        backgroundColor: tokens.colorNeutralBackground1,
+        overflow: "auto",
+        padding: tokens.spacingHorizontalL,
+        paddingLeft: "20px",
+        paddingRight: "20px"
+    }
 }
 
 export const useCommonStyles = makeStyles({
@@ -93,15 +102,15 @@ export const useCommonStyles = makeStyles({
         fontWeight: tokens.fontWeightRegular,
         lineHeight: tokens.lineHeightBase200
     },
+    /** position fixed - full size of the window */
     fullscreen: {
         position: "fixed",
-        top: 0, bottom: 0, left: 0, right: 0,
-        zIndex: 1,
-        backgroundColor: tokens.colorNeutralBackground1,
-        overflow: "auto",
-        padding: tokens.spacingHorizontalL,
-        paddingLeft: "20px",
-        paddingRight: "20px"
+        ...mixins.full
+    },
+    /** position absolute - full size of the relative container */
+    fullsize: {
+        position: "absolute",
+        ...mixins.full
     },
     header: {
         boxShadow: tokens.shadow4Brand,

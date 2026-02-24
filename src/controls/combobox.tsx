@@ -32,7 +32,7 @@ export function ComboboxEX(props: iProps) {
                 onChange(data.optionValue);
             }
         }}>
-        {!selectedOption && <Option key={freeFormKey}>{`${freeFormPrefix}${value}`}</Option>}
+        {!selectedOption && <Option key={freeFormKey} value={value}>{`${freeFormPrefix}${value}`}</Option>}
         {items.map(o => <Option key={o.key} value={o.key}>{o.text}</Option>)}
     </Combobox>;
 }

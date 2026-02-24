@@ -4,7 +4,7 @@ import React from 'react';
 import { useKWIZFluentContext } from '../helpers/context-internal';
 import { IPrompterProps, Prompter } from './prompt';
 
-interface IProps {
+export interface iPleaseWaitProps {
     step?: number; max?: number;
     /** do not wrap in a dialog */
     contentOnly?: boolean;
@@ -12,17 +12,20 @@ interface IProps {
     onCancel?: () => void;
     label?: string;
 }
-export const PleaseWait: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+export const PleaseWait: React.FunctionComponent<React.PropsWithChildren<iPleaseWaitProps>> = (props) => {
     const ctx = useKWIZFluentContext();
+    //add a hidden input to capture focus, otherwise dialog will show a warning
     const field = <Field validationMessage={props.label || ctx.strings?.prompt_wait?.({ cap: true }) || "please wait..."} validationState="none">
         <ProgressBar value={props.step} max={props.max} />
+        <input type="button" style={{ position: "fixed", left: `-200vw` }} />
     </Field>;
     return (props.contentOnly
         ? field
         : <Prompter hideOk
             hideCancel={!isFunction(props.onCancel)}
             cancelButtonText={props.cancelText || 'cancel'}
-            onCancel={props.onCancel}>{field}</Prompter>
+            onCancel={props.onCancel}>{field}
+        </Prompter>
     );
 }
 

@@ -45,6 +45,8 @@ export interface ISectionProps {
     sticky?: boolean;
     /** true - will add css position fixed. portal will also wrap it in a portal. */
     fullscreen?: boolean | "portal";
+    /** true - will add css position absolute. */
+    fullsize?: boolean;
     centerSelf?: boolean;
 }
 
@@ -110,6 +112,7 @@ export const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<
     //a css class might have space and  multiuple classes in it
     if (isNotEmptyArray(props.css)) props.css.filter(c => isNotEmptyString(c)).forEach(c => css.push(...c.split(" ")));
     if (props.fullscreen) css.push(commonStyles.fullscreen);
+    if (props.fullsize) css.push(commonStyles.fullsize);
     const control = <div ref={divRef.set} {...(props.rootProps || {})} title={props.title} style={props.style}
         className={mergeClassesEX(...css)}
         onClick={props.onClick}>
