@@ -165,6 +165,14 @@ const useStyles = makeStyles({
             width: "1px",
             top: 0, right: 0, bottom: 0
 
+        },
+        //make sure content covers the selection cell when it is not showing
+        [`&.${cssNames.selectableTable}::before`]: {
+            content: '""',
+            position: "absolute",
+            backgroundColor: tokens.colorNeutralBackground1,
+            width: "40px",
+            top: 0, left: '-40px', bottom: 0
         }
     },
     stickyColumnCellPre: {
