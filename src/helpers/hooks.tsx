@@ -39,7 +39,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
 
     const [value, setValueInState] = useState<ValueType>(initialValue);
 
-    const currentValue = useRef<ValueType>();
+    const currentValue = useRef<ValueType>(initialValue);//must set initial value don't rely on useEffect to do it since some dependents might try to access it on first load
     //json clone complex/ref values so we can compare if value changed, in case caller makes chagnes on the value object directly.
     const currentValueForChecks = useRef<ValueType>();
     useEffect(() => {
