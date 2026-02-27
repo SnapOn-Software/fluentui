@@ -1,12 +1,12 @@
-import { CommonLogger, debounce, firstIndexOf, firstOrNull, isNotEmptyString, isNullOrEmptyString, isNumber, jsonClone, promiseOnce } from "@kwiz/common";
-import { isValidElement, useCallback, useMemo } from "react";
+import { CommonLogger, debounce, firstIndexOf, firstOrNull, isNotEmptyString, isNullOrEmptyString, isNumber, jsonClone, jsonStringify, promiseOnce } from "@kwiz/common";
+import { isValidElement, useCallback, useMemo, useRef } from "react";
 import { iLoadingProps, Loading } from "../controls/loading";
 import { iPleaseWaitProps, PleaseWait } from "../controls/please-wait";
 import { useStateEX } from "./hooks";
 
 const logger = new CommonLogger("useReloadTracker");
 
-type queueType = "required" | "optional";
+type queueType = "required" | "optional" | "idle";
 type isLoadingType = { type: queueType, label?: string; };
 
 export interface iUseReloadTracker<Scope extends string = "global"> {
@@ -15,12 +15,12 @@ export interface iUseReloadTracker<Scope extends string = "global"> {
     /** call to reload scope+global, or send global to reload all scopes */
     reload: (scope?: Scope) => void;
     /** state: is there pending promises in the queue */
-    isLoading: isLoadingType | false;
+    isLoading: isLoadingType;
     /** add a loading promise to the queue */
     queue: <Result, >(promise: () => Promise<Result>, info: {
         label: string; type?: queueType,
         /** will use promiseOnce if provided, along with the reload key */
-        cacheKey: string;
+        cacheKey?: string;
         /** switch reloadKey scope for cacheKey. Global will update on any reload. You want to set this if you have a dependency on reloadKey.[scope] that is not global */
         cacheScope?: Scope;
     }) => Promise<Result>;
@@ -38,8 +38,8 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
     type scopeType = withGlobal<Scope>;
     const [reloadKey, setReload, reloadKeyRef] = useStateEX<{ [key in scopeType]?: number; }>({ global: 1 });
 
-    const promises: { id: number; type: queueType; label: string; }[] = [];
-    let counter = 1;
+    const promises = useRef<{ id: number; type: queueType; label: string; }[]>([]);
+    let counter = useRef(1);
 
     const reload = useCallback(debounce((scope: scopeType) => {
         const rk = jsonClone(reloadKey);
@@ -59,19 +59,19 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
         setReload(rk);
     }, 100), [reloadKey]);
 
-    const [isLoading, setLoading, isLoadingRef] = useStateEX<isLoadingType | false>(false, { skipUpdateIfSame: true });
+    const [isLoading, setLoading, isLoadingRef] = useStateEX<isLoadingType>({ type: "idle" }, { skipUpdateIfSame: true });
 
     //this does not have dependencies, never changes, so unsafe to use state. use stateRef objects.
     const queue = useCallback<iUseReloadTracker<Scope>["queue"]>(async (promise, info) => {
         const type = info?.type || "optional";
-        if ((isLoadingRef.current as isLoadingType)?.type !== "required")//if its required - do not update this back to optional
+        if (isLoadingRef.current.type !== "required")//if its required - do not update this back to optional
             setLoading({ type, label: info.label });
 
-        const myId = counter++;
-        promises.push({ id: myId, type, label: info?.label });
+        const myId = counter.current++;
+        promises.current.push({ id: myId, type, label: info?.label });
 
         try {
-            return (isNotEmptyString(info.cacheKey)
+            return await (isNotEmptyString(info.cacheKey)
                 ? (() => {
                     const cache_reloadKey = isNotEmptyString(info.cacheScope) ? `${info.cacheScope}:${reloadKeyRef.current[info.cacheScope] || 0}` : `global:${reloadKeyRef.current.global}`;
                     const promiseOnceCacheKey = `${cache_reloadKey}|${info.cacheKey}`;
@@ -82,27 +82,30 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
             );
         } finally {
             //remove this promise
-            const myIndex = firstIndexOf(promises, p => p.id === myId);
-            promises.splice(myIndex, 1);
+            const myIndex = firstIndexOf(promises.current, p => p.id === myId);
+            promises.current.splice(myIndex, 1);
             //if no more promises - set loading to false
-            if (promises.length === 0) setLoading(false);
+            if (promises.current.length === 0) setLoading({ type: "idle" });
 
             //else, if it is state required and no more required promiese - drop it to optional
             else {
                 //drop the label/type to the next promise in queue, prioritize required ones.
-                const nextPromise = firstOrNull(promises, p_1 => p_1.type === "required") || promises[0];
+                const nextPromise = firstOrNull(promises.current, p_1 => p_1.type === "required") || promises[0];
                 setLoading({ type: nextPromise.type, label: nextPromise.label });
             }
         }
     }, []);
 
-    const reloadElement = useMemo(() => (isLoading as isLoadingType)?.type === "required"
-        ? isValidElement(props?.requiredElement) ? props.requiredElement
-            : <Loading fullsize label={(isLoading as isLoadingType).label} {...props?.requiredElement} />
-        : (isLoading as isLoadingType)?.type === "optional"
-            ? isValidElement(props?.optionalElement) ? props.optionalElement
-                : <PleaseWait label={(isLoading as isLoadingType).label} {...props?.optionalElement} />
-            : undefined, [isLoading]);
+    const reloadElement = useMemo(() => {
+        logger.debug(`reloadElement: ${jsonStringify(isLoading)}`);
+        return (isLoading as isLoadingType)?.type === "required"
+            ? isValidElement(props?.requiredElement) ? props.requiredElement
+                : <Loading fullsize label={(isLoading as isLoadingType).label} {...props?.requiredElement} />
+            : (isLoading as isLoadingType)?.type === "optional"
+                ? isValidElement(props?.optionalElement) ? props.optionalElement
+                    : <PleaseWait label={(isLoading as isLoadingType).label} {...props?.optionalElement} />
+                : undefined;
+    }, [isLoading.type, isLoading.label]);
 
     return {
         reloadKey, reload, isLoading, queue, reloadElement
