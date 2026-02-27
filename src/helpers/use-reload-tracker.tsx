@@ -1,4 +1,4 @@
-import { CommonLogger, debounce, firstIndexOf, firstOrNull, isNotEmptyString, isNullOrEmptyString, isNumber, jsonClone, jsonStringify, promiseOnce } from "@kwiz/common";
+import { CommonLogger, debounce, firstIndexOf, firstOrNull, isNotEmptyString, isNullOrEmptyString, isNumber, jsonClone, promiseOnce } from "@kwiz/common";
 import { isValidElement, useCallback, useMemo, useRef } from "react";
 import { iLoadingProps, Loading } from "../controls/loading";
 import { iPleaseWaitProps, PleaseWait } from "../controls/please-wait";
@@ -90,14 +90,13 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
             //else, if it is state required and no more required promiese - drop it to optional
             else {
                 //drop the label/type to the next promise in queue, prioritize required ones.
-                const nextPromise = firstOrNull(promises.current, p_1 => p_1.type === "required") || promises[0];
+                const nextPromise = firstOrNull(promises.current, p_1 => p_1.type === "required") || promises.current[0];
                 setLoading({ type: nextPromise.type, label: nextPromise.label });
             }
         }
     }, []);
 
     const reloadElement = useMemo(() => {
-        logger.debug(`reloadElement: ${jsonStringify(isLoading)}`);
         return (isLoading as isLoadingType)?.type === "required"
             ? isValidElement(props?.requiredElement) ? props.requiredElement
                 : <Loading fullsize label={(isLoading as isLoadingType).label} {...props?.requiredElement} />
