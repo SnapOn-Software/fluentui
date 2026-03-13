@@ -1,5 +1,4 @@
-import { makeStyles, mergeClasses } from "@fluentui/react-components";
-import { IDictionary } from "@kwiz/common";
+import { IDictionary, isNotEmptyArray } from "@kwiz/common";
 import Editor from '@monaco-editor/react';
 
 export interface iCodeEditorProps {
@@ -9,27 +8,41 @@ export interface iCodeEditorProps {
     /** key: name of library/module, value: types, enums, interfaces and declare global variables */
     extraLibs?: IDictionary<string>;
     hideLineNumbers?: boolean;
+    jsonSchemaValidations?: {
+        /** https://your-app/license-blob-schema.json */
+        uri: string;
+        /** ["*"], // Apply to all JSON models or use a specific model URI */
+        fileMatch: string[];
+        /** json schema */
+        schema: Object
+    }[];
 }
 
 /** it is recommended to lazy load this control into its own chunk */
 export function CodeEditor(props: iCodeEditorProps) {
     return <>
-    <style>{`.force-ltr{direction:ltr;}`}</style>
-    <Editor className="force-ltr" defaultLanguage={props.defaultLanguage}
-        options={{
-            minimap: { enabled: false },
-            lineNumbers: props.hideLineNumbers ? "off" : undefined
-        }}
-        value={props.value}
-        beforeMount={monaco => {
-            // extra libraries
-            if (props.extraLibs)
-                Object.keys(props.extraLibs).forEach(key =>
-                    monaco.languages.typescript.javascriptDefaults.addExtraLib(props.extraLibs[key], key)
-                );
-        }}
-        onChange={(value, ev) => {
-            props.onChange(value);
-        }}
-    /></>;
+        <style>{`.force-ltr{direction:ltr;}`}</style>
+        <Editor className="force-ltr" defaultLanguage={props.defaultLanguage}
+            options={{
+                minimap: { enabled: false },
+                lineNumbers: props.hideLineNumbers ? "off" : undefined
+            }}
+            value={props.value}
+            beforeMount={monaco => {
+                // extra libraries
+                if (props.extraLibs)
+                    Object.keys(props.extraLibs).forEach(key =>
+                        monaco.languages.typescript.javascriptDefaults.addExtraLib(props.extraLibs[key], key)
+                    );
+
+                if (isNotEmptyArray(props.jsonSchemaValidations))
+                    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                        validate: true,
+                        schemas: props.jsonSchemaValidations
+                    });
+            }}
+            onChange={(value, ev) => {
+                props.onChange(value);
+            }}
+        /></>;
 }
