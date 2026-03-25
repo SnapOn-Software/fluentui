@@ -9,12 +9,14 @@ export interface iBlockNav {
     navPrompt?: JSX.Element;
 
 }
-/** set block message if you want to block nav.
+/** @deprecated replace with useTrackChanges
+ * set block message if you want to block nav.
  * - call setMessage to  add a blocker message
  * - call onNav when you have internal navigation (open / close popups)
  * - render the navPrompt control to your page
  * FYI for page unload, most modern browsers won't show your message but a generic one instead. */
 export function useBlockNav(): iBlockNav {
+    //todo: once we remove this and replace it with useTrackChanges keep this only for the window unload event registration
     const [, setBlockNavMessages, blockNavMessagesRef] = useStateEX<IDictionary<string>>({});
     const [_prompt, setPrompt] = useStateEX<IPrompterProps>(null);
 
@@ -56,7 +58,7 @@ export function useBlockNav(): iBlockNav {
 
     useEffect(() => {
         function handleBeforeUnload(e: BeforeUnloadEvent) {
-            //todo: use blockMessageRef.current so that we don't have to re-register every time message changes.
+            //using blockMessageRef.current so that we don't have to re-register every time message changes.
             //otherwise we would have to add blockMessage as a dependency for this useEffect
             const message = getMessages();
             if (!isNullOrEmptyString(message)) {
@@ -78,13 +80,6 @@ export function useBlockNav(): iBlockNav {
             if (!objectsEqual(current, blockNavMessagesRef.current))
                 setBlockNavMessages(current);
         },
-        // clearMessages: () => {
-        //     setBlockNavMessages({});
-        // },
-        // getMessages,
-        // getMessagesArr,
-
-
         /** single page applications, call this to navigate if ok */
         onNav,
         navPrompt: _prompt ? <Prompter {..._prompt} /> : undefined
