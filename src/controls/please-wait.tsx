@@ -12,7 +12,7 @@ export interface iPleaseWaitProps {
     onCancel?: () => void;
     label?: string;
 }
-export const PleaseWait: React.FunctionComponent<React.PropsWithChildren<iPleaseWaitProps>> = (props) => {
+export const PleaseWait: React.FunctionComponent<iPleaseWaitProps> = (props) => {
     const ctx = useKWIZFluentContext();
     //add a hidden input to capture focus, otherwise dialog will show a warning
     const field = <Field validationMessage={props.label || ctx.strings?.prompt_wait?.({ cap: true }) || "please wait..."} validationState="none">

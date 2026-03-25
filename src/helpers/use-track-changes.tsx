@@ -1,7 +1,7 @@
-import { Toast, ToastTitle, Toaster, useId, useToastController } from "@fluentui/react-components";
-import { GetError } from "@kwiz/common";
+import { Toast, Toaster, ToastTitle, useId, useToastController } from "@fluentui/react-components";
+import { GetError, isBoolean } from "@kwiz/common";
 import { MutableRefObject, useCallback, useState } from "react";
-import { PleaseWait } from "../controls/please-wait";
+import { iPleaseWaitProps, PleaseWait } from "../controls/please-wait";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
 import { useAlerts } from "./use-alerts";
 
@@ -24,7 +24,7 @@ export function useTrackChanges(): {
     trackChangesElement: JSX.Element
 } {
     const alerts = useAlerts();
-    const [showProgress, setShowProgress] = useState(false);
+    const [showProgress, setShowProgress] = useState<boolean | iPleaseWaitProps>(false);
     const [hasChanges, setHasChanges, hasChangesRef] = useStateEX(false, { name: "hasChanges", skipUpdateIfSame: true });
 
     const toasterId = useId("toaster");
@@ -70,7 +70,7 @@ export function useTrackChanges(): {
         },
         trackChangesElement: <>
             {alerts.alertPrompt}
-            {showProgress && <PleaseWait />}
+            {showProgress && <PleaseWait {...(isBoolean(showProgress) ? {} : showProgress)} />}
             <Toaster toasterId={toasterId} />
         </>
     };
