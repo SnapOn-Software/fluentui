@@ -4,6 +4,7 @@ export * from './drag-drop';
 export * from './hooks';
 export * from './hooks-events';
 export * from './use-alerts';
+export * from './use-auto-focus-ex';
 export * from './use-controlled-state-tracker';
 export * from './use-highlight';
 export * from './use-is-concurrenct';
