@@ -18,9 +18,9 @@ interface IProps extends InputProps {
     tokens?: { title: string; value: string; replace?: boolean; }[];
     tokenMenuLabel?: string;
 }
-export const InputEx: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
+export const InputEx = React.forwardRef<HTMLInputElement, IProps>((props, ref) => {
     const ctx = useKWIZFluentContext();
-    const input = <Input appearance={ctx.inputAppearance} {...props}
+    const input = <Input appearance={ctx.inputAppearance} {...props} ref={ref}
         onKeyDown={isFunction(props.onOK) || isFunction(props.onCancel)
             ? e => {
                 if (e.key === "Enter") props.onOK?.();
@@ -61,7 +61,7 @@ export const InputEx: React.FunctionComponent<React.PropsWithChildren<IProps>> =
             </Vertical>
             : input
     );
-}
+});
 
 const fullSize: GriffelStyle = {
     width: '100% !important',
