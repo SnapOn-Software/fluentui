@@ -58,6 +58,8 @@ export interface iKWIZFluentContext {
         add_custom?: iKWIZFluentStringValueType;
         option?: iKWIZFluentStringValueType;
         options?: iKWIZFluentStringValueType;
+        prompt_unsaved_changes?: iKWIZFluentStringValueType;
+        error_cannot_save_changes?: iKWIZFluentStringValueType;
     }
 }
 

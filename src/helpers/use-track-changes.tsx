@@ -3,6 +3,7 @@ import { GetError, isBoolean } from "@kwiz/common";
 import { MutableRefObject, useCallback, useState } from "react";
 import { iPleaseWaitProps, PleaseWait } from "../controls/please-wait";
 import { useBlockNav } from "./block-nav";
+import { useKWIZFluentContext } from "./context-internal";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
 import { useAlerts } from "./use-alerts";
 
@@ -24,8 +25,10 @@ export function useTrackChanges({ blockNav }: { blockNav?: boolean; } = {}): {
     /** include in your react control */
     trackChangesElement: JSX.Element,
 } {
-    //todo: translate
-    const unsavedChangesPrompt = "You will lose unsaved changes. Continue?";
+
+    const ctx = useKWIZFluentContext();
+
+    const unsavedChangesPrompt = ctx.strings?.prompt_unsaved_changes?.() || "You will lose unsaved changes. Continue?";
     const alerts = useAlerts();
     const [showProgress, setShowProgress] = useState<boolean | iPleaseWaitProps>(false);
     //we just need it to register the window unload event... no need for its element or onNav we handle it in this element.
@@ -51,9 +54,8 @@ export function useTrackChanges({ blockNav }: { blockNav?: boolean; } = {}): {
         setShowProgress(false);
 
         if (success.success !== true) {
-            //todo: translate
             dispatchToast(<Toast>
-                <ToastTitle>{success.message || "Could not save your changes."}</ToastTitle>
+                <ToastTitle>{success.message || ctx.strings?.error_cannot_save_changes?.({ cap: true }) || "Could not save your changes."}</ToastTitle>
             </Toast>, { intent: "warning", timeout: 10000 });
         }
         else {
