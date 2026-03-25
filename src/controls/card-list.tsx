@@ -1,5 +1,6 @@
 import { makeStyles, tokens } from '@fluentui/react-components';
 import React from 'react';
+import { useAutoFocusEX } from '../helpers';
 import { KnownClassNames } from '../styles';
 import { CardEX, iCardProps } from './card';
 import { Centered } from './centered';
@@ -27,9 +28,11 @@ interface iProps {
     /** single line fit, when overflow - more button will trigger this handler */
     useOverflow?: boolean;
     renderOverflowMenuButton?: (props: iOverflowV2Props<iCardProps>) => JSX.Element;
+    autoFocusOnFirst?: boolean;
 }
 export const CardList: React.FunctionComponent<React.PropsWithChildren<iProps>> = (props) => {
     const classes = useStyles();
+    const autoFocus = useAutoFocusEX();
     return (!props.useOverflow
         ? <Horizontal main wrap css={[KnownClassNames.cardList, classes.rootStyle]}>
             {props.backfill && <div className={classes.backfill}>
@@ -38,7 +41,7 @@ export const CardList: React.FunctionComponent<React.PropsWithChildren<iProps>> 
                 </Centered>
             </div>}
 
-            {props.cards.map((card, idx) => <CardEX key={`i${idx}`} {...card} />)}
+            {props.cards.map((card, idx) => <CardEX key={`i${idx}`} {...card} ref={(props.autoFocusOnFirst && idx === 0) ? autoFocus.set : undefined} />)}
         </Horizontal>
         : <KWIZOverflowV2 root={{ css: [classes.rootStyle, classes.overflowStyle] }}
             items={props.cards}

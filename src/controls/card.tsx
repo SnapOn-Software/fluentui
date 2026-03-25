@@ -61,13 +61,13 @@ export interface iCardProps {
     footer?: JSX.Element;
     onClick: React.MouseEventHandler<HTMLDivElement>;
 }
-export const CardEX: React.FunctionComponent<React.PropsWithChildren<iCardProps>> = (props) => {
+export const CardEX = React.forwardRef<HTMLDivElement, iCardProps>((props, ref) => {
     const ctx = useKWIZFluentContext();
     const classes = useStyles();
     const hasDescription = isNotEmptyString(props.description);
     const hasActions = isNotEmptyArray(props.menuItems) || !isNullOrUndefined(props.footer);
     return (
-        <Card className={classes.card} onClick={props.onClick}>
+        <Card className={classes.card} onClick={props.onClick} ref={ref}>
             <CardPreview>
                 <div className={hasDescription ? classes.previewContent : classes.previewContentNoDescription}>
                     <props.icon className={classes.cardIcon} />
@@ -90,4 +90,4 @@ export const CardEX: React.FunctionComponent<React.PropsWithChildren<iCardProps>
                 {props.footer}
             </CardFooter>}
         </Card>);
-}
+});
