@@ -34,8 +34,9 @@ export function useTrackChanges({ blockNav }: { blockNav?: boolean; } = {}): {
     //we just need it to register the window unload event... no need for its element or onNav we handle it in this element.
     const navBlockData = useBlockNav();
     const [hasChanges, setHasChanges, hasChangesRef] = useStateEX(false, {
-        name: "hasChanges", skipUpdateIfSame: true, onChange: newValue => {
-            navBlockData.setMessage("useTrackChanges", (blockNav && newValue === true) ? unsavedChangesPrompt : undefined);
+        name: "hasChanges", skipUpdateIfSame: true, onChange: (newValue, isValueChanged) => {
+            if (isValueChanged)
+                navBlockData.setMessage("useTrackChanges", (blockNav && newValue === true) ? unsavedChangesPrompt : undefined);
             return newValue;
         }
     });

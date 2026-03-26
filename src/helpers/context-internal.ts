@@ -11,6 +11,26 @@ export function useKWIZFluentContext() {
     if (isNullOrUndefined(ctx.buttonShape))
         ctx.buttonShape = "circular";
 
+    patchResize();
+
     ctx.isRtl = ctx.isRtl || ctx.strings?.dir?.() === "rtl";
     return ctx;
+}
+
+
+function patchResize() {
+    if (!window.ResizeObserver["sos-patch"]) {
+        window.ResizeObserver["sos-patch"] = true;
+        const OriginalResizeObserver = window.ResizeObserver;
+
+        window.ResizeObserver = class ResizeObserver extends OriginalResizeObserver {
+            constructor(callback: ResizeObserverCallback) {
+                super((entries, observer) => {
+                    window.requestAnimationFrame(() => {
+                        callback(entries, observer);
+                    });
+                });
+            }
+        };
+    }
 }

@@ -1,5 +1,5 @@
 import { makeStyles } from "@fluentui/react-components";
-import { CommonLogger, isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
+import { CommonLogger, isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
 import { HTMLAttributes, MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { mixins } from "../styles/styles";
 
@@ -105,7 +105,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
             //if we don't clone it, currentValue.current will be a ref to the value in the owner
             //and will be treated as unchanged object, and it will be out of sync
             //this leads to skipUpdateIfSame failing after just 1 unchanged update
-            : jsonClone(newValue) as ValueType;
+            : { ...newValue } as ValueType;
     }
 
     const setValue = useCallback((newState: ValueType) => new Promise<ValueType>(resolve => {

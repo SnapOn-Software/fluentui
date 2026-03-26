@@ -1,4 +1,4 @@
-import { CommonLogger, debounce, firstIndexOf, firstOrNull, isNotEmptyString, isNullOrEmptyString, isNumber, jsonClone, promiseOnce } from "@kwiz/common";
+import { CommonLogger, debounce, firstIndexOf, firstOrNull, isNotEmptyString, isNullOrEmptyString, isNumber, promiseOnce } from "@kwiz/common";
 import { isValidElement, useCallback, useMemo, useRef } from "react";
 import { iLoadingProps, Loading } from "../controls/loading";
 import { iPleaseWaitProps, PleaseWait } from "../controls/please-wait";
@@ -42,7 +42,7 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
     let counter = useRef(1);
 
     const reload = useCallback(debounce((scope: scopeType) => {
-        const rk = jsonClone(reloadKey);
+        const rk = { ...reloadKey };
         if (scope === "global" || isNullOrEmptyString(scope)) {
             //if global - notify all listeners
             Object.keys(rk).forEach(s => {

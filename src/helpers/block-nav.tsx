@@ -1,4 +1,4 @@
-import { IDictionary, isNotEmptyArray, isNullOrEmptyString, jsonClone, objectsEqual } from "@kwiz/common";
+import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, stringEqualsOrEmpty } from "@kwiz/common";
 import { useCallback, useEffect } from "react";
 import { IPrompterProps, Prompter } from "../controls/prompt";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
@@ -73,12 +73,15 @@ export function useBlockNav(): iBlockNav {
     }, useEffectOnlyOnMount);
     return {
         setMessage: (id: string, message?: string) => {
-            let current = jsonClone(blockNavMessagesRef.current);
-            if (isNullOrEmptyString(message))
-                delete current[id];
-            else current[id] = message;
-            if (!objectsEqual(current, blockNavMessagesRef.current))
+            if (!stringEqualsOrEmpty(message, blockNavMessagesRef.current[id])) {
+                const current = { ...blockNavMessagesRef.current };
+                if (isNotEmptyString(message))
+                    current[id] = message;
+                else
+                    delete current[id];
+
                 setBlockNavMessages(current);
+            }
         },
         /** single page applications, call this to navigate if ok */
         onNav,

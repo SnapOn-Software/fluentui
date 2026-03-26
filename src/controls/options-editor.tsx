@@ -1,6 +1,6 @@
 import { MenuItem, MessageBar, Overflow, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from "@fluentui/react-components";
 import { AddRegular, DismissRegular, EditRegular } from "@fluentui/react-icons";
-import { isNotEmptyString, isString, jsonClone, KeyValuePair } from "@kwiz/common";
+import { isNotEmptyString, isString, KeyValuePair } from "@kwiz/common";
 import { useCallback, useMemo, useState } from "react";
 import { useAlerts } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
@@ -75,7 +75,7 @@ export function OptionsEditor<ot extends optionType>(props: {
             <TableBody>
                 {value.map((v, i) => <TableRow key={i}>
                     <TableCell><InputEx placeholder={ctx.strings?.placeholder_input?.() || "Enter value here"} value={isString(v) ? v : v.key} onChange={(e, data) => {
-                        const newValue = jsonClone(value);
+                        const newValue = value.slice();
                         if (isString(newValue[i]))
                             newValue[i] = data.value as ot;
                         else
@@ -83,7 +83,7 @@ export function OptionsEditor<ot extends optionType>(props: {
                         setValue(newValue);
                     }} /></TableCell>
                     {(isKeyValue && !isString(v)) && <TableCell><InputEx placeholder={ctx.strings?.placeholder_input?.({ context: "text" }) || "Enter text here"} value={v.value} onChange={(e, data) => {
-                        const newValue = jsonClone(value);
+                        const newValue = value.slice();
                         if (isString(newValue[i])) return;//no value
                         newValue[i].value = data.value;
                         setValue(newValue);
@@ -91,7 +91,7 @@ export function OptionsEditor<ot extends optionType>(props: {
                     <TableCell>
                         <ButtonEX icon={<DismissRegular />} title={ctx.strings?.btn_remove?.() || "Remove"}
                             onClick={() => alerts.confirmEX(ctx.strings?.confirm_remove?.({ context: "option" }) || "Are you sure you want to remove this option?", () => {
-                                const newValue = jsonClone(value);
+                                const newValue = value.slice();
                                 newValue.splice(i, 1);
                                 setValue(newValue);
                             })} />
@@ -100,7 +100,7 @@ export function OptionsEditor<ot extends optionType>(props: {
                 <TableRow>
                     <TableCell colSpan={3}>
                         <ButtonEX icon={<AddRegular />} title={ctx.strings?.add_custom?.({ cap: true, param: ctx.strings?.option() || "option" }) || "Add option"} showTitleWithIcon onClick={() => {
-                            const newValue = jsonClone(value);
+                            const newValue = value.slice();
                             newValue.push(props.newItem());
                             setValue(newValue);
                         }} />
