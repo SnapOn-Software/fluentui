@@ -103,10 +103,12 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
         });
     }, []);
     function updateCurrentRef(newValue: ValueType) {
+        currentValue.current = newValue;//always update this ref- it is being used by callers
+
         //this json clone on html elements for useRefWithState was killing our app
+        //we don't need to clone currentValueForChecks if we don't have to
         if (!needToTrackChanges) return;
 
-        currentValue.current = newValue;
         currentValueForChecks.current = isPrimitiveValue(newValue) || isFunction(newValue)
             ? newValue
             //fix skipUpdateIfSame for complex objects
