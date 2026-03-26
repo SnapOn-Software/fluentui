@@ -1,14 +1,15 @@
 import { makeStyles } from "@fluentui/react-components";
-import { CommonLogger, isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
-import { HTMLAttributes, MutableRefObject, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { CommonLogger, isFunction, isNotEmptyArray, isNullOrEmptyString, isNullOrUndefined, isPrimitiveValue, jsonClone, jsonStringify, LoggerLevel, objectsEqual } from "@kwiz/common";
+import { HTMLAttributes, MutableRefObject, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { mixins } from "../styles/styles";
 
 /** Empty array ensures that effect is only run on mount */
 export const useEffectOnlyOnMount = [];
 
 type stateExOptions<ValueType> = {
+    /** static: do not change between renders */
     onChange?: (newValue: ValueType, isValueChanged: boolean) => ValueType;
-    //will not set state if value did not change
+    /** static: do not change between renders. will not set state if value did not change */
     skipUpdateIfSame?: boolean;
     //optional, provide a name for better logging
     name?: string;
@@ -34,10 +35,13 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
     options = options || {};
     const name = options.name || '';
 
-    let logger = new CommonLogger(`useStateWithTrack${isNullOrEmptyString(name) ? '' : ` ${name}`}`);
+    let logger = useMemo(() => new CommonLogger(`useStateWithTrack${isNullOrEmptyString(name) ? '' : ` ${name}`}`), [name]);
     logger.i.setLevel(LoggerLevel.WARN);
 
     const [value, setValueInState] = useState<ValueType>(initialValue);
+
+    //you can't flip those options between renders
+    const needToTrackChanges = useMemo(() => options.skipUpdateIfSame || isFunction(options.onChange), []);
 
     const currentValue = useRef<ValueType>(initialValue);//must set initial value don't rely on useEffect to do it since some dependents might try to access it on first load
     //json clone complex/ref values so we can compare if value changed, in case caller makes chagnes on the value object directly.
@@ -48,6 +52,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
 
     //keep a ref to onChange so the caller's latet state is accessible
     const onChange = useRef(options.onChange);
+    //keep it in sync
     onChange.current = options.onChange;
 
     /** make this a collection in case several callers are awaiting the same propr update */
@@ -62,18 +67,18 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
         };
     }, useEffectOnlyOnMount);
 
-    function resolvePromises() {
+    const resolvePromises = useCallback(() => {
         if (isNotEmptyArray(resolveState.current)) {
             let resolvers = resolveState.current.slice();
             resolveState.current = [];//clear
             resolvers.map(r => r(currentValue.current));
         }
-    };
+    }, []);
     useEffect(() => {
         resolvePromises();
     }, [value]);
 
-    function getIsValueChanged(newValue: ValueType): boolean {
+    const getIsValueChanged = useCallback((newValue: ValueType): boolean => {
         let error: Error = null;
         let result: boolean;
         try {
@@ -96,8 +101,11 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
             }
             return result;
         });
-    };
+    }, []);
     function updateCurrentRef(newValue: ValueType) {
+        //this json clone on html elements for useRefWithState was killing our app
+        if (!needToTrackChanges) return;
+
         currentValue.current = newValue;
         currentValueForChecks.current = isPrimitiveValue(newValue) || isFunction(newValue)
             ? newValue
@@ -105,7 +113,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
             //if we don't clone it, currentValue.current will be a ref to the value in the owner
             //and will be treated as unchanged object, and it will be out of sync
             //this leads to skipUpdateIfSame failing after just 1 unchanged update
-            : { ...newValue } as ValueType;
+            : jsonClone(newValue) as ValueType;
     }
 
     const setValue = useCallback((newState: ValueType) => new Promise<ValueType>(resolve => {
@@ -116,7 +124,7 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
         }
         else {
             resolveState.current.push(resolve);
-            const isChanged = isFunction(onChange.current) || options.skipUpdateIfSame
+            const isChanged = needToTrackChanges
                 ? getIsValueChanged(newState)//don't call this if there is no onChange handler and if we don't need to monitor skipUpdateIfSame
                 : true;
             if (isFunction(onChange.current))
@@ -133,7 +141,8 @@ export function useStateEX<ValueType>(initialValue: ValueType, options?: stateEx
         }
     }), useEffectOnlyOnMount);
 
-    return [value, setValue, currentValue];
+    return useMemo(() => [value, setValue, currentValue],
+        [value, setValue, currentValue]);
 }
 
 /** use a ref, that can be tracked as useEffect dependency */
@@ -157,14 +166,15 @@ export function useRefWithState<T>(initialValue?: T,
         }
     }, [asState]);
 
-    return {
+    return useMemo(() => ({
         /** ref object for getting latest value in handlers */
         ref: asRef,
         /** for useEffect dependency */
         value: asState,
         /** for setting on element: ref={e.set} */
         set: setRef
-    };
+    }),
+        [asRef, asState, setRef]);
 }
 
 const useStyles = makeStyles({

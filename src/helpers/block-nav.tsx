@@ -1,5 +1,5 @@
 import { IDictionary, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, stringEqualsOrEmpty } from "@kwiz/common";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { IPrompterProps, Prompter } from "../controls/prompt";
 import { useEffectOnlyOnMount, useStateEX } from "./hooks";
 
@@ -27,6 +27,18 @@ export function useBlockNav(): iBlockNav {
     const getMessages = useCallback(() => {
         return getMessagesArr().join();
     }, useEffectOnlyOnMount);
+
+    const setMessage = useCallback((id: string, message?: string) => {
+        if (!stringEqualsOrEmpty(message, blockNavMessagesRef.current[id])) {
+            const current = { ...blockNavMessagesRef.current };
+            if (isNotEmptyString(message))
+                current[id] = message;
+            else
+                delete current[id];
+
+            setBlockNavMessages(current);
+        }
+    }, [setBlockNavMessages]);
 
     const onNav = useCallback((nav: () => void) => {
         let messages = getMessagesArr();
@@ -71,20 +83,14 @@ export function useBlockNav(): iBlockNav {
         // Remove event listener on cleanup
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     }, useEffectOnlyOnMount);
-    return {
-        setMessage: (id: string, message?: string) => {
-            if (!stringEqualsOrEmpty(message, blockNavMessagesRef.current[id])) {
-                const current = { ...blockNavMessagesRef.current };
-                if (isNotEmptyString(message))
-                    current[id] = message;
-                else
-                    delete current[id];
 
-                setBlockNavMessages(current);
-            }
-        },
-        /** single page applications, call this to navigate if ok */
+    const navPrompt = useMemo(() =>
+        _prompt ? <Prompter {..._prompt} /> : undefined,
+        [_prompt]);
+
+    return useMemo(() => ({
+        setMessage,
         onNav,
-        navPrompt: _prompt ? <Prompter {..._prompt} /> : undefined
-    };
+        navPrompt
+    }), [setMessage, onNav, navPrompt]);
 }

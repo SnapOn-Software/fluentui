@@ -1,6 +1,6 @@
 import { Toast, Toaster, ToastTitle, useId, useToastController } from "@fluentui/react-components";
 import { GetError, isBoolean } from "@kwiz/common";
-import { MutableRefObject, useCallback, useState } from "react";
+import { MutableRefObject, useCallback, useMemo, useState } from "react";
 import { iPleaseWaitProps, PleaseWait } from "../controls/please-wait";
 import { useBlockNav } from "./block-nav";
 import { useKWIZFluentContext } from "./context-internal";
@@ -28,7 +28,7 @@ export function useTrackChanges({ blockNav }: { blockNav?: boolean; } = {}): {
 
     const ctx = useKWIZFluentContext();
 
-    const unsavedChangesPrompt = ctx.strings?.prompt_unsaved_changes?.() || "You will lose unsaved changes. Continue?";
+    const unsavedChangesPrompt = useMemo(() => ctx.strings?.prompt_unsaved_changes?.() || "You will lose unsaved changes. Continue?", [ctx.strings]);
     const alerts = useAlerts();
     const [showProgress, setShowProgress] = useState<boolean | iPleaseWaitProps>(false);
     //we just need it to register the window unload event... no need for its element or onNav we handle it in this element.
@@ -79,16 +79,25 @@ export function useTrackChanges({ blockNav }: { blockNav?: boolean; } = {}): {
         else return handler();
     }, [hasChanges, alerts]);
 
-    return {
-        trackChanges: {
-            hasChanges, hasChangesRef, setHasChanges, onSaveChanges, doIfNoChanges
-        },
-        trackChangesElement: <>
+    const trackChanges = useMemo<iTrackChanges>(() => ({
+        hasChanges,
+        hasChangesRef,
+        setHasChanges,
+        onSaveChanges,
+        doIfNoChanges
+    }), [hasChanges, hasChangesRef, setHasChanges, onSaveChanges, doIfNoChanges]);
+    const trackChangesElement = useMemo(() => (
+        <>
             {alerts.alertPrompt}
             {showProgress && <PleaseWait {...(isBoolean(showProgress) ? {} : showProgress)} />}
             <Toaster toasterId={toasterId} />
         </>
-    };
+    ), [alerts.alertPrompt, showProgress, toasterId]);
+
+    return useMemo(() => ({
+        trackChanges,
+        trackChangesElement
+    }), [trackChanges, trackChangesElement]);
 }
 
 /** @deprecated renamed to useTrackChanges */
