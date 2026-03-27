@@ -78,6 +78,18 @@ export namespace mixins {
         overflow: 'hidden',
         textOverflow: 'ellipsis'
     }
+    export const multiLineEllipsis2: GriffelStyle = {
+        display: '-webkit-box',
+        WebkitBoxOrient: 'vertical',
+        WebkitLineClamp: '2',
+        overflow: "hidden"
+    }
+    export const multiLineEllipsis3: GriffelStyle = {
+        display: '-webkit-box',
+        WebkitBoxOrient: 'vertical',
+        WebkitLineClamp: '3',
+        overflow: "hidden"
+    }
     export const full: GriffelStyle = {
         top: 0, bottom: 0, left: 0, right: 0,
         zIndex: 1,
