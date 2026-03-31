@@ -144,8 +144,8 @@ export function OptionsEditorInDialog<ot extends optionType>(props: {
             </Vertical>
         </Prompter>}
         <KWIZOverflowV2 items={value} renderItem={(item => Overflow
-            ? <MenuItem>{isString(item) ? item : item.value}</MenuItem>
-            : <TagEx text={isString(item) ? item : item.value} size="extra-small" />
+            ? <MenuItem>{isString(item) ? item : item?.value||''}</MenuItem>
+            : <TagEx text={isString(item) ? item : item?.value||''} size="extra-small" />
         )}><ButtonEXPrimarySubtle icon={<EditRegular />} title={ctx.strings?.btn_edit?.() || "Edit"} onClick={() => {
             setError(null);
             setEditValues(value);
