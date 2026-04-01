@@ -29,7 +29,7 @@ export interface iOverflowV2Props<ItemType> {
     menu?: Partial<MenuProps>;
     menuIcon?: JSX.Element;
     /** when hiding items, lower priority items will be collapsed first */
-    priority?: (item: ItemType) => number;
+    priority?: (item: ItemType, index: number) => number;
     /** makes this a vertical overflow */
     vertical?: boolean;
     overflowButtonProps?: Partial<ButtonEXProps>;
@@ -98,8 +98,8 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
     const size = useElementSize(wrapperRef.ref.current);
     const [overflowIndexes, setOverflowIndexes] = useState<number[]>([]);
 
-    const getPriority = useCallback((item: ItemType) => {
-        const p = props?.priority?.(item) || 0;
+    const getPriority = useCallback((item: ItemType, index: number) => {
+        const p = props?.priority?.(item, index) || 0;
         if (!isNumber(p) || p < 0) return 0;
         else return p;
     }, [props.priority]);
@@ -125,7 +125,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
                 const divItem = e as HTMLDivElement;
                 const itemIndex = Number(divItem.dataset.itemIndex);
                 if (itemIndex >= 0 && itemIndex <= info.items.length) {
-                    const priority = getPriority(info.items[itemIndex]);
+                    const priority = getPriority(info.items[itemIndex], itemIndex);
                     divItem.dataset.itemPriority = priority.toString(10);//allows easier debugging on caller, but we don't rely on this value
                     if (priority > highestPriority) highestPriority = priority;
                     allChildren.push({ div: divItem, priority, itemIndex });

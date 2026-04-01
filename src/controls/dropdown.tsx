@@ -41,6 +41,10 @@ type tProps<keyType, dataType> = iProps<keyType, dataType> & ({
     defaultSelected: keyType | keyType[];
 });
 
+function cleanupValue(value: string) {
+    //netsuite sometimes puts &nbsp; in option values for padding
+    return value.replace(/&nbsp;/g, ' ');
+}
 function $DropdownEX<keyType extends string = string, dataType = never>(props: tProps<keyType, dataType>, ref: React.ForwardedRef<HTMLButtonElement>) {
     const classes = useStyles();
     const ctx = useKWIZFluentContext();
@@ -57,10 +61,12 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: t
     //sometimes control will lose value when re-rendered
     //use case: public forms when editing other fields after the dropdown was set
     //re-set the text value manually to fix
-    let text = filterEmptyEntries(selected.map(s => {
-        let v = firstOrNull(props.items, i => i.key === s);
-        return v ? v.value : ''
-    })).join(', ');
+    let text = useMemo(() => {
+        return filterEmptyEntries(selected.map(s => {
+            let v = firstOrNull(props.items, i => i.key === s);
+            return v ? cleanupValue(v.value) : ''
+        })).join(', ')
+    }, [selected, props.items]);
 
     const [filter, setFilter] = useState("");
     const items = useMemo(() => {
@@ -72,6 +78,23 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: t
 
         return itms;
     }, [props.items, filter]);
+
+    const itemOptions = useMemo(() => {
+        return items.map(i => {
+            let valueAsText = cleanupValue(i.value);
+            let padding = 0;
+            //replace any space or &nbsp; at start of valueAsText with padding.
+            while (valueAsText.startsWith(' ')) {
+                padding++;
+                valueAsText = valueAsText.slice(1);
+            }
+            return <Option key={i.key} value={i.key} text={valueAsText}>{i.option
+                ? i.option
+                : <>{padding > 0 ? <span style={{ minWidth: `${4 * padding}px` }} /> : undefined}{valueAsText}</>}
+            </Option>;
+        });
+
+    }, [items]);
 
     return (
         <Dropdown {...{ ...props, onSelect: undefined }} className={mergeClasses(classes.root, props.className)} ref={ref} clearable={!props.required && !props.multiselect}
@@ -99,7 +122,7 @@ function $DropdownEX<keyType extends string = string, dataType = never>(props: t
                     props.onSelect(o);
                 }
             }}>
-            {items.map(i => <Option key={i.key} value={i.key} text={i.value}>{i.option ? i.option : i.value}</Option>)}
+            {itemOptions}
         </Dropdown>
     );
 }
