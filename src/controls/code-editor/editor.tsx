@@ -1,5 +1,5 @@
-import { IDictionary, isNotEmptyArray } from "@kwiz/common";
-import Editor from '@monaco-editor/react';
+import { IDictionary, isNotEmptyArray, isNotEmptyString } from "@kwiz/common";
+import { Editor, loader } from '@monaco-editor/react';
 
 export interface iCodeEditorProps {
     value: string;
@@ -16,10 +16,19 @@ export interface iCodeEditorProps {
         /** json schema */
         schema: Object
     }[];
+    /** pass in the CDN to use, like: https://apps.kwizcom.com/libs/monaco-editor/4.7.0/min/vs */
+    overrideCdn?: string;
 }
 
 /** it is recommended to lazy load this control into its own chunk */
 export function CodeEditor(props: iCodeEditorProps) {
+    if (isNotEmptyString(props.overrideCdn))//load from our build do not load from cdn
+        loader.config({
+            paths: {
+                vs: props.overrideCdn//'https://apps.kwizcom.com/libs/monaco-editor/4.7.0/min/vs',
+            },
+        });
+
     return <>
         <style>{`.force-ltr{direction:ltr;}`}</style>
         <Editor className="force-ltr" defaultLanguage={props.defaultLanguage}

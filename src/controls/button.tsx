@@ -5,8 +5,6 @@ import { useKWIZFluentContext } from '../helpers/context-internal';
 import { commonSizes, KnownClassNames } from '../styles/styles';
 import { ButtonEXProps, CompoundButtonEXProps } from '../types';
 
-
-
 const useStyles = makeStyles({
     buttonNoCenter: {
         justifyContent: 'flex-start',
@@ -47,29 +45,44 @@ const useStyles = makeStyles({
     }
 });
 
-export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
+export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>(({ showTitleWithIcon,
+    dontStretch,
+    hideOnPrint,
+    dontCenterText,
+    icon,
+    hoverIcon,
+    hoverTitle,
+    title,
+    'aria-label': ariaLabel,
+    children,
+    variant,
+    className,
+    onClick,
+    onMouseEnter, onMouseLeave,
+    href, target,
+    ...passProps }, ref) => {
     const ctx = useKWIZFluentContext();
     const [hover, setHover] = React.useState(false);
-    const trackHover = !isNullOrEmptyString(props.hoverTitle) || !isNullOrUndefined(props.hoverIcon);
+    const trackHover = !isNullOrEmptyString(hoverTitle) || !isNullOrUndefined(hoverIcon);
 
-    const title = hover && !isNullOrEmptyString(props.hoverTitle) ? props.hoverTitle
-        : props.title || props['aria-label'];
-    const icon = hover && !isNullOrUndefined(props.hoverIcon) ? props.hoverIcon : props.icon;
-    let hasIcon = !isNullOrUndefined(icon);
-    let hasText = props.children || !hasIcon || (hasIcon && props.showTitleWithIcon === true);
+    const myTitle = hover && !isNullOrEmptyString(hoverTitle) ? hoverTitle
+        : title || ariaLabel;
+    const myIcon = hover && !isNullOrUndefined(hoverIcon) ? hoverIcon : icon;
+    let hasIcon = !isNullOrUndefined(myIcon);
+    let hasText = children || !hasIcon || (hasIcon && showTitleWithIcon === true);
 
     const cssNames = useStyles();
     let css: string[] = [];
-    if (isNotEmptyString(props.variant)) {
-        switch (props.variant) {
+    if (isNotEmptyString(variant)) {
+        switch (variant) {
             case "danger":
-                if (!props.disabled) css.push(cssNames.danger);
+                if (!passProps.disabled) css.push(cssNames.danger);
                 break;
             case "danger-subtle":
-                if (!props.disabled) css.push(cssNames.dangerSubtle);
+                if (!passProps.disabled) css.push(cssNames.dangerSubtle);
                 break;
             case "primary-subtle":
-                if (!props.disabled) css.push(cssNames.primarySubtle);
+                if (!passProps.disabled) css.push(cssNames.primarySubtle);
                 break;
             case "success":
                 css.push(cssNames.success);
@@ -77,54 +90,51 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((pr
         }
     }
 
-    if (props.hideOnPrint) PushNoDuplicate(css, KnownClassNames.printHide);
-    if (props.dontCenterText) PushNoDuplicate(css, cssNames.buttonNoCenter);
+    if (hideOnPrint) PushNoDuplicate(css, KnownClassNames.printHide);
+    if (dontCenterText) PushNoDuplicate(css, cssNames.buttonNoCenter);
 
-    let onClick = props.onClick;
-
-    if (isNullOrUndefined(onClick) && isNotEmptyString(props.href)) {
+    if (isNullOrUndefined(onClick) && isNotEmptyString(href)) {
         onClick = () => {
-            switch (props.target) {
+            switch (target) {
                 case "_top":
-                    window.top.location.href = props.href;
+                    window.top.location.href = href;
                     break;
                 case "_parent":
-                    window.parent.location.href = props.href;
+                    window.parent.location.href = href;
                     break;
                 case "_blank":
-                    window.open(props.href);
+                    window.open(href);
                     break;
                 default:
-                    window.location.href = props.href;
+                    window.location.href = href;
                     break;
             }
         };
     }
 
-    let btn = <Button ref={ref} appearance='subtle' {...props as any as ButtonProps} onClick={onClick} className={mergeClasses(...css, props.className)}
-        aria-label={title} title={undefined} icon={icon}
+    let btn = <Button ref={ref} appearance='subtle' {...passProps as any as ButtonProps} onClick={onClick} className={mergeClasses(...css, className)}
+        aria-label={myTitle} title={undefined} icon={myIcon}
         onMouseEnter={trackHover ? (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             setHover(true);
-            if (isFunction(props.onMouseEnter))
-                props.onMouseEnter(e as any);
-        } : props.onMouseEnter as any}
+            if (isFunction(onMouseEnter))
+                onMouseEnter(e as any);
+        } : onMouseEnter as any}
         onMouseLeave={trackHover ? (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             setHover(false);
-            if (isFunction(props.onMouseLeave))
-                props.onMouseLeave(e as any);
-        } : props.onMouseLeave as any}
-    >{props.children ||
+            if (isFunction(onMouseLeave))
+                onMouseLeave(e as any);
+        } : onMouseLeave as any}
+    >{children ||
         //no icon? will show the title by default
-        (hasText && capitalizeFirstLetter(title))}</Button>;
-    if (!hasText || props.children)//icon only or when content is different than props.title
-        btn = <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={title}
-            mountNode={ctx.mountNode}
-        >
+        (hasText && capitalizeFirstLetter(myTitle))}</Button>;
+    if (!hasText || children)//icon only or when content is different than props.title
+        btn = <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={myTitle}
+            mountNode={ctx.mountNode}>
             {btn}
         </Tooltip>;
 
     return (
-        props.dontStretch ? <div>{btn}</div> : btn
+        dontStretch ? <div>{btn}</div> : btn
 
     );
 });
