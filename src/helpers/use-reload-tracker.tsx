@@ -42,7 +42,7 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
     let counter = useRef(1);
 
     const reload = useCallback(debounce((scope: scopeType) => {
-        const rk = { ...reloadKey };
+        const rk = { ...reloadKeyRef.current };
         if (scope === "global" || isNullOrEmptyString(scope)) {
             //if global - notify all listeners
             Object.keys(rk).forEach(s => {
@@ -57,7 +57,7 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
             logger.debug(`Reload ${scope}: ${rk[scope]}, and global: ${rk.global}`);
         }
         setReload(rk);
-    }, 100), [reloadKey]);
+    }, 100), []);
 
     const [isLoading, setLoading, isLoadingRef] = useStateEX<isLoadingType>({ type: "idle" }, { skipUpdateIfSame: true });
 
