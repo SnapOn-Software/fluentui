@@ -106,6 +106,25 @@ export const kThemeSecondary: BrandVariants = {
     160: "#A0E5FF"
 };
 
+export const netSuiteDefault: BrandVariants = {
+    10: "#020303",
+    20: "#14171B",
+    30: "#20252E",
+    40: "#29313D",
+    50: "#333D4D",
+    60: "#3D4A5E",
+    70: "#47576F",
+    80: "#526581",
+    90: "#5C7293",
+    100: "#6B80A0",
+    110: "#7C8EAB",
+    120: "#8D9CB6",
+    130: "#9EABC1",
+    140: "#AFB9CC",
+    150: "#C0C8D7",
+    160: "#D1D7E2"
+};
+
 function getLightTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
     if (ctx.teams) return teamsLightTheme;
     //return jsonClone(webLightTheme);
