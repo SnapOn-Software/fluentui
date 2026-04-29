@@ -1,6 +1,6 @@
 import { createTableColumn, makeStyles, Table, TableBody, TableCell, TableCellActions, TableCellLayout, TableColumnDefinition, TableColumnId, TableHeader, TableHeaderCell, TableRow, TableSelectionCell, tokens, useArrowNavigationGroup, useTableFeatures, useTableSort } from "@fluentui/react-components";
 import { CheckboxCheckedRegular, CheckboxUncheckedRegular, ChevronCircleLeftFilled, ChevronCircleLeftRegular, ChevronCircleRightFilled, ChevronCircleRightRegular, EqualCircleFilled, EqualCircleRegular, FilterDismissRegular, FilterFilled, FilterRegular, MoreVerticalRegular } from "@fluentui/react-icons";
-import { dateFormat, filterEmptyEntries, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyString, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
+import { CommonLogger, dateFormat, filterEmptyEntries, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyString, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useShowOnHover } from "../helpers";
 import { mergeClassesEX } from "../styles/styles";
@@ -9,6 +9,8 @@ import { DatePickerEx } from "./date";
 import { Horizontal } from "./horizontal";
 import { InputEx, InputNumberEx } from "./input";
 import { iMenuItemEX, MenuEx } from "./menu";
+
+const logger = new CommonLogger("table");
 
 type expandedColType = {
     /** key used for getting the column value, and for sorting/filtering */
@@ -44,6 +46,7 @@ interface iPropsBaseNoSelect {
 }
 interface iPropsSelect<ItemType extends itemTypeBase, ItemKeyType extends string | number> {
     selectionMode: "single" | "multiselect";
+    /** used to identify the selected row */
     getItemKey: (item: ItemType) => ItemKeyType;
     selection: ItemKeyType[];
     onSelect: (selection: ItemKeyType[]) => void;
@@ -385,7 +388,7 @@ export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends strin
                 {
                     if (selectionMode === "multiselect")//remove selected
                     {
-                        onSelect(selection.filter(s => s !== item.key));
+                        onSelect(selection.filter(s => s !== key));
                     }
                 }
             }

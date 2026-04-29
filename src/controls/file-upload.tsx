@@ -1,6 +1,6 @@
 import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowUploadRegular } from "@fluentui/react-icons";
-import { isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, lastOrNull } from '@kwiz/common';
+import { blobToBase64, isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, lastOrNull } from '@kwiz/common';
 import * as React from "react";
 import { dropFiles, useDragDropContext, useEffectOnlyOnMount } from "../helpers";
 import { useKWIZFluentContext } from "../helpers/context-internal";
@@ -148,16 +148,11 @@ export const FileUpload = React.forwardRef<HTMLButtonElement, (iProps)>((props, 
 });
 
 async function getFileAsBase64(file: File): Promise<base64Result> {
-    return new Promise<base64Result>(resolve => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (!isNullOrEmptyString(reader.result))
-                resolve({ filename: file.name, base64: reader.result as string });
-            else {
-                console.warn("Empty file selected");
-                resolve(null);
-            }
-        };
-        reader.readAsDataURL(file);
-    });
+    try {
+        const base64 = await blobToBase64(file);
+        return { filename: file.name, base64 };
+    } catch (e) {
+        console.warn("Empty file selected");
+        return null;
+    }
 }
