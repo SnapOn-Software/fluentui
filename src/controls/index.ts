@@ -16,6 +16,7 @@ export * from './error-boundary';
 export * from './field';
 export * from './field-editor';
 export * from './field-set';
+export * from './file-type-icon';
 export * from './file-upload';
 export * from './form';
 export * from './horizontal';
