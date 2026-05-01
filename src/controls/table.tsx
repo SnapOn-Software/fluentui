@@ -1,6 +1,6 @@
 import { createTableColumn, makeStyles, Table, TableBody, TableCell, TableCellActions, TableCellLayout, TableColumnDefinition, TableColumnId, TableHeader, TableHeaderCell, TableRow, TableSelectionCell, tokens, useArrowNavigationGroup, useTableFeatures, useTableSort } from "@fluentui/react-components";
 import { CheckboxCheckedRegular, CheckboxUncheckedRegular, ChevronCircleLeftFilled, ChevronCircleLeftRegular, ChevronCircleRightFilled, ChevronCircleRightRegular, EqualCircleFilled, EqualCircleRegular, FilterDismissRegular, FilterFilled, FilterRegular, MoreVerticalRegular } from "@fluentui/react-icons";
-import { CommonLogger, dateFormat, filterEmptyEntries, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyString, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
+import { CommonLogger, dateFormat, filterEmptyEntries, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useShowOnHover } from "../helpers";
 import { mergeClassesEX } from "../styles/styles";
@@ -52,19 +52,22 @@ interface iPropsSelect<ItemType extends itemTypeBase, ItemKeyType extends string
     onSelect: (selection: ItemKeyType[]) => void;
 }
 
-interface iPropsBase<ItemType extends itemTypeBase> {
+interface iPropsBase<ItemType extends itemTypeBase, FolderType extends IDictionary<tableItemValueType>> {
     columns: colType[];
     /** item is a dictionary. Values are primitives, or tableItemExpandedValueType */
     items: ItemType[];
+    /** folders are similar to items but do not sort, always show on top, and hidden when there is a filter */
+    folders?: FolderType[];
     css?: string[];
     rowCss?: string[];
     getItemMenu?: (item: ItemType, index: number) => iMenuItemEX[];
+    getFolderMenu?: (folder: FolderType, index: number) => iMenuItemEX[];
 }
 
-interface iPropsUnfreezed<ItemType extends itemTypeBase, ItemKeyType extends string | number> extends iPropsBase<ItemType> {
+interface iPropsUnfreezed<ItemType extends itemTypeBase, ItemKeyType extends string | number, FolderType extends IDictionary<tableItemValueType>> extends iPropsBase<ItemType, FolderType> {
     maxHeight: never;
 }
-interface iPropsFreezed<ItemType extends itemTypeBase, ItemKeyType extends string | number> extends iPropsBase<ItemType> {
+interface iPropsFreezed<ItemType extends itemTypeBase, ItemKeyType extends string | number, FolderType extends IDictionary<tableItemValueType>> extends iPropsBase<ItemType, FolderType> {
     stickyTop?: true;
     stickyLeft?: true | 1 | 2;
     /** default: small - keep 40px of first cell visible. medium=80px cover=none */
@@ -74,11 +77,11 @@ interface iPropsFreezed<ItemType extends itemTypeBase, ItemKeyType extends strin
      */
     maxHeight?: string;
 }
-type iProps<ItemType extends itemTypeBase, ItemKeyType extends string | number> =
-    iPropsUnfreezed<ItemType, ItemKeyType> & iPropsSelect<ItemType, ItemKeyType> |
-    iPropsFreezed<ItemType, ItemKeyType> & iPropsSelect<ItemType, ItemKeyType> |
-    iPropsUnfreezed<ItemType, ItemKeyType> & iPropsBaseNoSelect |
-    iPropsFreezed<ItemType, ItemKeyType> & iPropsBaseNoSelect;
+type iProps<ItemType extends itemTypeBase, ItemKeyType extends string | number, FolderType extends IDictionary<tableItemValueType>> =
+    iPropsUnfreezed<ItemType, ItemKeyType, FolderType> & iPropsSelect<ItemType, ItemKeyType> |
+    iPropsFreezed<ItemType, ItemKeyType, FolderType> & iPropsSelect<ItemType, ItemKeyType> |
+    iPropsUnfreezed<ItemType, ItemKeyType, FolderType> & iPropsBaseNoSelect |
+    iPropsFreezed<ItemType, ItemKeyType, FolderType> & iPropsBaseNoSelect;
 
 const cssNames = {
     sortIcon: "sort-icon",
@@ -199,12 +202,12 @@ const useStyles = makeStyles({
     }
 });
 
-export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends string | number>(props: iProps<ItemType, ItemKeyType>) {
-    const { items, columns, getItemMenu, selectionMode } = props;
+export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends string | number, FolderType extends IDictionary<tableItemValueType> = {}>(props: iProps<ItemType, ItemKeyType, FolderType>) {
+    const { items, columns, getItemMenu, selectionMode, folders, getFolderMenu } = props;
     const css = useStyles();
     const showOnHover = useShowOnHover();
 
-    const fProps = props as iPropsFreezed<ItemType, ItemKeyType>;
+    const fProps = props as iPropsFreezed<ItemType, ItemKeyType, FolderType>;
     const freezed = fProps.stickyTop || fProps.stickyLeft || isString(props.maxHeight);
 
     const keyboardNavAttr = useArrowNavigationGroup({ axis: "grid" });
@@ -247,7 +250,9 @@ export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends strin
     }
     // #endregion
 
-    const menuIndex = isNullOrUndefined(getItemMenu) ? -1 : fProps.stickyLeft === 2 ? 1 : 0;
+    const menuIndex = fProps.stickyLeft === 2 ? 1 : 0;
+    const hasMenu = useMemo(() => isFunction(getItemMenu), [getItemMenu]);
+    const hasFolderMenu = useMemo(() => isFunction(getFolderMenu), [getItemMenu]);
 
     function normalizeColValue(colValue: tableItemValueType) {
         const normalizedColValue: tableItemExpandedValueType = isPrimitiveValue(colValue)
@@ -454,6 +459,19 @@ export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends strin
             </TableRow>
         </TableHeader>
         <TableBody>
+            {(!filter && isNotEmptyArray(folders)) ? folders.map((folder, folderIndex) => <TableRow key={`f${folderIndex}`} className={mergeClassesEX(props.rowCss)}>
+                {isNotEmptyString(selectionMode) && <td />}
+                {normalizedCols.map((col, coli) => {
+                    const normalizedColValue = normalizeColValue(folder[col.key]);
+                    const menuItems = (hasFolderMenu && menuIndex === coli) ? getFolderMenu(folder, folderIndex) : [];
+                    return <TableCell key={`h${coli}`} tabIndex={0} role="gridcell" className={mergeClassesEX((coli === 0 ? firstCellClasses : coli === 1 ? secondCellClasses : []), col.css, col.nowrap ? css.nowrap : undefined)}>
+                        <TableCellLayout media={normalizedColValue.media} appearance={col.primary ? "primary" : undefined} description={normalizedColValue.description}>{isFunction(normalizedColValue.renderer) ? normalizedColValue.renderer() : normalizedColValue.renderer}</TableCellLayout>
+                        {(isNotEmptyArray(menuItems)) && <TableCellActions>
+                            <MenuEx trigger={{ icon: <MoreVerticalRegular />, title: "more" }} items={menuItems} />
+                        </TableCellActions>}
+                    </TableCell>;
+                })}
+            </TableRow>) : undefined}
             {rows.map((row, rowi) => <TableRow key={`i${rowi}`} className={mergeClassesEX(props.rowCss)}
                 onClick={(e: React.MouseEvent) => toggleRow(row.item)}
                 onKeyDown={(e: React.KeyboardEvent) => {
@@ -471,10 +489,12 @@ export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends strin
                 />}
                 {normalizedCols.map((col, coli) => {
                     const normalizedColValue = normalizeColValue(row.item[col.key]);
+
+                    const menuItems = (hasMenu && menuIndex === coli) ? getItemMenu(row.item, rowi) : [];
                     return <TableCell key={`h${coli}`} tabIndex={0} role="gridcell" className={mergeClassesEX((coli === 0 ? firstCellClasses : coli === 1 ? secondCellClasses : []), col.css, col.nowrap ? css.nowrap : undefined)}>
                         <TableCellLayout media={normalizedColValue.media} appearance={col.primary ? "primary" : undefined} description={normalizedColValue.description}>{isFunction(normalizedColValue.renderer) ? normalizedColValue.renderer() : normalizedColValue.renderer}</TableCellLayout>
-                        {menuIndex === coli && <TableCellActions>
-                            <MenuEx trigger={{ icon: <MoreVerticalRegular />, title: "more" }} items={getItemMenu(row.item, rowi)} />
+                        {isNotEmptyArray(menuItems) && <TableCellActions>
+                            <MenuEx trigger={{ icon: <MoreVerticalRegular />, title: "more" }} items={menuItems} />
                         </TableCellActions>}
                     </TableCell>;
                 })}
