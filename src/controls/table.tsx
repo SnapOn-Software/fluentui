@@ -378,7 +378,7 @@ export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends strin
 
     // #selection
     const { onSelect, selection, getItemKey } = { selection: [], ...props as iPropsSelect<ItemType, ItemKeyType> };
-    const allSelected = selection.length === rows.length;
+    const allSelected = rows.length > 0 && selection.length === rows.length;
     const toggleRow = useCallback((item: ItemType) => {
         if (isNotEmptyString(selectionMode)) {
             const key = getItemKey(item);
