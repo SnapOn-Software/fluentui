@@ -20,7 +20,9 @@ export const KnownClassNames = {
     cardList: 'kfui-card-list',
     tagSelected: 'kfui-tag-selected',
     tagUnselected: 'kfui-tag-unselected',
-    tagNoSelection: 'kfui-tag-no-selection'
+    tagNoSelection: 'kfui-tag-no-selection',
+    /** put this on any content that might have a scroll */
+    overflowContent: 'kfui-overflow-content',
 }
 
 export namespace mixins {

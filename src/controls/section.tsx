@@ -70,6 +70,7 @@ export const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<
     }
     else if (props.sticky) {
         css.push(cssNames.sticky);
+        css.push(KnownClassNames.overflowContent);
     }
 
     /** need scrollparent if we are sticky */

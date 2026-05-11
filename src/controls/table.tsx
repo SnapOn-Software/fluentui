@@ -1,14 +1,15 @@
-import { createTableColumn, makeStyles, Table, TableBody, TableCell, TableCellActions, TableCellLayout, TableColumnDefinition, TableColumnId, TableHeader, TableHeaderCell, TableRow, TableSelectionCell, tokens, useArrowNavigationGroup, useTableFeatures, useTableSort } from "@fluentui/react-components";
+import { createTableColumn, makeStyles, Subtitle1, Table, TableBody, TableCell, TableCellActions, TableCellLayout, TableColumnDefinition, TableColumnId, TableHeader, TableHeaderCell, TableRow, TableSelectionCell, tokens, useArrowNavigationGroup, useTableFeatures, useTableSort } from "@fluentui/react-components";
 import { CheckboxCheckedRegular, CheckboxUncheckedRegular, ChevronCircleLeftFilled, ChevronCircleLeftRegular, ChevronCircleRightFilled, ChevronCircleRightRegular, EqualCircleFilled, EqualCircleRegular, FilterDismissRegular, FilterFilled, FilterRegular, MoreVerticalRegular } from "@fluentui/react-icons";
-import { CommonLogger, dateFormat, filterEmptyEntries, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
+import { CommonLogger, dateFormat, filterEmptyEntries, firstOrNull, IDictionary, isBoolean, isDate, isFunction, isNotEmptyArray, isNotEmptyString, isNullOrEmptyArray, isNullOrEmptyString, isNullOrNaN, isNullOrUndefined, isNumber, isPrimitiveValue, isString, primitiveTypes, stopEvent } from "@kwiz/common";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useShowOnHover } from "../helpers";
-import { mergeClassesEX } from "../styles/styles";
+import { KnownClassNames, mergeClassesEX } from "../styles/styles";
 import { ButtonEX } from "./button";
 import { DatePickerEx } from "./date";
 import { Horizontal } from "./horizontal";
 import { InputEx, InputNumberEx } from "./input";
 import { iMenuItemEX, MenuEx } from "./menu";
+import { Vertical } from "./vertical";
 
 const logger = new CommonLogger("table");
 
@@ -62,6 +63,8 @@ interface iPropsBase<ItemType extends itemTypeBase, FolderType extends IDictiona
     rowCss?: string[];
     getItemMenu?: (item: ItemType, index: number) => iMenuItemEX[];
     getFolderMenu?: (folder: FolderType, index: number) => iMenuItemEX[];
+    emptyLabel?: string;
+    noDefaultSort?: boolean;
 }
 
 interface iPropsUnfreezed<ItemType extends itemTypeBase, ItemKeyType extends string | number, FolderType extends IDictionary<tableItemValueType>> extends iPropsBase<ItemType, FolderType> {
@@ -199,6 +202,10 @@ const useStyles = makeStyles({
     },
     nowrap: {
         whiteSpace: "nowrap"
+    },
+    emptyLabel: {
+        paddingTop: tokens.spacingVerticalM,
+        paddingBottom: tokens.spacingVerticalM,
     }
 });
 
@@ -362,7 +369,7 @@ export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends strin
         { columns: table_columns, items: filteredItems },
         [
             useTableSort({
-                defaultSortState: { sortColumn: normalizedCols[0].key, sortDirection: "ascending" }
+                defaultSortState: props.noDefaultSort ? undefined : { sortColumn: normalizedCols[0].key, sortDirection: "ascending" }
             })
         ]);
 
@@ -502,7 +509,14 @@ export function TableEX<ItemType extends itemTypeBase, ItemKeyType extends strin
         </TableBody>
     </Table >;
 
-    return freezed
-        ? <div style={{ maxHeight: fProps.maxHeight, overflow: "auto" }}>{tbl}</div>
+    const tableControl = freezed
+        ? <div className={KnownClassNames.overflowContent} style={{ maxHeight: fProps.maxHeight, overflow: "auto" }}>{tbl}</div>
         : tbl;
+
+    return (isNullOrEmptyArray(props.items) && isNotEmptyString(props.emptyLabel))
+        ? <Vertical>
+            {tableControl}
+            <Horizontal hCentered css={[css.emptyLabel]}><Subtitle1>{props.emptyLabel}</Subtitle1></Horizontal>
+        </Vertical>
+        : tableControl;
 }

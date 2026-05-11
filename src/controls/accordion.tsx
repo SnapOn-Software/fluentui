@@ -53,7 +53,7 @@ export const AccordionEX: React.FunctionComponent<iProps> = (props) => {
             />
             <DividerEX />
             {group.key === opened && <>
-                <Horizontal main css={[classes.body, KnownClassNames.accordionBodyWrapper]}>
+                <Horizontal main css={[classes.body, KnownClassNames.accordionBodyWrapper, KnownClassNames.overflowContent]}>
                     <Vertical main css={[KnownClassNames.accordionBody]}>
                         {group.content}
                     </Vertical>
