@@ -1,5 +1,5 @@
-import { IDictionary, isNotEmptyArray, isNotEmptyString } from "@kwiz/common";
-import { Editor, loader } from '@monaco-editor/react';
+import { IDictionary, isNotEmptyArray, isNullOrUndefined, isString } from "@kwiz/common";
+import { Editor, loader, Monaco } from '@monaco-editor/react';
 
 export interface iCodeEditorProps {
     value: string;
@@ -16,18 +16,23 @@ export interface iCodeEditorProps {
         /** json schema */
         schema: Object
     }[];
-    /** pass in the CDN to use, like: https://apps.kwizcom.com/libs/monaco-editor/4.7.0/min/vs */
-    overrideCdn?: string;
+    /** pass in the CDN to use, like: https://apps.kwizcom.com/libs/monaco-editor/4.7.0/min/vs or a Monaco instance to overide loader.config*/
+    loaderOptions?: string | Monaco;
+
 }
 
 /** it is recommended to lazy load this control into its own chunk */
 export function CodeEditor(props: iCodeEditorProps) {
-    if (isNotEmptyString(props.overrideCdn))//load from our build do not load from cdn
-        loader.config({
-            paths: {
-                vs: props.overrideCdn//'https://apps.kwizcom.com/libs/monaco-editor/4.7.0/min/vs',
-            },
-        });
+    if (!isNullOrUndefined(props.loaderOptions))//load from our build do not load from cdn
+        loader.config(isString(props.loaderOptions)
+            ? {
+                paths: {
+                    vs: props.loaderOptions//'https://apps.kwizcom.com/libs/monaco-editor/4.7.0/min/vs',
+                },
+            }
+            : {
+                monaco: props.loaderOptions
+            });
 
     return <>
         <style>{`.force-ltr{direction:ltr;}`}</style>
