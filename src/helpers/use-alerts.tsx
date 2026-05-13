@@ -34,11 +34,7 @@ export interface iAlerts {
     close: () => void;
 }
 
-/** set block message if you want to block nav.
- * - call setMessage to  add a blocker message
- * - call onNav when you have internal navigation (open / close popups)
- * - render the navPrompt control to your page
- * FYI for page unload, most modern browsers won't show your message but a generic one instead. */
+/** Easily prompt, confirm or alert the user. To use this you must render the alertPrompt in your element. */
 export function useAlerts(): iAlerts {
     const [_prompt, _setPrompt] = useStateEX<iAlertPrompterProps>(null);
 

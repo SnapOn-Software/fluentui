@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 
 const logger = new CommonLogger("useControlledStateTracker");
 
+/** track an input control if it was changed from a managed to unmanaged (controlled / uncontrolled) state between renders.
+for example, if you pass a value on first render, but a defaultValue on a following render. */
 export function useControlledStateTracker<ValueType>(props: { name: string; value?: ValueType; defaultValue?: ValueType }) {
     const [isUnControlled, setIsUnControlled] = useState(!isUndefined(props.defaultValue));
 

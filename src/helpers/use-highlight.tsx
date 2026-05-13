@@ -32,6 +32,7 @@ const useStyles = makeStyles({
             0 0 40px ${tokens.colorStatusWarningBorderActive}`
     }
 });
+/** returns a function you can call to make an element glow momentarily */
 export function useHighlight(): {
     highlight: (e: HTMLElement, options?: {
         /** highlight text or the box */
