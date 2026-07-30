@@ -57,7 +57,7 @@ export function useKWIZFluentContextProvider(options: {
             ...v,
             mountNode: options.root?.current || v.mountNode
         });
-    }, [options.root]);
+    }, [options.root, v.mountNode]);
     return {
         KWIZFluentContext,
         value: kwizFluentContext
