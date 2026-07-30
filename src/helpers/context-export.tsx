@@ -55,7 +55,7 @@ export function useKWIZFluentContextProvider(options: {
         // we need to set it into state so it will trigger a ui update
         setKwizFluentContext({
             ...v,
-            mountNode: options.root?.current
+            mountNode: options.root?.current || v.mountNode
         });
     }, [options.root]);
     return {
