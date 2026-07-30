@@ -41,10 +41,10 @@
     ],
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/KWizCom/fluentui/issues",
-        "email": "support@kwizcom.com"
+        "url": "https://github.com/SnapOn-Software/fluentui/issues",
+        "email": "support@snapon-software.com"
     },
-    "homepage": "https://github.com/KWizCom/fluentui#readme",
+    "homepage": "https://github.com/SnapOn-Software/fluentui#readme",
     "private": false,
     "engines": {
         "node": ">=16"
