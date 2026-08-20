@@ -1,4 +1,4 @@
-import { MessageBar } from "@fluentui/react-components";
+import { MessageBar, MessageBarBody } from "@fluentui/react-components";
 import { IDictionary, isNotEmptyString, isNullOrEmptyString, jsonClone, stringEqualsOrEmpty } from "@kwiz/common";
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 
@@ -66,8 +66,8 @@ export function Internal_FormEX({ children, onValid, submitError }: {
             setError,
             showErrors
         }}>
-        {isNotEmptyString(submitError) && <MessageBar intent="error">{submitError}</MessageBar>}
-        {isNotEmptyString(errors.form) && <MessageBar intent="error">{errors.form}</MessageBar>}
+        {isNotEmptyString(submitError) && <MessageBar intent="error"><MessageBarBody>{submitError}</MessageBarBody></MessageBar>}
+        {isNotEmptyString(errors.form) && <MessageBar intent="error"><MessageBarBody>{errors.form}</MessageBarBody></MessageBar>}
         {children}
     </FormValidationContext.Provider>;
 }

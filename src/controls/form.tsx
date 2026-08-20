@@ -1,4 +1,4 @@
-import { MessageBar } from "@fluentui/react-components";
+import { MessageBar, MessageBarBody } from "@fluentui/react-components";
 import { CommonConfig, filterEmptyEntries, isNotEmptyString, isNullOrEmptyString, isNullOrUndefined, jsonClone } from "@kwiz/common";
 import { MutableRefObject, useCallback, useRef, useState } from "react";
 import { ButtonEXProps } from "../types";
@@ -150,7 +150,7 @@ function FormEX_internal<FormData>({ fields, setValid, inProgress, submitError, 
                     return field.validation(values[field.key], values);
                 } : undefined}
             >
-                {isNullOrUndefined(values[field.key]) && CommonConfig.i.IsLocalDev && <MessageBar layout="multiline" intent="warning">This should be a controlled element, value should never be null or your control might get out of sync.</MessageBar>}
+                {isNullOrUndefined(values[field.key]) && CommonConfig.i.IsLocalDev && <MessageBar layout="multiline" intent="warning"><MessageBarBody>This should be a controlled element, value should never be null or your control might get out of sync.</MessageBarBody></MessageBar>}
                 {field.fieldControl(values[field.key], (newValue, otherValues) => setValues({ ...values, ...(otherValues || {}), [field.key]: newValue }), values)}
             </FormFieldEX>)}
         </Internal_FormEX>
