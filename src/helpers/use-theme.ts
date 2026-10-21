@@ -1,4 +1,5 @@
 "use client"
+import { BrandVariants } from "@fluentui/react-components";
 import { deleteCookie, dispatchCustomEvent, getCookie, getGlobal, isNullOrUndefined, setCookie } from "@kwiz/common";
 import { useEffect, useId, useState } from "react";
 import { useIsInPrint } from "./hooks-events";
@@ -8,6 +9,8 @@ export type themeScheme = "light" | "dark";
 export interface iThemeInfo {
     auto: boolean;
     scheme: themeScheme;
+    /** if you want to change the theme colors on the fly */
+    brandVariants?: BrandVariants;
 }
 
 function getDefaultThemeInfo(): iThemeInfo {

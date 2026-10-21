@@ -63,8 +63,9 @@
     "dependencies": {
         "@fluentui/react-datepicker-compat": "^0.4.53",
         "@fluentui/react-file-type-icons": "^8.17.0",
+        "@fluentui/react-migration-v8-v9": "^9.10.19",
         "@fluentui/react-timepicker-compat": "^0.2.42",
-        "@kwiz/common": "^1.0.251",
+        "@kwiz/common": "^1.0.270",
         "@mismerge/core": "^1.2.1",
         "@mismerge/react": "^1.0.1",
         "@monaco-editor/react": "^4.7.0",

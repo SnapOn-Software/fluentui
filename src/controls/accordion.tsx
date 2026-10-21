@@ -34,6 +34,7 @@ interface iProps {
     groups: {
         key: string;
         title: string;
+        /** @deprecated not used */
         icon?: JSX.Element;
         content: JSX.Element;
     }[];

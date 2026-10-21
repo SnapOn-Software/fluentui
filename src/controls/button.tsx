@@ -112,7 +112,7 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>(({ 
         };
     }
 
-    let btn = <Button ref={ref} appearance='subtle' {...passProps as any as ButtonProps} onClick={onClick} className={mergeClasses(...css, className)}
+    let btn = <Button ref={ref} appearance='subtle' shape={ctx.buttonShape} {...passProps as any as ButtonProps} onClick={onClick} className={mergeClasses(...css, className)}
         aria-label={myTitle} title={undefined} icon={myIcon}
         onMouseEnter={trackHover ? (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
             setHover(true);
@@ -141,7 +141,7 @@ export const ButtonEX = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>(({ 
 export const ButtonEXSecondary = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
     const ctx = useKWIZFluentContext();
     return (
-        <ButtonEX ref={ref} appearance='secondary' shape={ctx.buttonShape} {...props}></ButtonEX>
+        <ButtonEX ref={ref} appearance='secondary' {...props}></ButtonEX>
     );
 });
 /** to be used in MessageBarActions for prominent actions. Otherwise use ButtonEX or ButtonEXDangerSubtle */
@@ -157,25 +157,21 @@ export const ButtonEXPrimary = React.forwardRef<HTMLButtonElement, (ButtonEXProp
     );
 });
 export const ButtonEXDanger = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
-    const cssNames = useStyles();
     return (
         <ButtonEXSecondary ref={ref} variant='danger' {...props}>{props.children}</ButtonEXSecondary>
     );
 });
 export const ButtonEXSuccess = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
-    const cssNames = useStyles();
     return (
         <ButtonEX ref={ref} variant="success" {...props}>{props.children}</ButtonEX>
     );
 });
 export const ButtonEXPrimarySubtle = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
-    const cssNames = useStyles();
     return (
         <ButtonEX ref={ref} variant="primary-subtle" {...props}>{props.children}</ButtonEX>
     );
 });
 export const ButtonEXDangerSubtle = React.forwardRef<HTMLButtonElement, (ButtonEXProps)>((props, ref) => {
-    const cssNames = useStyles();
     return (
         <ButtonEX ref={ref} variant="danger-subtle" {...props}>{props.children}</ButtonEX>
     );
@@ -212,7 +208,7 @@ export const CompoundButtonEX = React.forwardRef<HTMLButtonElement, (CompoundBut
         <Tooltip showDelay={1000} relationship='label' withArrow appearance='inverted' content={tooltip}
             mountNode={ctx.mountNode}
         >
-            <CompoundButton ref={ref} appearance='subtle' style={{ justifyContent: "flex-start", maxWidth: max }} {...props as any as CompoundButtonProps} onClick={onClick} aria-label={tooltip} title={undefined}>
+            <CompoundButton ref={ref} appearance='subtle' shape={ctx.buttonShape} style={{ justifyContent: "flex-start", maxWidth: max }} {...props as any as CompoundButtonProps} onClick={onClick} aria-label={tooltip} title={undefined}>
                 {props.children || capitalizeFirstLetter(title)}</CompoundButton>
         </Tooltip>
     );
@@ -220,7 +216,7 @@ export const CompoundButtonEX = React.forwardRef<HTMLButtonElement, (CompoundBut
 export const CompoundButtonEXSecondary = React.forwardRef<HTMLButtonElement, (CompoundButtonEXProps)>((props, ref) => {
     const ctx = useKWIZFluentContext();
     return (
-        <CompoundButtonEX ref={ref} appearance='secondary' shape={ctx.buttonShape} {...props}></CompoundButtonEX>
+        <CompoundButtonEX ref={ref} appearance='secondary' {...props}></CompoundButtonEX>
     );
 });
 export const CompoundButtonEXPrimary = React.forwardRef<HTMLButtonElement, (CompoundButtonEXProps)>((props, ref) => {

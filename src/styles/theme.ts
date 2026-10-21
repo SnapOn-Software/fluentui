@@ -1,4 +1,6 @@
 import { BrandVariants, Theme, createDarkTheme, createLightTheme, teamsDarkTheme, teamsLightTheme } from "@fluentui/react-components";
+import { createBrandVariants } from '@fluentui/react-migration-v8-v9';
+import { IDictionary } from "@kwiz/common";
 
 export interface iThemeContext {
     teams?: boolean;
@@ -8,8 +10,8 @@ export interface iThemeContext {
 
 export function getTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
     const theme = ctx.dark
-        ? getDarkTheme(ctx, t)
-        : getLightTheme(ctx, t);
+        ? getDarkTheme(ctx.teams, t)
+        : getLightTheme(ctx.teams, t);
 
     if (ctx.fullPage) {
         try {
@@ -125,8 +127,8 @@ export const netSuiteDefault: BrandVariants = {
     160: "#D1D7E2"
 };
 
-function getLightTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
-    if (ctx.teams) return teamsLightTheme;
+function getLightTheme(teams?: boolean, t: BrandVariants = kThemeDefault) {
+    if (teams) return teamsLightTheme;
     //return jsonClone(webLightTheme);
     const lightTheme: Theme = {
         ...createLightTheme(t),
@@ -134,8 +136,8 @@ function getLightTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
     return lightTheme;
 }
 
-function getDarkTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
-    if (ctx.teams) return teamsDarkTheme;
+function getDarkTheme(teams?: boolean, t: BrandVariants = kThemeDefault) {
+    if (teams) return teamsDarkTheme;
     //return jsonClone(webDarkTheme);
     const darkTheme: Theme = {
         ...createDarkTheme(t),
@@ -144,4 +146,27 @@ function getDarkTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
     darkTheme.colorBrandForeground1 = t[110];
     darkTheme.colorBrandForeground2 = t[120];
     return darkTheme;
+}
+
+/** the sharepoint global theme info */
+interface iSharePointThemeState {
+    __themeState__?: {
+        theme?: Parameters<typeof createBrandVariants>[0];
+    };
+}
+
+/**
+ * Automatically generates a valid Fluent UI v9 Theme from the current SharePoint site theme
+ * Or pass along a v8 __themeState__.theme
+ */
+export function getFluentV9BrandVariantsFromV8Pallet(theme?: IDictionary<string>): { bv: BrandVariants; isDark: boolean; } {
+    const spPalette = theme || (window as unknown as iSharePointThemeState).__themeState__?.theme;
+    if (spPalette && spPalette.themePrimary && spPalette.white) {
+        const isDark = spPalette.white.toLowerCase() !== '#ffffff'
+        // Generate a v9 16-shade brand ramp mapping from the legacy slots
+        const bv = createBrandVariants(spPalette as any);
+        return { bv, isDark };
+    }
+
+    return null;
 }

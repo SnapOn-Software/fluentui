@@ -18,7 +18,8 @@ const useStyles = makeStyles({
         zIndex: 0
     },
     overflowStyle: {
-        padding: tokens.spacingHorizontalXXS
+        padding: tokens.spacingHorizontalXXS,
+        boxSizing: "border-box"//include padding in the size
     }
 });
 interface iProps {
