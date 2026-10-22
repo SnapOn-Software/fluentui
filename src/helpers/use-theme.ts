@@ -1,10 +1,9 @@
 "use client"
 import { BrandVariants } from "@fluentui/react-components";
-import { deleteCookie, dispatchCustomEvent, getCookie, getGlobal, isNullOrUndefined, setCookie } from "@kwiz/common";
+import { dispatchCustomEvent, getGlobal, isNotEmptyString, isNullOrUndefined, jsonParse, jsonStringify } from "@kwiz/common";
 import { useEffect, useId, useState } from "react";
 import { useIsInPrint } from "./hooks-events";
 
-const $themeCookie = "KWTheme";
 export type themeScheme = "light" | "dark";
 export interface iThemeInfo {
     auto: boolean;
@@ -19,19 +18,16 @@ function getDefaultThemeInfo(): iThemeInfo {
 }
 
 function getThemeInfo(): iThemeInfo {
-    let themeInfo: iThemeInfo = null;
-    const cookie = getCookie($themeCookie) as themeScheme;
-    if (isNullOrUndefined(cookie)) {
+    let themeInfo: iThemeInfo = getThemeFromLocalStorage();
+    if (themeInfo) {
         themeInfo = getDefaultThemeInfo();
-    } else {
-        themeInfo = { auto: false, scheme: cookie === "dark" ? "dark" : "light" };
     }
     return themeInfo;
 }
 
 const globals: {
     theme: iThemeInfo;
-} = getGlobal("g_theme", {
+} = getGlobal("sos_theme_global", {
     theme: getThemeInfo()
 });
 
@@ -41,15 +37,20 @@ export function setThemeInfo(themeInfo: iThemeInfo) {
         : themeInfo;
 
     if (!themeInfo.auto) {
-        setCookie($themeCookie, themeInfo.scheme, 365);
+        saveThemeInLocalStorage(themeInfo);
     } else {
-        deleteCookie($themeCookie);
+        removeThemeInLocalStorage();
     }
 
     globals.theme = newThemeInfo;
     dispatchCustomEvent(globalThis as any as Window, "OnThemeChanged");
 }
 
+/** returns the theme hook, tells you if to use dark / light and brand variables if they were ever saved.
+ * call getTheme({dark:theme.scheme==="dark"}) to get the theme, or if your app wants to use custom colors too
+ * call getTheme({dark:theme.scheme==="dark"}, theme.brandVariants) or
+ * getTheme({dark:theme.scheme==="dark"}, netSuiteDefault)
+ */
 export function useTheme(): iThemeInfo {
     const [theme, setTheme] = useState(globals.theme);
     const isInPrint = useIsInPrint();
@@ -65,4 +66,17 @@ export function useTheme(): iThemeInfo {
     }, [id]);
 
     return isInPrint ? { auto: false, scheme: "light" } : theme;
+}
+
+const $themeStorageKey = "sos-theme-info";
+function saveThemeInLocalStorage(themeInfo: iThemeInfo) {
+    localStorage.setItem($themeStorageKey, jsonStringify(themeInfo));
+}
+function getThemeFromLocalStorage(): iThemeInfo {
+    const str = localStorage.getItem($themeStorageKey);
+    if (isNotEmptyString(str)) return jsonParse(str);
+    else return null;
+}
+function removeThemeInLocalStorage() {
+    localStorage.removeItem($themeStorageKey);
 }

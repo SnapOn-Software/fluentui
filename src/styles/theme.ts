@@ -1,6 +1,6 @@
 import { BrandVariants, Theme, createDarkTheme, createLightTheme, teamsDarkTheme, teamsLightTheme } from "@fluentui/react-components";
 import { createBrandVariants } from '@fluentui/react-migration-v8-v9';
-import { IDictionary } from "@kwiz/common";
+import { IDictionary, isNullOrUndefined } from "@kwiz/common";
 
 export interface iThemeContext {
     teams?: boolean;
@@ -8,7 +8,15 @@ export interface iThemeContext {
     fullPage?: boolean;
 }
 
-export function getTheme(ctx: iThemeContext, t: BrandVariants = kThemeDefault) {
+export function getTheme(ctx: iThemeContext, t?: BrandVariants) {
+    if (isNullOrUndefined(t)) {
+        const spoTheme = getFluentV9BrandVariantsFromV8Pallet();
+        if (spoTheme) {
+            t = spoTheme.bv;
+            ctx.dark = spoTheme.isDark;
+        } else t = kThemeDefault;
+    }
+
     const theme = ctx.dark
         ? getDarkTheme(ctx.teams, t)
         : getLightTheme(ctx.teams, t);
