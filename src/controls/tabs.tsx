@@ -6,7 +6,10 @@ import { IStackProps, Stack } from "./stack";
 const logger = new CommonLogger("Tabs");
 
 interface iProps<keyType extends string> {
-    tabs: { key: keyType; title: string | JSX.Element; children: ReactNode | JSX.Element; props?: TabProps }[];
+    tabs: {
+        key: keyType; title: string | JSX.Element; children: ReactNode | JSX.Element;
+        props?: Partial<TabProps>;
+    }[];
     root?: TabListProps;
     onSelect?: (value: keyType) => void;
     /** default: {direction:"v"} */

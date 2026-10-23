@@ -1,21 +1,24 @@
 import { makeStyles } from "@fluentui/react-components";
 
-const showOnHoverClass = "kfui-show-on-hover";
+/** switch to using a var, reset it to hidden on every scope. this way nested controls will
+ * not all show up when parent is on hover.
+ */
 const useStyles = makeStyles({
     hoverParent: {
-        [`& .${showOnHoverClass}`]: {
-            visibility: "hidden",
+        "--kfui-show-on-hover-visibility": "hidden",
+        ":hover": {
+            "--kfui-show-on-hover-visibility": "visible"
         },
-        [`:hover .${showOnHoverClass}`]: {
-            visibility: "visible"
-        },
-        //ignore the reserved space rendered element for tab list
-        [`:hover .fui-Tab__content--reserved-space .${showOnHoverClass}`]: {
-            visibility: "hidden"
+        "& .fui-Tab__content--reserved-space": {
+            "--kfui-show-on-hover-visibility": "hidden"
         }
+    },
+    showOnHover: {
+        visibility: "var(--kfui-show-on-hover-visibility, hidden)" as "hidden"
     }
-
 });
+
 export function useShowOnHover() {
-    return { hoverParent: useStyles().hoverParent, showOnHover: showOnHoverClass }
+    const styles = useStyles();
+    return { hoverParent: styles.hoverParent, showOnHover: styles.showOnHover }
 }

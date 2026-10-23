@@ -12,6 +12,8 @@ export interface iThemeInfo {
     brandVariants?: BrandVariants;
 }
 
+const $themeStorageKey = "sos-theme-info";
+
 function getDefaultThemeInfo(): iThemeInfo {
     const themeInfo: iThemeInfo = { auto: true, scheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light" };
     return themeInfo;
@@ -68,7 +70,6 @@ export function useTheme(): iThemeInfo {
     return isInPrint ? { auto: false, scheme: "light" } : theme;
 }
 
-const $themeStorageKey = "sos-theme-info";
 function saveThemeInLocalStorage(themeInfo: iThemeInfo) {
     localStorage.setItem($themeStorageKey, jsonStringify(themeInfo));
 }
