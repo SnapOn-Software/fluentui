@@ -21,7 +21,7 @@ function getDefaultThemeInfo(): iThemeInfo {
 
 function getThemeInfo(): iThemeInfo {
     let themeInfo: iThemeInfo = getThemeFromLocalStorage();
-    if (themeInfo) {
+    if (!themeInfo) {
         themeInfo = getDefaultThemeInfo();
     }
     return themeInfo;
