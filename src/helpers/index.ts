@@ -6,6 +6,7 @@ export * from './hooks-events';
 export * from './use-alerts';
 export * from './use-auto-focus-ex';
 export * from './use-controlled-state-tracker';
+export * from './use-draggable';
 export * from './use-highlight';
 export * from './use-is-concurrenct';
 export * from './use-reload-tracker';
@@ -13,3 +14,4 @@ export * from './use-show-on-hover';
 export * from './use-theme';
 export * from './use-toast';
 export * from './use-track-changes';
+
