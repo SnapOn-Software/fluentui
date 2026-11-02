@@ -1,4 +1,4 @@
-import { makeStyles } from "@fluentui/react-components";
+import { makeStyles, mergeClasses } from "@fluentui/react-components";
 import { ChevronLeftRegular, ChevronRightRegular } from "@fluentui/react-icons";
 import * as React from 'react';
 import { useKWIZFluentContext } from "../helpers/context-internal";
@@ -9,9 +9,11 @@ import { Horizontal } from "./horizontal";
 import { Vertical } from "./vertical";
 
 const useStyles = makeStyles({
-    opened: {
-        transform: "rotate(90deg)",
+    chevronIcon: {
         transition: "transform 200ms ease-out"
+    },
+    opened: {
+        transform: "rotate(90deg)"
     },
     header: {
         paddingLeft: 0
@@ -45,12 +47,13 @@ export const AccordionEX: React.FunctionComponent<iProps> = (props) => {
     const ctx = useKWIZFluentContext();
     const classes = useStyles();
     const [opened, setOpened] = React.useState<string | undefined>(props.opened || props.groups[0].key);
+
+    const Chevron = React.useMemo(()=>ctx.isRtl?ChevronLeftRegular:ChevronRightRegular,[ctx.isRtl]);
+    
     return (<Vertical main css={[classes.root, props.fillHeight && classes.rootFill, KnownClassNames.accordion]}>
         {props.groups.map(group => <React.Fragment key={group.key}>
             <ButtonEX className={`${classes.header} ${KnownClassNames.accordionHeader} ${opened === group.key ? ` ${KnownClassNames.isOpen}` : ''}`}
-                icon={ctx.isRtl
-                    ? <ChevronLeftRegular className={opened === group.key ? classes.opened : ''} />
-                    : <ChevronRightRegular className={opened === group.key ? classes.opened : ''} />}
+                icon={<Chevron className={mergeClasses(classes.chevronIcon, opened === group.key ? classes.opened : '')} />}
                 title={group.title} showTitleWithIcon dontCenterText
                 onClick={() => setOpened(current => props.allowClose && current === group.key ? undefined : group.key)}
             />
