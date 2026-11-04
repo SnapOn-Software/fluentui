@@ -79,7 +79,7 @@ export function IconPicker({ value, onChange, extendButtonProps }: {
         </DrawerEX>}
     </>;
 }
-export default function DynamicIcon(props: { name?: string; } & FluentIconsProps) {
+export function DynamicIcon(props: { name?: string; } & FluentIconsProps) {
     const Icon = useFluentIcon(props?.name);
     return Icon ? <Icon {...(props || {})} /> : null;
 }
