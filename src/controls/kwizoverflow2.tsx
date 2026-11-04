@@ -14,13 +14,21 @@ import { Vertical } from "./vertical";
 const logger = new CommonLogger("OverflowV2");
 export const kwizOVerflowMoreMenuCSSName = "kfui-overflow-more";
 
+export interface iOverflowV2OverflowButtonProps<ItemType> extends iOverflowV2Props<ItemType> {
+    overflowItems: {
+        item: ItemType;
+        /** used internally for the overflow menu */
+        $originalIndex?: number;
+    }[];
+}
+
 export interface iOverflowV2Props<ItemType> {
     /** you cannot have a menu with trigger in overflow items. put those in groupWrapper controls before/after rendering children. */
     items: ItemType[];
     /** when overflow:true, if using the OOB menu, should return a <MenuItem> */
     renderItem: (item: ItemType, index: number, overflow?: boolean) => JSX.Element;
     /** items will only have the items that need to overflow. Add kwizOVerflowMoreMenuCSSName to the button */
-    renderOverflowMenuButton?: (props: iOverflowV2Props<ItemType>) => JSX.Element;
+    renderOverflowMenuButton?: (props: iOverflowV2OverflowButtonProps<ItemType>) => JSX.Element;
     root?: Partial<iHorizontalProps>;
     nowrap?: boolean;
     /** if you have this inside a TabList, turn this flag on to make sure tabs don't wrap / shrink text */
@@ -41,13 +49,7 @@ export interface iOverflowV2Props<ItemType> {
     ref?: React.Ref<HTMLDivElement>;
 }
 
-const OverflowMenu = <ItemType,>(props: iOverflowV2Props<ItemType> & {
-    overflowItems: {
-        item: ItemType;
-        /** used internally for the overflow menu */
-        $originalIndex?: number;
-    }[];
-}) => {
+const OverflowMenu = <ItemType,>(props: iOverflowV2OverflowButtonProps<ItemType>) => {
     const ctx = useKWIZFluentContext();
     const closeMenu = useRef<() => void>();
 
