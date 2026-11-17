@@ -28,7 +28,7 @@ export function useDraggable<ItemType extends iDraggedItemType<string>>(props?: 
             }),
             end: (item, monitor) => {
                 dragDropContext.setDragItem(null);
-                onEndDrag && onEndDrag(monitor.getDropResult());
+                onEndDrag?.(monitor.getDropResult());
             },
         }),
         [item, item.type]
@@ -37,7 +37,7 @@ export function useDraggable<ItemType extends iDraggedItemType<string>>(props?: 
     useEffect(() => {
         if (isDragging) {
             dragDropContext.setDragItem(item);
-            onBeginDrag && onBeginDrag();
+            onBeginDrag?.();
         }
     }, [isDragging, onBeginDrag])
 

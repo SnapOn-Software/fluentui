@@ -126,7 +126,7 @@ export const KWIZOverflowV2 = <ItemType,>(props: PropsWithChildren<iOverflowV2Pr
             childrenE.forEach(e => {
                 const divItem = e as HTMLDivElement;
                 const itemIndex = Number(divItem.dataset.itemIndex);
-                if (itemIndex >= 0 && itemIndex <= info.items.length) {
+                if (itemIndex >= 0 && itemIndex < info.items.length) {
                     const priority = getPriority(info.items[itemIndex], itemIndex);
                     divItem.dataset.itemPriority = priority.toString(10);//allows easier debugging on caller, but we don't rely on this value
                     if (priority > highestPriority) highestPriority = priority;

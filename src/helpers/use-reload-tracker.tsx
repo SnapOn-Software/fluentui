@@ -1,5 +1,5 @@
 import { CommonLogger, debounce, firstIndexOf, firstOrNull, isNotEmptyString, isNullOrEmptyString, isNumber, promiseOnce } from "@kwiz/common";
-import { isValidElement, useCallback, useMemo, useRef } from "react";
+import { isValidElement, useCallback, useMemo, useRef, useState } from "react";
 import { iLoadingProps, Loading } from "../controls/loading";
 import { iPleaseWaitProps, PleaseWait } from "../controls/please-wait";
 import { useStateEX } from "./hooks";
@@ -36,13 +36,20 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
     optionalElement?: Partial<iPleaseWaitProps> | JSX.Element;
 }): iUseReloadTracker<Scope> {
     type scopeType = withGlobal<Scope>;
-    const [reloadKey, setReload, reloadKeyRef] = useStateEX<{ [key in scopeType]?: number; }>({ global: 1 });
+    const reloadKeyRef = useRef<{ [key in scopeType]?: number; }>({ global: 1 });
+    const [reloadKey, setReloadKey] = useState(reloadKeyRef.current);
 
     const promises = useRef<{ id: number; type: queueType; label: string; }[]>([]);
     let counter = useRef(1);
 
-    const reload = useCallback(debounce((scope: scopeType) => {
+    //making sure we don't call the set too often since it reloads data
+    const set_reload_throttled = useCallback(debounce(() => {
         const rk = { ...reloadKeyRef.current };
+        setReloadKey(rk);
+    }, 100), []);
+
+    const reload = useCallback((scope: scopeType) => {
+        const rk = reloadKeyRef.current;
         if (scope === "global" || isNullOrEmptyString(scope)) {
             //if global - notify all listeners
             Object.keys(rk).forEach(s => {
@@ -56,8 +63,8 @@ export function useReloadTracker<Scope extends string = "global">(props?: {
             rk.global++;
             logger.debug(`Reload ${scope}: ${rk[scope]}, and global: ${rk.global}`);
         }
-        setReload(rk);
-    }, 100), []);
+        set_reload_throttled();
+    }, []);
 
     const [isLoading, setLoading, isLoadingRef] = useStateEX<isLoadingType>({ type: "idle" }, { skipUpdateIfSame: true });
 
