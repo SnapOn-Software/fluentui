@@ -2,6 +2,7 @@
 import { BrandVariants } from "@fluentui/react-components";
 import { dispatchCustomEvent, getGlobal, isNotEmptyString, isNullOrUndefined, jsonParse, jsonStringify } from "@kwiz/common";
 import { useEffect, useId, useState } from "react";
+import { getFluentV9BrandVariantsFromV8Pallet } from "../styles";
 import { useIsInPrint } from "./hooks-events";
 
 export type themeScheme = "light" | "dark";
@@ -15,7 +16,15 @@ export interface iThemeInfo {
 const $themeStorageKey = "sos-theme-info";
 
 function getDefaultThemeInfo(): iThemeInfo {
-    const themeInfo: iThemeInfo = { auto: true, scheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light" };
+    const spoTheme = getFluentV9BrandVariantsFromV8Pallet();
+    //if in SPO - use page theme otherwise check browser for system settings
+    const autoScheme: themeScheme = (spoTheme
+        ? spoTheme.isDark
+        : window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ? "dark"
+        : "light";
+
+    const themeInfo: iThemeInfo = { auto: true, scheme: autoScheme };
     return themeInfo;
 }
 

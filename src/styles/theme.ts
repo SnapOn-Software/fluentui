@@ -13,7 +13,8 @@ export function getTheme(ctx: iThemeContext, t?: BrandVariants) {
         const spoTheme = getFluentV9BrandVariantsFromV8Pallet();
         if (spoTheme) {
             t = spoTheme.bv;
-            ctx.dark = spoTheme.isDark;
+            //we can't flip theme request since it will throw off other parts of the caller... moved the loging to getDefaultThemeInfo
+            //ctx.dark = spoTheme.isDark;
         } else t = kThemeDefault;
     }
 
